@@ -1,0 +1,71 @@
+# @knitr setup
+setwd("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/regional/samples")
+files <- list.files(pattern="^CRU31.*.regions_samples.RData$")
+
+models <- "CRU31"
+
+# @knitr load
+for(i in 1:length(files)){
+	load(files[i])
+	m <- do.call(rbind, samples.out)
+	n <- nrow(m)
+	d.tmp <- data.frame(
+		Var=rep(c("Temperature","Precipitation"),each=n/(2*length(samples.out))),
+		#Location=rep(names(means.out),each=n/length(samples.out)),
+		m,
+		stringsAsFactors=F
+	)
+	if(i==1) d <- d.tmp else d <- rbind(d,d.tmp)
+	print(i)
+}
+
+rm(samples.out,n,m,i,files,models,d.tmp)
+names(d)[3:ncol(d)] <- gsub("X", "", names(d)[3:ncol(d)])
+#save.image("../../final/CRU31_region_samples_data.RData")
+
+# @knitr organize
+f <- function(i, n, index, multiplier){
+	name.tmp <- samples.names[i]
+	rsd <- subset(d, Location==name.tmp)
+	rsd <- melt(rsd, id.vars=names(rsd)[1:2], measure.vars=names(rsd)[-c(1:2)], variable.name="Time", value.name="Vals_Probs")
+	rsd$vals.ind <- rep(rep(c(T,F), each=n), length=nrow(rsd))
+	rsd$dcastIsDumb <- rep(1:n, length=nrow(rsd))
+	rsd <- dcast(rsd, Var + Location + Time + dcastIsDumb ~ vals.ind, value.var="Vals_Probs")
+	names(rsd)[6:5] <- c("Val", "Prob")
+	rsd$Year <- substr(as.character(rsd$Time), 1, 4)
+	rsd$Month <- substr(as.character(rsd$Time), 6, 8)
+	rsd$Month <- factor(rsd$Month, levels=month.abb)
+	rsd$Decade <- paste0(substr(rsd$Year,1,3),0)
+	rownames(rsd) <- NULL
+	rsd <- rsd[c(1:2,6,5,7:9)]
+	grp <- rep(names(region.names.out), times=sapply(region.names.out, length))[i]
+	dir.create(outDir <- file.path("../../final/region_files_CRU/samples", grp, name.tmp), recursive=T, showWarnings=F)
+	rsd$Val <- round(rsd$Val,1)*multiplier[1]
+	rsd$Prob <- round(rsd$Prob,8)*multiplier[2]
+	if(i==1) x <- subset(rsd, Var=="Precipitation") else x <- NULL
+	gc()
+	rsd.cru <- unlist(subset(rsd, Var=="Precipitation")[,index])
+	names(rsd.cru) <- NULL
+	save(rsd.cru, file=paste0(outDir, "/", "precipitation.RData"))
+	gc()
+	rsd.cru <- unlist(subset(rsd, Var=="Temperature")[,index])
+	names(rsd.cru) <- NULL
+	save(rsd.cru, file=paste0(outDir, "/", "temperature.RData"))
+	gc()
+	print(i)
+	x
+}
+
+# @knitr save
+samples.columns.cru <- 3:4
+samples.multipliers.cru <- c(1e1, 1e8)
+
+out <- mclapply(1:length(samples.names), f, n=n.samples, index=samples.columns.cru, multiplier=samples.multipliers.cru, mc.cores=32)
+cru.samples.df <- out[[1]]
+cru.samples.df[,samples.columns.cru] <- NA
+cru.samples.df$Var <- NA
+cru.samples.df$Location <- NA
+
+rm(d, f, out)
+load("../../final/meta.RData")
+save.image("../../final/meta.RData")

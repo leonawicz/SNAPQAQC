@@ -1,0 +1,126 @@
+---
+title: AR4/CMIP3 and AR5/CMIP5 Data Extraction Code
+author: Matthew Leonawicz
+output:
+  html_document:
+    toc: TRUE
+    theme: cosmo
+    highlight: zenburn
+    keep_md: TRUE
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, messages=FALSE, warnings=FALSE)
+read_chunk("../../code/code_sankey.R")
+read_chunk("../../code/AR4_AR5_extract.R")
+```
+
+## Introduction
+
+This script extracts AR4/CMIP3 and AR5/CMIP5 temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent.
+Optionally it also extracts data for specific point locations via the raster grid cell in which given spatial coordinates fall.
+Data are saved to **R** workspaces (.RData files) for analysis and graphing by subsequent **R** code.
+
+### Motivation
+The primary motivation for this code is not just to extract regional and point data from a large number of high-resolution geotiffs,
+but to limit the routine recurrence and redundancy of such extractions.
+It allows for storing commonly required data in a more compact format that can be quickly shared and digested by other projects.
+
+### Details
+
+#### Capabilities
+This script uses parallel processing via the base `parallel` package and the function `mclapply`.
+It uses 12 CPU cores to process all 12 combinations of climate variable (precipitation and temperature) and emissions scenario (three per CMIP phase).
+These 12 processes are applied to one GCM at a time from each of the two phases.
+This is why they are listed in the code in pairs of models, one from each phase.
+Processing is serial across model pairs.
+
+The code ran be run strictly to obtain community data, regional data, or both. This allows for redoing only one type of extraction, for instance if new shapefiles or additional city locations are desired.
+It can be passed an arbitrary list of cities and/or regions.
+
+#### Limitations
+This code is intended to be run on all ten models hard coded in the list of pairs below.
+It can be run on fewer and in fact is typically called via slurm script with a command line argument referring to a specific batch pair.
+Outputs for each pair of two models are saved independently.
+However, subsequent **R** scripts assume that all ten GCM data extractions have been completed and that all necessary output files are available for further processing.
+The code does not make use of `Rmpi` or similar options so it cannot take advantage of multi-node cluster parallel processing.
+
+Cities coordinates are assumed to be WGS84 Lat/Lon and are projected to NAD 83 Alaska Albers prior to use in extraction.
+Regional information are expected in the form of a named nested list object of a specific type.
+Non-list type sub-elements are vectors of cell indices previously extracted from 2-km Alaska-Canada extent template rasters using named groups of various shapefiles.
+These objects are created in advance. There are multiple versions, as indexing by shapefile is based on the origin, resolution and extent of the rasters and geotiffs of intended use,
+as well as subsampling and/or NA-removal, if desired.
+The specific **R** workspace intended for use in data extraction by this script is hard coded and matches that used in `AR4_AR5_extract.R`.
+
+### Files and Data
+The input files include 2-km Alaska-Canada extent data from 10 combined CMIP3 and CMIP5 downscaled GCMs
+as well as community locations and raster layer cell indices pertaining to various regional shapefile polygons.
+`AR4_AR5_extract.R` is called via slurm script, `AR4_AR5_extract.slurm`.
+
+The `AR4_AR5_extract.R` script produces three main sets of output data:
+* Data for variables at the scale and location of individual communities
+* Spatially aggregated summary statistics of this data over larger regions
+* Regional probability distribution estimates for these same regions.
+
+Each of these groups of outputs is handled separately by additional **R** scripts.
+
+In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R` which performs similar operations on downscaled CRU 3.1 data.
+
+### Code flow
+
+The collection of project code of which this script is a part exists within the context of a broader hierarchy of **R** code and data sets (shown below) spanning a multitude of other projects (not shown).
+
+```{r code_sankey, echo=F, eval=T}
+```
+
+```{r code_sankey_embed, echo=F, eval=T, comment = NA, results = 'asis', tidy = F}
+```
+
+## **R** Code
+
+### Setup
+
+Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions.
+
+#### Required packages
+
+```{r packages}
+```
+
+#### Command line arguments
+
+```{r clargs}
+```
+
+#### Sourced code
+
+```{r source}
+```
+
+#### Define **R** objects
+
+```{r setup}
+```
+
+#### Support functions
+
+```{r functions1}
+```
+
+----
+
+```{r functions2}
+```
+
+### Processing
+
+Compile annual average time series data for each model, scenario/rcp, variable, from CMIP3 and CMIP5, two models at a time (one from each phase)
+**batch** is passed as a command line argument
+
+```{r run}
+```
+
+### Results
+
+```{r save}
+```

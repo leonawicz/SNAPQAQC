@@ -1,0 +1,88 @@
+---
+title: CRU 3.1 Cities Setup Code
+author: Matthew Leonawicz
+output:
+  html_document:
+    toc: TRUE
+    theme: cosmo
+    highlight: zenburn
+    keep_md: TRUE
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, messages=FALSE, warnings=FALSE)
+read_chunk("../../code/code_sankey.R")
+read_chunk("../../code/cities_setup_CRU31.R")
+```
+
+## Introduction
+This script prepares extracted CRU 3.1 community temperature and precipitation data for direct use.
+
+### Motivation
+This script transforms and organizes output data from a parent script into a format that is easier to work with in certain frameworks.
+
+### Details
+The data are extracted based on coordinates of communities.
+Using the 2-km Alaska_Canada extent, single 2-km raster grid cells in which coordinate pairs for each community fall are used as point location estimates.
+This is done for SNAP's CRU 3.1 data set.
+Data manipulation is performed to organize the inputs into more usefully formatted outputs.
+
+#### Capabilities
+This script uses parallel processing via the base `parallel` package and the function `mclapply`.
+It uses as many CPU cores as are available since it is parallelized across cities, which exceed the number of cores.
+It becomes serial beyond the number of cores simultaneously in use.
+
+#### Limitations
+This code expects CRU 3.1 data have been processed by the parent script.
+The code does not make use of `Rmpi` or similar options so it cannot take advantage of multi-node cluster parallel processing.
+
+## Related items
+
+### Files and Data
+The input files are produced by the **R** script, `CRU_extract.R`. `cities_setup_CRU31.R` assumes a complete and successful run of this precursory code.
+
+The `CRU_extract.R` script produces three main sets of output data:
+* Data for variables at the scale and location of individual communities
+* Spatially aggregated summary statistics of this data over larger regions
+* Regional probability distribution estimates for these same regions.
+
+For this reason, `cities_setup_CRU31.R` has two companion **R** scripts which share the parent script, `CRU_extract.R`. These are `stats_setup_CRU31.R` and `samples_setup_CRU31.R`.
+
+In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R`.
+As a result, this script and its two companion scripts mentioned above are related to a similar set of three **R** scripts which perform similar intermediary data manipulation on extracted GCM data.
+
+### Code flow
+
+The collection of project code of which this script is a part exists within the context of a broader hierarchy of **R** code and data sets (shown below) spanning a multitude of other projects (not shown).
+Similarly, outputs from this script and its companion scripts are used across a range of other projects.
+
+```{r code_sankey, echo=F, eval=T}
+```
+
+```{r code_sankey_embed, echo=F, eval=T, comment = NA, results = 'asis', tidy = F}
+```
+
+## **R** Code
+
+### Setup
+
+Setup is minimal. Set working directory. List CRU 3.1 files.
+
+#### Load and compile data
+
+```{r load}
+```
+
+#### Organize data frame and support objects
+
+```{r organize}
+```
+
+#### Save output files
+
+```{r save}
+```
+
+NEW_CODE_CHUNKS
+```{r setup}
+```
