@@ -3,7 +3,7 @@ require(igraph)
 require(rCharts)
 
 # @knitr files
-out <- "X:/Leonawicz/Projects/2014/AR4_AR5_comparisons/docs/diagrams/codeflow.html"
+out <- "X:/leonawicz/Projects/active/AR4_AR5_comparisons/docs/diagrams/codeflow.html"
 
 c0 <- c("AR4_AR5_extract.slurm", "CRU_extract.slurm")
 c1 <- c("AR4_AR5_extract.R", "CRU_extract.R")

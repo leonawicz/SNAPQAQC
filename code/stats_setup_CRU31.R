@@ -1,5 +1,5 @@
 # @knitr setup
-setwd("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/regional/stats")
+setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/stats")
 files <- list.files(pattern="^CRU31.*.regions_stats.RData$")
 
 models <- "CRU31"

@@ -1,6 +1,6 @@
 # @knitr create_project
 source("C:/github/ProjectManagement/code/rpm.R") # eventually load a package instead of source script
-proj.name <- "DataExtraction" # Project name
+proj.name <- "SNAPQAQC" # Project name
 proj.location <- matt.proj.path # Use default file location
 
 docDir <- c("Rmd/include", "md", "html", "Rnw", "pdf", "timeline")

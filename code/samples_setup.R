@@ -1,5 +1,5 @@
 # @knitr setup
-setwd("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/regional/samples")
+setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/samples")
 files <- list.files(pattern="regions_samples.RData$")
 files <- files[substr(files, 1, 3) != "CRU"]
 

@@ -1,10 +1,12 @@
 # @knitr setup
 comArgs <- commandArgs(TRUE)
-if(any(comArgs=="akcan2km")) domain <- "akcan2km" else if(any(comArgs=="world10min")) domain <- "world10min" else stop("Unquoted 'akcan2km' or 'world10min' argument not supplied.")
+if(length(comArgs)) for(i in 1:length(comArgs)) eval(parse(text=comArgs[[i]]))
+if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
+if(!exists("cities.batch")) cities.batch <- ""
 
-setwd("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/cities")
+setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/cities")
 
-files <- list.files(pattern=paste0("^CRU31.*.", domain,".RData$")
+files <- list.files(pattern=paste0("^CRU31.*.batch", cities.batch, ".*.", domain, ".RData$"))
 
 models <- "CRU31"
 
@@ -26,7 +28,7 @@ for(i in 1:length(files)){
 }
 d <- d.hold
 
-rm(d.hold, n, m, i, files, models, d.tmp)
+rm(d.hold, n, m, i, files, models, d.tmp, cities.batch)
 
 # @knitr organize
 d$Val[d$Var=="Temperature"] <- round(d$Val[d$Var=="Temperature"],1)
@@ -40,23 +42,24 @@ names(cities.meta) <- c("Country", "Location", "Population", "Lat", "Lon")
 d$Decade <- paste0(substr(d$Year,1,3),0)
 gc()
 d.cities.cru31 <- d
-rm(d)
+rm(d, results.years)
 gc()
 #save.image("../final/data_cities_CRU31.RData")
 
 # @knitr save
 library(parallel)
 f <- function(i){
-	name.tmp <- gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "", cities.meta$Location[i]))))
+	name.tmp <- gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))
 	city.cru.dat <- subset(d.cities.cru31, Location==cities.meta$Location[i])
-	save(city.cru.dat, file=paste0("../final/city_files_CRU/", gsub(", ", "--", name.tmp), "_", domain, ".RData"))
+	save(city.cru.dat, file=paste0("../final/city_files_CRU/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
 	print(i)
 }
 
 mclapply(1:length(cities.meta$Location), f, mc.cores=32)
 
-assign(pste0("cities.meta.", domain), cities.meta)
+assign(paste0("cities.meta.", domain), cities.meta)
 
-rm(d.cities, f, cities.meta)
-load("../final/meta.RData")
-save.image("../final/meta.RData")
+rm(d.cities.cru31, f, cities.meta, domain)
+save(cities.meta.akcan2km, file="../final/cities_meta_akcan2km.RData")
+#load("../final/meta.RData")
+#save.image("../final/meta.RData")

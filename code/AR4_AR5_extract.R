@@ -3,10 +3,10 @@ comArgs <- commandArgs(TRUE)
 if(length(comArgs)) for(i in 1:length(comArgs)) eval(parse(text=comArgs[[i]]))
 
 if(!exists("batch")) stop("Model pair batch integer not supplied.")
-if(any(comArgs=="akcan2km")) domain <- "akcan2km" else if(any(comArgs=="world10min")) domain <- "world10min" else stop("Unquoted 'akcan2km' or 'world10min' argument not supplied.")
-if(any(comArgs=="regions")) regions <- TRUE else regions <- FALSE
-if(any(comArgs=="cities")) cities <- TRUE else cities <- FALSE
-if(!(regions | cities)) stop("Unquoted 'regions' or 'cities' argument supplied. Must provide at least one.")
+if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
+if(!exists("regions")) regions <- FALSE
+if(!exists("cities")) cities <- FALSE
+if(!(regions | cities)) stop("regions and cities both FALSE. Nothing to process.")
 
 # @knitr packages
 library(raster)
@@ -17,7 +17,9 @@ library(plyr)
 # @knitr source
 if(domain=="akcan2km"){ # For regions and/or cities
 	topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",c("historical","projected")) # files are not read, but metadata parsed from filenames list
-	if(regions) load("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
+	if(regions){
+		load("/workspace/UA/mfleonawicz/leonawicz/Projects/active/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
+	} else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 	locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
 } else if(domain=="world10min") { # Currently for cities only
 	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",c("historical","projected")) # files are not read, but metadata parsed from filenames list
@@ -52,6 +54,7 @@ years <- yr1:yr2
 #	d.cities <- subset(locs, pop >= 1000)[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
 #}
 if(cities){
+	locs <- locs[locs$pop > 10,]
 	l <- paste(locs$region, locs$loc)
 	lu <- unique(l)
 	dup <- which(duplicated(l))
@@ -63,6 +66,10 @@ if(cities){
 		drp <- c(drp, ind)
 	}
 	cities <- locs[-drp,]
+	if(exists("cities.batch")){
+		batch.bounds <- round(seq(1, nrow(cities) + 1, length=11))[c(cities.batch, cities.batch + 1)] - c(0,1)
+		cities <- cities[batch.bounds[1]:batch.bounds[2],]
+	} else cities.batch <- 1
 	d.cities <- cities[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
 	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon, cities$lat)
 }
@@ -85,7 +92,7 @@ denFun <- function(x, n, variable){
 
 # @knitr functions2
 # Processing function
-getData <- function(i, model, cells.list, shp.names, n.shp, seed=232, regions=TRUE, n.samples=512, cities=NULL, start.year=NULL, end.year=NULL){
+getData <- function(i, model, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=232, regions=TRUE, n.samples=512, cities=NULL, start.year=NULL, end.year=NULL){
 	print(i)
 	if(length(model)==1) model <- rep(model, i)
 	for(p in 1:length(topDir)){
@@ -110,16 +117,18 @@ getData <- function(i, model, cells.list, shp.names, n.shp, seed=232, regions=TR
 		files <- files[order(yr.mo.tmp)]
 		yr.tmp <- substr(files,nchar(files)-7,nchar(files)-4)
 		yr.tmp <- substr(files,nchar(files)-7,nchar(files)-4)
-		seq.q <- c(0.05, 0.10, 0.25, 0.5, 0.75, 0.9, 0.95) #seq(0, 1, by=0.05) #Hard coded
-		m <- matrix(NA, nrow=length(files), ncol=length(seq.q) + 2) # +2 for mean and SD below
+		if(regions){
+			seq.q <- c(0.05, 0.10, 0.25, 0.5, 0.75, 0.9, 0.95) #seq(0, 1, by=0.05) #Hard coded
+			m <- matrix(NA, nrow=length(files), ncol=length(seq.q) + 2) # +2 for mean and SD below
 
-		mden <- matrix(NA, nrow=2*n.samples, ncol=length(files))
-		samples.list <- rapply(cells.list, f=function(x, m) m, classes="integer", how="replace", m=mden)
-		names(samples.list) <- names(shp.names)
-		for(l1 in 1:length(shp.names)) names(samples.list[[l1]]) <- shp.names[[l1]]
+			mden <- matrix(NA, nrow=2*n.samples, ncol=length(files))
+			samples.list <- rapply(cells.list, f=function(x, m) m, classes="integer", how="replace", m=mden)
+			names(samples.list) <- names(shp.names)
+			for(l1 in 1:length(shp.names)) names(samples.list[[l1]]) <- shp.names[[l1]]
+		}
 		
 		if(regions) for(l1 in 1:length(shp.names)) for(l2 in 1:length(shp.names[[l1]])) assign(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], sep="__"), m)
-		rm(m)
+		if(regions) rm(m)
 		gc()
 		if(!is.null(cities)) m.cities <- matrix(NA, nrow=length(cells_cities), ncol=length(files))
 		if((i %in% c(1,4,7,10)) | p==2){ # no need to read historical files more than once for each CMIP phase, scenario, and variable.
@@ -183,7 +192,7 @@ getData <- function(i, model, cells.list, shp.names, n.shp, seed=232, regions=TR
 	}
 	if(regions & is.null(cities))	l <- list(regions.list, list("No cities"))
 	if(regions & !is.null(cities))	l <- list(regions.list, list(m.cities=m.cities.hold))
-	if(!regions & !is.null(cities))	l <- list(list(yr=yr.hold), list(m.cities=m.cities.hold))
+	if(!regions & !is.null(cities))	l <- list(c(list(yr=yr.hold), list("empty")), list(m.cities=m.cities.hold))
 	l
 }
 
@@ -222,7 +231,7 @@ for(k in 1:2){
 		print(length(stats.out)-i)
 		}
 		save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames,
-			file=paste0("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
+			file=paste0("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
@@ -255,7 +264,7 @@ for(k in 1:2){
 			}
 		print(length(samples.out)-i)
 		}
-		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
+		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
 	}
 	if(k==2 & !is.null(cities)){
 		for(i in 1:length(stats)){
@@ -273,6 +282,6 @@ for(k in 1:2){
 			stats.out[[i]][na.rows2,11] <- stats.out[[i]][na.rows2,12] <- stats.out[[i]][na.rows2,10]
 		}
 		d <- stats.out[[1]]
-		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/cities/",models[1],"_",models[4],"_annual_cities_", domain, ".RData"))
+		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/cities/",models[1],"_",models[4],"_annual_cities_batch", cities.batch, "_", domain, ".RData"))
 	}
 }

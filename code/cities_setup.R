@@ -1,10 +1,12 @@
 # @knitr setup
 comArgs <- commandArgs(TRUE)
-if(any(comArgs=="akcan2km")) domain <- "akcan2km" else if(any(comArgs=="world10min")) domain <- "world10min" else stop("Unquoted 'akcan2km' or 'world10min' argument not supplied.")
+if(length(comArgs)) for(i in 1:length(comArgs)) eval(parse(text=comArgs[[i]]))
+if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
+if(!exists("cities.batch")) cities.batch <- ""
 
-setwd("/workspace/UA/mfleonawicz/Leonawicz/Projects/2014/AR4_AR5_comparisons/data/cities")
+setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/cities")
 
-files <- list.files(pattern=paste0(domain, ".RData$"))
+files <- list.files(pattern=paste0("batch", cities.batch, ".*.", domain, ".RData$"))
 files <- files[substr(files, 1, 3) != "CRU"]
 
 models <- list(
@@ -35,7 +37,8 @@ for(i in 1:length(files)){
 	print(i)
 }
 d <- d.hold
-rm(d.hold, n, m, i, files, models, d.tmp, domain)
+rm(d.hold, n, m, i, files, models, d.tmp)
+gc()
 
 # @knitr organize
 d$Val[d$Var=="Temperature"] <- round(d$Val[d$Var=="Temperature"], 1)
@@ -47,20 +50,29 @@ d$Scenario <- factor(d$Scenario, levels=unique(d$Scenario))
 cities.meta$loc <- paste0(cities.meta$loc, ", ", cities.meta$region)
 cities.meta <- cities.meta[c(1,3:6)]
 names(cities.meta) <- c("Country", "Location", "Population", "Lat", "Lon")
-d$Decade <- paste0(substr(d$Year,1,3),0)
+d$Decade <- as.character(10*(d$Year %/% 10))
 gc()
 d.cities <- d
-rm(d)
+rm(d, results.years)
 gc()
 #save.image("../final/data_cities.RData")
 
-# @knitr save
+# @knitr save_cc4lite
+# Save R workspace of data frame for use in Community Charts v4 Lite
+#library(dplyr)
+#d.sub <- filter(d.cities, Phase=="CMIP5" & Year >= 2010 & Year <= 2099)
+#d.sub.t <- filter(d.sub, Var=="Temperature")
+#d.sub.p <- filter(d.sub, Var=="Precipitation")
+#ddply(d.sub.t, c(), summarize, )
+
+# @knitr save_city_files
+# Save individual R workspace files for each city for use in master QAQC Shiny app
 library(parallel)
 
 f <- function(i){
 	name.tmp <- gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "", cities.meta$Location[i]))))
 	city.dat <- subset(d.cities, Location==cities.meta$Location[i])
-	save(city.dat, file=paste0("../final/city_files_GCM/", gsub(", ", "--", name.tmp), "_", domain, ".RData"))
+	save(city.dat, file=paste0("../final/city_files_GCM/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
 	print(i)
 }
 
