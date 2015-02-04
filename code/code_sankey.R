@@ -15,15 +15,45 @@ d2 <- "Regional shapefiles"
 
 c3 <- "shapes2cells.R"
 
+e1 <- "qaqc_app_metadata.R"
+e2 <- "Master QAQC app: meta.RData"
+e3 <- "cities_meta_akcan2km.RData"
+
+f1 <- c("alfStatsByRep_Rmpi.slurm", "alfStatsByRep_Rmpi.R", "alfStatsByRep.R", "Intermediary data", "getAlfStatsAndDensities.R")
+f2 <- "1-km ALFRESCO outputs"
+f3 <- c("shapes2cells_AKCAN1km.RData", "shapes2cells_AKCAN1km_rmNA.RData")
+
 # @knitr links
 from <- c(
 	c0,
 	rep(c1, times=c(length(c2a), length(c2b))),
 	rep(d1, length(c1)),
 	d2,
-	c3
+	rep(c3, 3),
+	"cities_setup.slurm",
+	c(c2a[2:3], c2b[3], e1),
+	e1, e3,
+	c(f1[1], f3),
+	f1[2], f1[3], f1[4],
+	rep(f1[5], 3),
+	rep(f2, 2)
 )
-to <- c(c1, c2a, c2b, rep(c1, each=length(d1)), c3, d1[1])
+
+to <- c(
+	c1,
+	c2a, c2b,
+	rep(c1, each=length(d1)),
+	c3,
+	c(d1[1], f3),
+	c2a[1],
+	rep(e2, 4),
+	e3, e2,
+	rep(f1[2], 3),
+	f1[3], f1[4], f1[5],
+	c(e2, "App data", "Other QAQC analyses"),
+	f1[2:3]
+)
+
 val <- rep(1, length(to))
 
 # @knitr igraph

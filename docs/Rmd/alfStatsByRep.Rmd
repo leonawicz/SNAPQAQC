@@ -1,5 +1,5 @@
 ---
-title: pm.R
+title: alfStatsByRep.R
 output:
   html_document:
     toc: false
@@ -10,7 +10,7 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
-read_chunk("../../code/C:/github/SNAPQAQC/docs/Rmd/pm.Rmd")
+read_chunk("../../code/alfStatsByRep.Rmd")
 ```
 
 

@@ -35,14 +35,14 @@ proj.menu <- c("Data Overview", "Processing", "R Code", "Use Cases", "All Projec
 
 proj.submenu <- list(
 	c("Variables", "Climate", "Fire", "Vegetation", "divider", "Areas of interest", "Regions", "Communities"),
-	c("Extraction", "placeholder", "placeholder", "divider", "Organization", "placeholder", "placeholder"),
+	c("Overview", "Extraction", "Organization"),
 	c("placeholder"),
 	c("empty")
 )
 
 proj.files <- list(
 	c("header", "placeholder", "placeholder", "placeholder", "divider", "header", "placeholder", "placeholder"),
-	c("header", "placeholder", "placeholder", "divider", "header", "placeholder", "placeholder"),
+	c("code_sankey.html", "placeholder", "placeholder"),
 	c("placeholder"),
 	c("http://leonawicz.github.io")
 )
