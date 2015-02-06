@@ -1,25 +1,28 @@
 # @knitr setup
 setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/samples")
+
+library(data.table)
+
 files <- list.files(pattern="^CRU31.*.regions_samples.RData$")
 
 models <- "CRU31"
 
 # @knitr load
+dlist <- vector("list", length(files))
 for(i in 1:length(files)){
 	load(files[i])
 	m <- do.call(rbind, samples.out)
 	n <- nrow(m)
-	d.tmp <- data.frame(
+	dlist[[i]] <- data.frame(
 		Var=rep(c("Temperature","Precipitation"),each=n/(2*length(samples.out))),
 		#Location=rep(names(means.out),each=n/length(samples.out)),
 		m,
 		stringsAsFactors=F
 	)
-	if(i==1) d <- d.tmp else d <- rbind(d,d.tmp)
 	print(i)
 }
-
-rm(samples.out,n,m,i,files,models,d.tmp)
+d <- as.data.frame(rbindlist(dlist))
+rm(samples.out,n,m,i,files,models,dlist)
 names(d)[3:ncol(d)] <- gsub("X", "", names(d)[3:ncol(d)])
 #save.image("../../final/CRU31_region_samples_data.RData")
 

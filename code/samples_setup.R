@@ -1,5 +1,8 @@
 # @knitr setup
 setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/samples")
+
+library(data.table)
+
 files <- list.files(pattern="regions_samples.RData$")
 files <- files[substr(files, 1, 3) != "CRU"]
 
@@ -12,11 +15,12 @@ models <- list(
 )
 
 # @knitr load
+dlist <- vector("list", length(files))
 for(i in 1:length(files)){
 	load(files[i])
 	m <- do.call(rbind, samples.out)
 	n <- nrow(m)
-	d.tmp <- data.frame(
+	dlist[[i]] <- data.frame(
 		Phase=rep(c("CMIP3","CMIP5"),each=n/(4*length(samples.out))),
 		Scenario=rep(c("SRES B1","SRES A1B","SRES A2","RCP 4.5","RCP 6.0","RCP 8.5"),each=n/(12*length(samples.out))),
 		Model=rep(models[[i]],each=n/(4*length(samples.out))),
@@ -24,11 +28,10 @@ for(i in 1:length(files)){
 		m,
 		stringsAsFactors=F
 	)
-	if(i==1) d <- d.tmp else d <- rbind(d,d.tmp)
 	print(i)
 }
-
-rm(samples.out,n,m,i,files,models,d.tmp)
+d <- as.data.frame(rbindlist(dlist))
+rm(samples.out,n,m,i,files,models,dlist)
 names(d)[6:ncol(d)] <- gsub("X", "", names(d)[6:ncol(d)])
 gc()
 #save.image("../../final/region_samples_data.RData")

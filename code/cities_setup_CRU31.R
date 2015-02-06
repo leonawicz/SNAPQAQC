@@ -6,29 +6,30 @@ if(!exists("cities.batch")) cities.batch <- ""
 
 setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/cities")
 
+library(data.table)
+
 files <- list.files(pattern=paste0("^CRU31.*.batch", cities.batch, ".*.", domain, ".RData$"))
 
 models <- "CRU31"
 
 # @knitr load
+dlist <- vector("list", length(files))
 for(i in 1:length(files)){
 	load(files[i])
 	cities.meta <- d.cities
 	m <- as.numeric(d)
 	n <- length(m)
-	d.tmp <- data.frame(
+	dlist[[i]] <- data.frame(
 		Var=rep(c("Temperature","Precipitation"), each=n/(2*nrow(cities.meta))),
 		Location=rep(paste0(cities.meta$loc, ", ", cities.meta$region), each=n/nrow(cities.meta)),
 		Val=m,
 		stringsAsFactors=F
 	)
-	if(i==1) d.hold <- d.tmp else d.hold <- rbind(d.hold, d.tmp)
 	gc()
 	print(i)
 }
-d <- d.hold
-
-rm(d.hold, n, m, i, files, models, d.tmp, cities.batch)
+d <- as.data.frame(rbindlist(dlist))
+rm(n, m, i, files, models, dlist, cities.batch)
 
 # @knitr organize
 d$Val[d$Var=="Temperature"] <- round(d$Val[d$Var=="Temperature"],1)

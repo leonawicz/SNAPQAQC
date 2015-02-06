@@ -1,26 +1,29 @@
 # @knitr setup
 setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/stats")
+
+library(data.table)
+
 files <- list.files(pattern="^CRU31.*.regions_stats.RData$")
 
 models <- "CRU31"
 
 # @knitr load
+dlist <- vector("list", length(files))
 for(i in 1:length(files)){
 	load(files[i])
 	m <- do.call(rbind,stats.out)
 	n <- nrow(m)
 	p <- length(stats.out)
-	d.tmp <- data.frame(
+	dlist[[i]] <- data.frame(
 		Var=rep(c("Temperature","Precipitation"),each=n/(2*p)),
 		Location=rep(names(stats.out),each=n/p),
 		m,
 		stringsAsFactors=F
 	)
-	if(i==1) d <- d.tmp else d <- rbind(d,d.tmp)
 	print(i)
 }
-
-rm(stats.out,n,m,i,p,files,models,d.tmp)
+d <- as.data.frame(rbindlist(dlist))
+rm(stats.out,n,m,i,p,files,models,dlist)
 
 # @knitr organize
 d[d$Var=="Temperature", 3:ncol(d)] <- round(d[d$Var=="Temperature",  3:ncol(d)],1)
