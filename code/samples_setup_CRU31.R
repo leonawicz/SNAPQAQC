@@ -1,5 +1,5 @@
 # @knitr setup
-setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/samples")
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples")
 
 library(data.table)
 

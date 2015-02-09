@@ -18,7 +18,7 @@ library(plyr)
 if(domain=="akcan2km"){ # For regions and/or cities
 	topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",c("historical","projected")) # files are not read, but metadata parsed from filenames list
 	if(regions){
-		load("/workspace/UA/mfleonawicz/leonawicz/Projects/active/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
+		load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
 	} else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 	locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
 } else if(domain=="world10min") { # Currently for cities only
@@ -231,7 +231,7 @@ for(k in 1:2){
 		print(length(stats.out)-i)
 		}
 		save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames,
-			file=paste0("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
+			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
@@ -264,7 +264,7 @@ for(k in 1:2){
 			}
 		print(length(samples.out)-i)
 		}
-		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
+		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
 	}
 	if(k==2 & !is.null(cities)){
 		for(i in 1:length(stats)){
@@ -282,6 +282,6 @@ for(k in 1:2){
 			stats.out[[i]][na.rows2,11] <- stats.out[[i]][na.rows2,12] <- stats.out[[i]][na.rows2,10]
 		}
 		d <- stats.out[[1]]
-		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/cities/",models[1],"_",models[4],"_annual_cities_batch", cities.batch, "_", domain, ".RData"))
+		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities/",models[1],"_",models[4],"_annual_cities_batch", cities.batch, "_", domain, ".RData"))
 	}
 }

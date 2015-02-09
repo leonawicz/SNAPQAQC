@@ -4,7 +4,7 @@ if(length(comArgs)) for(i in 1:length(comArgs)) eval(parse(text=comArgs[[i]]))
 if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
 if(!exists("cities.batch")) cities.batch <- ""
 
-setwd("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/cities")
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities")
 
 library(data.table)
 

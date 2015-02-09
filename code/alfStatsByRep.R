@@ -1,6 +1,8 @@
+# @knitr setup
 library(raster)
 rasterOptions(chunksize=10^12,maxmemory=10^11)
 
+# @knitr getFireStats
 getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, ...){
 	rep.lab <- paste0("_",c(0:199),"_")[i]
 	pat <- gsub("expression","",paste(bquote(expression("^FireS.*.",.(rep.lab),".*.tif$")),collapse=""))
@@ -38,6 +40,7 @@ getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, 
 	m
 }
 
+# @knitr getFireStats
 getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, breaks, age.lab, veg.lab, n.samples, replace.deciduous=FALSE, ...){
 	id.vals <- as.numeric(paste0(rep(1:(length(age.lab)), length(veg.lab)), rep(1:length(veg.lab), each=length(age.lab))))
 	rep.lab <- paste0("_",c(0:199),"_")[i]
@@ -119,6 +122,7 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	veg.area
 }
 
+# @knitr getAlfStats
 getAlfStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, breaks, age.lab, veg.lab, n.samples, replace.deciduous=FALSE, ...){
 	id.vals <- as.numeric(paste0(rep(1:(length(age.lab)), length(veg.lab)), rep(1:length(veg.lab), each=length(age.lab))))
 	rep.lab <- paste0("_",c(0:199),"_")[i]

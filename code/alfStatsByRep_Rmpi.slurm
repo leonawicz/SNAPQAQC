@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --exclusive
 #SBATCH --mail-type=END
-#SBATCH --mail-user=mfleonawicz@alaska.edu,angelica.floyd@alaska.edu
+#SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --account=snap
 #SBATCH -p main
 #SBATCH --ntasks=200
@@ -11,7 +11,7 @@
 #SBATCH --ntasks-per-node=23
 
 # CL variables passed take form, e.g., model.index=1, reps=1:200, years=1900:2100
-mpirun -np 1 Rscript /big_scratch/mfleonawicz/Rmpi/alfStatsByRep_Rmpi.R $1 $2 $3
+mpirun -np 1 Rscript /workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/alfStatsByRep_Rmpi.R $1 $2 $3
 
 # If mpirun call above is commented out and the lines below are not, pass any dummy model.index CL arg
 #mpirun -np 1 Rscript /big_scratch/mfleonawicz/Rmpi/alfStatsByRep_Rmpi.R model.index=1 $2 $3

@@ -1,15 +1,17 @@
-
+# @knitr setup
 library(parallel)
 library(reshape2)
-n.regions <- 53
-n.cores <- 27
-n.samples <- 20
+n.regions <- 53 # known, fixed
+n.cores <- 27 # of 32 available
+n.samples <- 20 # known, based on upstream settings for vegetation age
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 ageDirs <- list.files("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", full=T)
 fireDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire"
 vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg"
 
+# @knitr functions1
+# Support functions
 swapModelName <- function(x){
 	switch(x,
 		cccma_cgcm3_1="CCCMAcgcm31", gfdl_cm2_1="GFDLcm21", miroc3_2_medres="MIROC32m", mpi_echam5="MPIecham5", ukmo_hadcm3="ukmoHADcm3"#,
@@ -29,6 +31,7 @@ getPhase <- function(x){
 	)
 }
 
+# @knitr functions2
 # Density estimation
 denFun <- function(x, n=20, min.zero=TRUE, diversify=FALSE, missing.veg.NA=TRUE, fire=FALSE){
 	if(all(is.na(x))) return(rep(NA, 2*n))
@@ -53,10 +56,12 @@ btfun <- function(p, n.samples=length(p)/2, n.boot=10000, interp=FALSE, n.interp
 	p
 }
 
+# @knitr functions_not_in_use
 #library(compiler)
 getSamples <- function(d, v) d[d[,2]==v, 1]
-#getSamples_cmp <- cmpfun(getSamples)
+#getSamples_cmp <- cmpfun(getSamples) # not in use
 
+# not in use
 library(Rcpp)
 cppFunction(
 'List lapply_C(List input, NumericMatrix data, Function f) {
@@ -79,6 +84,7 @@ getStats <- function(x, seq.q){
 	c(x1, x2, x3)
 }
 
+# @knitr get_AgeDensities
 # Primary processing functions
 get_AgeDensities <- function(j, dirs, n.samples=20, n.samples.in, samples.index, multiplier, veg.labels, scen.levels){
 	pat <- paste0("^veg.age.loc", j, ".rep.*.RData$")
@@ -148,8 +154,8 @@ get_AgeDensities <- function(j, dirs, n.samples=20, n.samples.in, samples.index,
 	rownames(d.alf.age) <- NULL
 	for(p in 1:length(veg.labels)) d.alf.age$VegID[d.alf.age$VegID==p] <- veg.labels[p]
 	names(d.alf.age)[which(names(d.alf.age)=="VegID")] <- "Vegetation"
-	#dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	#dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
 	d.alf.age$Val <- round(d.alf.age$Val)
 	d.alf.age$Prob <- round(d.alf.age$Prob,8)*multiplier[2] # round to eight seems decent for now
 	r.alf.age <- unlist(d.alf.age[,samples.index])
@@ -164,6 +170,7 @@ get_AgeDensities <- function(j, dirs, n.samples=20, n.samples.in, samples.index,
 	return(list(alf.ageSamples.df=x))#, alf.fireStats.df=y))
 }
 
+# @knitr get_FireStats_FireDensities
 get_FireStats_FireDensities <- function(j, inDir, n.samples=20, stats.index, samples.index, multiplier, scen.levels){
 	pat <- paste0("^abfc.loc", j, "\\..*.RData$")
 	files <- list.files(inDir, full=T, pattern=pat)
@@ -197,8 +204,8 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples=20, stats.index, sam
 	d.alf.fire$Decade <- paste0(substr(d.alf.fire$Year,1,3),0)
 	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
 	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
 	d.alf.fire$Prob <- round(d.alf.fire$Prob,8)*multiplier[2] # round to eight seems decent for now
 	r.alf.fire <- unlist(subset(d.alf.fire, Var=="Burn Area")[,samples.index])
 	names(r.alf.fire) <- NULL
@@ -218,6 +225,7 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples=20, stats.index, sam
 	return(list(alf.fireSamples.df=x, alf.fireStats.df=y))
 }
 
+# @knitr get_VegStats_VegDensities
 get_VegStats_VegDensities <- function(j, inDir, n.samples=20, stats.index, samples.index, multiplier, veg.labels, scen.levels){
 	pat <- paste0("^v.loc", j, "\\..*.RData$")
 	files <- list.files(inDir, full=T, pattern=pat)
@@ -259,8 +267,8 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples=20, stats.index, sampl
 	d.alf.veg$Decade <- paste0(substr(d.alf.veg$Year,1,3),0)
 	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
 	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
 	d.alf.veg$Prob <- round(d.alf.veg$Prob,8)*multiplier[2] # round to eight seems decent for now
 	r.alf.veg <- unlist(d.alf.veg[,samples.index])
 	names(r.alf.veg) <- NULL
@@ -274,12 +282,14 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples=20, stats.index, sampl
 	return(list(alf.vegSamples.df=x, alf.vegStats.df=y))
 }
 
+# @knitr proc_setup
 # Processing
 agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)))
 stats.columns <- 5+1:length(agg.stat.colnames)
 samples.columns <- 6:7
 samples.multipliers.alf <- c(1e1, 1e8) # First not used
 
+# @knitr proc_fire
 system.time( out.fire <- mclapply(1:n.regions, get_FireStats_FireDensities, inDir=fireDir, n.samples=n.samples, stats.index=stats.columns, samples.index=samples.columns, multiplier=samples.multipliers.alf, mc.cores=n.cores) )
 alf.fireStats.df <- out.fire[[1]]$alf.fireStats.df
 alf.fireSamples.df <- out.fire[[1]]$alf.fireSamples.df
@@ -294,6 +304,7 @@ alf.fireSamples.df[,samples.columns] <- NA
 alf.fireSamples.df$Var <- NA
 alf.fireSamples.df$Location <- NA
 
+# @knitr proc_veg
 system.time( out.veg <- mclapply(1:n.regions, get_VegStats_VegDensities, inDir=vegDir, n.samples=n.samples, stats.index=stats.columns, samples.index=samples.columns, multiplier=samples.multipliers.alf, veg.labels=veg.labels, mc.cores=n.cores) )
 alf.vegStats.df <- out.veg[[1]]$alf.vegStats.df
 alf.vegSamples.df <- out.veg[[1]]$alf.vegSamples.df
@@ -308,6 +319,7 @@ alf.vegSamples.df[,samples.columns] <- NA
 alf.vegSamples.df$Var <- NA
 alf.vegSamples.df$Location <- NA
 
+# @knitr proc_age
 system.time( out.age <- mclapply(1:n.regions, get_AgeDensities, dirs=ageDirs, n.samples=n.samples, n.samples.in=20, samples.index=samples.columns, multiplier=samples.multipliers.alf, veg.labels=veg.labels, mc.cores=n.cores) )
 #alf.ageStats.df <- out.age[[1]]$alf.ageStats.df
 alf.ageSamples.df <- out.age[[1]]$alf.ageSamples.df
@@ -322,8 +334,12 @@ alf.ageSamples.df[,samples.columns] <- NA
 alf.ageSamples.df$Var <- NA
 alf.ageSamples.df$Location <- NA
 
+# @knitr save_metadata
 # Remove unwanted objects, load metadata workspace, save along with age metadata
 rm(ageDirs, agg.stat.colnames, btfun, denFun, fireDir, get_AgeDensities, get_FireStats_FireDensities, get_VegStats_VegDensities, getPhase,
 getSamples, getStats, lapply_C, n.cores, n.regions, n.samples, samples.columns, scen.levels, stats.columns, swapModelName, swapScenarioName, vegDir)
-load("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/meta_backup.RData")
-save.image("/workspace/UA/mfleonawicz/leonawicz/Projects/2014/AR4_AR5_comparisons/data/final/meta.RData")
+# Create a backup of the meta.RData file, load and save over that.
+# Inclusion of ALFRESCO output in QAQC R Shiny app is under early development.
+# All but one shiny-apps development repo branch should not include this version of meta.RData in the cmip3_cmip5 app
+load("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta_backup.RData")
+save.image("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta_backup.RData")

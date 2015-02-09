@@ -14,4 +14,4 @@
 #### $2/$3 are regions=TRUE and/or cities=TRUE, defaults to FALSE, at least one must be specified TRUE;
 #### $4, optional, is years=1870:2099, or similar;
 #### $5 optional, not generally needed for CRU (see GCM slurm script), cities.batch is an integer 1 through 10;
-Rscript /workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/code/CRU_extract.R $1 $2 $3 $4 $5
+Rscript /workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/code/CRU_extract.R $1 $2 $3 $4 $5

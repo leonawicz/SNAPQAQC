@@ -1,3 +1,4 @@
+# @knitr regions
 #### This is the final script run after all app data and metadata files are compiled.
 #### This is for final formatting related to regions and cities.
 
@@ -14,8 +15,9 @@ region.cru.samples.path <- list.files(file.path(topDir, "region_files_CRU/sample
 region.cru.samples.files <- lapply(region.cru.samples.path, list.files, full=T)
 names(region.cru.stats.files) <- names(region.gcm.stats.files) <- names(region.cru.samples.files) <- names(region.gcm.samples.files) <- basename(region.gcm.stats.path)
 
+# @knitr cities
 # City inclusion is not perfect, some cities are dropped out
-# CRU has fewer city files, no time to investigate
+# CRU has fewer city files, no time to investigate yet
 city.cru.files.path <- file.path(topDir, "city_files_CRU")
 city.cru.files <- list.files(city.cru.files.path, full=T)
 
@@ -27,15 +29,15 @@ city.gcm.files <- gsub("city_files_CRU", "city_files_GCM", city.cru.files) # lis
 city.names <- gsub("APOS", "\\'", gsub("--", ", ", sapply(strsplit(basename(city.gcm.files), "__"), "[[", 1)))
 
 # subset cities metadata data frame to match CRU files
-cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/final/cities_meta_akcan2km.RData"
+cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/cities_meta_akcan2km.RData"
 load(cities.meta.file)
 cities.meta.akcan2km <- subset(cities.meta.akcan2km, Location %in% city.names)
 save(cities.meta.akcan2km, file=cities.meta.file) # okay to save over original file
 rm(cities.meta.file, topDir)
 
-# reverse for consistency
+# reverse for consistency, extra precaution
 city.names <- city.names[city.names %in% cities.meta.akcan2km$Location]
 
-load("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/final/meta.RData")
-
-save.image(file.path("/workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/data/final/meta.RData"))
+# @knitr save_metadata
+load("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta.RData")
+save.image(file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta.RData"))
