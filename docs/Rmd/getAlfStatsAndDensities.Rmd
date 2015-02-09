@@ -52,5 +52,61 @@ Things to note:
 ## R code
 
 ### Setup
-ADD_TEXT_HERE: EXAMPLE
-Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
+Setup consists of loading required **R** packages and defining file paths and other **R** objects including scenario names, vegetation classes, numbers of processing cores, and sampling factor for distributional estimation.
+
+```{r setup}
+```
+
+### Support functions
+Define support functions which assist in assembling curated data frames.
+
+```{r functions1}
+```
+
+Define support functions for density estimation, boostrap resampling from estimated densities, and extraction of mean, standard deviation, and quantile statistics.
+
+```{r functions2}
+```
+
+### Processing functions
+#### get_AgeDensities
+
+```{r get_AgeDensities}
+```
+
+#### get_FireStats_FireDensities
+
+```{r get_FireStats_FireDensities}
+```
+
+#### get_VegStats_VegDensities
+
+```{r get_VegStats_VegDensities}
+```
+
+### Processing
+Prepare for processing.
+
+```{r proc_setup}
+```
+
+Process fire statistics and distributions.
+
+```{r proc_fire}
+```
+
+Process vegetation class statistics and distributions.
+
+```{r proc_veg}
+```
+
+Process vegetation age distributions.
+
+```{r proc_age}
+```
+
+Save metadata into `meta.RData`, which is used by the master QAQC Shiny app.
+Currently, this is saved in a backup file as a specific version of metadata since the integration of ALFRESCO output statistics into the app is in an early developmental stage and not used by most repo branches.
+
+```{r save_metadata}
+```

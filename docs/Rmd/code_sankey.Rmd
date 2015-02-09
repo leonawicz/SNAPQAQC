@@ -40,6 +40,6 @@ Files generated as part of SNAP QAQC include fortified datasets which are more a
 ```{r rcharts}
 ```
 
-```{r sankey_embed, comment=NA, results="asis", tidy=F}
+```{r code_sankey_embed, comment=NA, results="asis", tidy=F}
 ```
 <style>iframe.rChart{ width: 100%; height: 840px;}</style>

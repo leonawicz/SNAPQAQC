@@ -3,8 +3,8 @@ title: QAQC Shiny App Metadata Finalization
 output:
   html_document:
     toc: false
-    theme: united
-    highlight: zenburn
+    theme: spacelab
+    highlight: espresso
     keep_md: true
 ---
 
@@ -22,7 +22,18 @@ but ultimately time is needed to investigate why GCM and CRU extractions of the 
 
 ## R code
 
-### Setup
-ADD_TEXT_HERE: EXAMPLE
-Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
+File path information for GCM and CRU files are finalized.
 
+```{r regions}
+```
+
+File path information for GCM and CRU cities, and associated metadata, are fortified as best as currently possible.
+See code comments for details regarding pending investigation of discrepancies between data sets.
+
+```{r cities}
+```
+
+The `meta.RData` workspace used by the master QAQC Shiny app is loaded and re-saved.
+
+```{r save_metadata}
+```

@@ -61,6 +61,9 @@ Setup is minimal. Set working directory. List GCM files while making sure to avo
 SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.
 Cities may be processed in batches via command line argument.
 
+```{r setup}
+```
+
 #### Load and compile data
 
 ```{r load}
@@ -74,8 +77,4 @@ Cities may be processed in batches via command line argument.
 #### Save output files
 
 ```{r save}
-```
-
-NEW_CODE_CHUNKS
-```{r setup}
 ```
