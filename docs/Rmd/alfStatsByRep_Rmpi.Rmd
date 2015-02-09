@@ -1,5 +1,5 @@
 ---
-title: alfStatsByRep_Rmpi.R
+title: "ALFRESCO Statistics: Rmpi Code"
 output:
   html_document:
     toc: false
@@ -10,38 +10,46 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
-read_chunk("../../code/alfStatsByRep_Rmpi.Rmd")
+read_chunk("../../code/alfStatsByRep_Rmpi.R")
 ```
-
 
 ## Introduction
-ADD_TEXT_HERE
+
+The `alfStatsByRep_Rmpi.R` script uses `Rmpi` to efficiently extract fire and vegetation statistics from calibrated, finalized ALFRESCO run output over the full Alaska-Canada 1-km resolution ALFRESCO extent.
+Data are saved to **R** workspaces (.RData files) for analysis and graphing by subsequent **R** code.
 
 ### Motivation
-ADD_TEXT_HERE
+The primary motivation for this code is not just to extract regional data from a large number of high-resolution geotiffs,
+but to limit the routine recurrence and redundancy of such extractions.
+It allows for storing commonly required data in a more compact format that can be quickly shared and digested by other projects.
 
 ### Details
-ADD_TEXT_HERE
 
 #### Capabilities
-ADD_TEXT_HERE
+Extractions occur across multiple climate model and scenario-driven runs for multiple simulation replicates.
+Statistics are extracted from geotiff output map layers for the entire spatial extent as well as an arbitrary number of spatial subregions.
 
 #### Limitations
-ADD_TEXT_HERE
-
-## Related items
+This script is intended to run on a single climate model-driven set of ALFRESCO output files at a time; one model-scenario pair.
+This is because the outputs for each model-scenario pair consist of 200 simulation replicates.
+This is plenty to process at one time.
+Scripts further downstream are written with some expectation of this upstream process compiling output statistics based on all replicates,
+regardless of how many models or scenarios are processed at once.
 
 ### Files and Data
-ADD_TEXT_HERE
+The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations
+as well as raster layer cell indices pertaining to various regional shapefile polygons.
+`alfStatsByRep_Rpmi.R` is called via slurm script, `alfStatsByRep_Rmpi.slurm` and is itself a wrapper around `alfStatsByRep.R` which performs data extractions on multiple CPU cores across multiple compute nodes.
 
-### Code flow
-ADD_TEXT_HERE
+The `alfStatsByRep_Rpmi.R` gathers on a head node the data extracted from ALFRESCO outputs on the CPU cores across all the processing nodes and writes these data to intermediary .RData workspace files:
+* Burn area by region
+* Fire frequency by region
+* Vegetated area by region and vegetation class
 
-```{r code_sankey, echo=F, eval=T}
-```
+Other data are written to files directly by the compute nodes, avoiding returning too much data to the head node.
+This consists of distributional information, in contrast to specific computed statistics.
 
-```{r code_sankey_embed, echo=F, eval=T, comment=NA, results="asis", tidy=F}
-```
+Intermediate outputs are handled by additional **R** scripts.
 
 ## R code
 

@@ -1,5 +1,5 @@
 ---
-title: getAlfStatsAndDensities.R
+title: ALFRESCO Statistics and Densities
 output:
   html_document:
     toc: false
@@ -10,42 +10,47 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
-read_chunk("../../code/getAlfStatsAndDensities.Rmd")
+read_chunk("../../code/getAlfStatsAndDensities.R")
 ```
-
 
 ## Introduction
-ADD_TEXT_HERE
+
+The `getAlfStatsAndDensities.R` script loads, combines, and organizes extracted ALFRESCO output statistics and distributional information from intermediary .RData workspace files produced by upstream **R** scripts in the processing chain.
+Curated outputs are saved to **R** workspaces for analysis and graphing by subsequent **R** code.
 
 ### Motivation
-ADD_TEXT_HERE
+The primary motivation for this code is not just to extract regional and point data from a large number of high-resolution geotiffs,
+but to limit the routine recurrence and redundancy of such extractions.
+It allows for storing commonly required data in a more compact format that can be quickly shared and digested by other projects.
 
 ### Details
-ADD_TEXT_HERE
 
 #### Capabilities
-ADD_TEXT_HERE
+This script uses parallel processing via the base `parallel` package and the function `mclapply`.
+Parallel processing is across regions.
+Processing is serial across model-scenario pairs.
+`getAlfStatsAndDensities.R` represents the stage in the processing chain at which the 200 simulation replicates from each ALFRESCO run are finally aggregated together, greatly reducing the overall amount of data carry-through,
+despite that additional distributional estimation leads to a smaller uptick in total information.
 
 #### Limitations
-ADD_TEXT_HERE
-
-## Related items
+The code does not make use of `Rmpi` or similar options so it cannot take advantage of multi-node cluster parallel processing.
+`getAlfStatsAndDensities.R` is not currently called via slurm script, but should be.
 
 ### Files and Data
-ADD_TEXT_HERE
+Input files include .RData workspace files storing fire, vegetation, and age data unique to each model, scenario, simulation replicate and spatial region.
 
-### Code flow
-ADD_TEXT_HERE
+The `getAlfStatsAndDensities.R` script produces the following curated outputs:
+* Spatially aggregated summary statistics of burn area and fire frequency by region
+* Spatially aggregated summary statistics of vegetation cover by vegetation class and region
+* Regional probability distribution estimates for these same regions for burn area, fire frequency, and vegetation cover, and vegetation age.
 
-```{r code_sankey, echo=F, eval=T}
-```
-
-```{r code_sankey_embed, echo=F, eval=T, comment=NA, results="asis", tidy=F}
-```
+Things to note:
+* Age probability distributions have a joint support involving the spatially explicit distribution of ages on the landscape and the variation across the simulation replicates.
+* As spatially aggregated statistics by definition, burn area, fire frequency, and vegetation cover probability distributions have a univariate support based strictly on variation across simulation replicates.
+* Outputs, particularly the distributional information, are stored compactly, e.g., as a numeric vector in an **R** workspace, while a template data frame is stored in a metadata workspace used across various projects.
 
 ## R code
 
 ### Setup
 ADD_TEXT_HERE: EXAMPLE
 Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
-

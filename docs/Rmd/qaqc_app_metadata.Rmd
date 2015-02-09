@@ -1,5 +1,5 @@
 ---
-title: qaqc_app_metadata.R
+title: QAQC Shiny App Metadata Finalization
 output:
   html_document:
     toc: false
@@ -10,38 +10,15 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
-read_chunk("../../code/C:/github/SNAPQAQC/docs/Rmd/qaqc_app_metadata.Rmd")
+read_chunk("../../code/C:/github/SNAPQAQC/docs/Rmd/qaqc_app_metadata.R")
 ```
 
+The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `cmip3_cmip5` QAQC app.
+Final preparations of region and city data file path locations are completed.
+This new workspace is saved over the original.
 
-## Introduction
-ADD_TEXT_HERE
-
-### Motivation
-ADD_TEXT_HERE
-
-### Details
-ADD_TEXT_HERE
-
-#### Capabilities
-ADD_TEXT_HERE
-
-#### Limitations
-ADD_TEXT_HERE
-
-## Related items
-
-### Files and Data
-ADD_TEXT_HERE
-
-### Code flow
-ADD_TEXT_HERE
-
-```{r code_sankey, echo=F, eval=T}
-```
-
-```{r code_sankey_embed, echo=F, eval=T, comment=NA, results="asis", tidy=F}
-```
+This script current handles subsetting of city files as best it can,
+but ultimately time is needed to investigate why GCM and CRU extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.
 
 ## R code
 

@@ -1,6 +1,5 @@
 ---
 title: CRU 3.1 Samples Setup Code
-author: Matthew Leonawicz
 output:
   html_document:
     toc: TRUE
@@ -11,12 +10,11 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, messages=FALSE, warnings=FALSE)
-read_chunk("../../code/code_sankey.R")
 read_chunk("../../code/samples_setup_CRU31.R")
 ```
 
 ## Introduction
-This script prepares extracted CRU 3.1 regional temperature and precipitation data for direct use.
+The `samples_setup_CRU31.R` script prepares extracted CRU 3.1 regional temperature and precipitation data for direct use.
 
 ### Motivation
 This script transforms and organizes output data from a parent script into a format that is easier to work with in certain frameworks.

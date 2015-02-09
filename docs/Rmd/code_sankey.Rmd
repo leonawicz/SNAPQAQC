@@ -1,5 +1,5 @@
 ---
-title: code_sankey.R
+title: Code Flow
 output:
   html_document:
     toc: false
@@ -16,7 +16,7 @@ read_chunk("../../code/code_sankey.R")
 ## Related items
 SNAP QAQC code feeds into many other projects, including the SNAP data QAQC master R Shiny app, Community Charts apps, and ALFRESCO-related projects.
 The primary order QAQC code is most directly related to data extraction.
-Secondary order code relates organization and preparation of useful data products which are taken up my web applications and other projects to investigate the data.
+Secondary order code relates to organization and preparation of useful data products which are taken up by web applications and other projects to investigate the data.
 Tertiary order code relates to specific QAQC analyses.
 
 ### Files and Data
