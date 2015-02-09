@@ -59,15 +59,7 @@ rm(d, results.years)
 gc()
 #save.image("../final/data_cities.RData")
 
-# @knitr save_cc4lite
-# Save R workspace of data frame for use in Community Charts v4 Lite
-#library(dplyr)
-#d.sub <- filter(d.cities, Phase=="CMIP5" & Year >= 2010 & Year <= 2099)
-#d.sub.t <- filter(d.sub, Var=="Temperature")
-#d.sub.p <- filter(d.sub, Var=="Precipitation")
-#ddply(d.sub.t, c(), summarize, )
-
-# @knitr save_city_files
+# @knitr save
 # Save individual R workspace files for each city for use in master QAQC Shiny app
 library(parallel)
 
