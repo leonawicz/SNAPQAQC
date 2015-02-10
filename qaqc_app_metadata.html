@@ -121,65 +121,66 @@ img {
 <div class="container-fluid main-container">
 
 <div class="navbar navbar-default navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="brand" href="index.html">SNAP Data QAQC</a>
-      <div class="nav-collapse collapse">
-        <ul class="nav">
+      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
           <li><a href="code_sankey.html">Code flow</a></li>
 
           <li class="dropdown">
-            <a href="gcm-climate-outputs" class="dropdown-toggle" data-toggle="dropdown">GCM climate outputs <b class="caret"></b></a>
+            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate-data" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate data <b class="caret"></b></a>
+            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
               <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
               <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="fire-and-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire and Vegetation <b class="caret"></b></a>
+            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
               <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="additional-r-code" class="dropdown-toggle" data-toggle="dropdown">Additional R Code <b class="caret"></b></a>
+            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
         </ul>
-        <ul class="nav pull-right">
-          <a class="btn btn-primary" href="https://github.com/leonawicz/SNAPQAQC">
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
             <i class="fa fa-github fa-lg"></i>
             Github
           </a>
@@ -187,7 +188,6 @@ img {
       </div><!--/.nav-collapse -->
     </div>
   </div>
-</div>
 
 <div id="header">
 <h1 class="title">QAQC Shiny App Metadata Finalization</h1>

@@ -14,7 +14,7 @@
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="libs/bootstrap-3.3.1/css/cosmo.min.css" rel="stylesheet" />
+<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
 <script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
@@ -63,22 +63,21 @@ body {
 <style type="text/css">
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
 td.sourceCode { padding-left: 5px; }
-pre, code { color: #cccccc; background-color: #303030; }
-code > span.kw { color: #f0dfaf; }
-code > span.dt { color: #dfdfbf; }
-code > span.dv { color: #dcdccc; }
-code > span.bn { color: #dca3a3; }
-code > span.fl { color: #c0bed1; }
-code > span.ch { color: #dca3a3; }
-code > span.st { color: #cc9393; }
-code > span.co { color: #7f9f7f; }
-code > span.ot { color: #efef8f; }
-code > span.al { color: #ffcfaf; }
-code > span.fu { color: #efef8f; }
-code > span.er { color: #c3bf9f; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.dv { color: #44aa43; }
+code > span.bn { color: #44aa43; }
+code > span.fl { color: #44aa43; }
+code > span.ch { color: #049b0a; }
+code > span.st { color: #049b0a; }
+code > span.co { color: #0066ff; font-style: italic; }
+code > span.al { color: #ffff00; }
+code > span.fu { color: #ff9358; font-weight: bold; }
+code > span.er { font-weight: bold; }
 </style>
 <style type="text/css">
   pre:not([class]) {
@@ -122,65 +121,66 @@ img {
 <div class="container-fluid main-container">
 
 <div class="navbar navbar-default navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="brand" href="index.html">SNAP Data QAQC</a>
-      <div class="nav-collapse collapse">
-        <ul class="nav">
+      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
           <li><a href="code_sankey.html">Code flow</a></li>
 
           <li class="dropdown">
-            <a href="gcm-climate-outputs" class="dropdown-toggle" data-toggle="dropdown">GCM climate outputs <b class="caret"></b></a>
+            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate-data" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate data <b class="caret"></b></a>
+            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
               <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
               <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="fire-and-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire and Vegetation <b class="caret"></b></a>
+            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
               <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="additional-r-code" class="dropdown-toggle" data-toggle="dropdown">Additional R Code <b class="caret"></b></a>
+            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
         </ul>
-        <ul class="nav pull-right">
-          <a class="btn btn-primary" href="https://github.com/leonawicz/SNAPQAQC">
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
             <i class="fa fa-github fa-lg"></i>
             Github
           </a>
@@ -188,19 +188,11 @@ img {
       </div><!--/.nav-collapse -->
     </div>
   </div>
-</div>
 
 <div id="header">
 <h1 class="title">CRU 3.1 Samples Setup Code</h1>
 </div>
 
-<div id="TOC">
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#related-items">Related items</a></li>
-<li><a href="#r-code"><strong>R</strong> Code</a></li>
-</ul>
-</div>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>

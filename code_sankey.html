@@ -14,7 +14,7 @@
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
 <script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
@@ -59,33 +59,6 @@ body {
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 
-<style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
-td.sourceCode { padding-left: 5px; }
-pre, code { color: #cccccc; background-color: #303030; }
-code > span.kw { color: #f0dfaf; }
-code > span.dt { color: #dfdfbf; }
-code > span.dv { color: #dcdccc; }
-code > span.bn { color: #dca3a3; }
-code > span.fl { color: #c0bed1; }
-code > span.ch { color: #dca3a3; }
-code > span.st { color: #cc9393; }
-code > span.co { color: #7f9f7f; }
-code > span.ot { color: #efef8f; }
-code > span.al { color: #ffcfaf; }
-code > span.fu { color: #efef8f; }
-code > span.er { color: #c3bf9f; }
-</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
-
 
 
 <script>
@@ -122,65 +95,66 @@ img {
 <div class="container-fluid main-container">
 
 <div class="navbar navbar-default navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="brand" href="index.html">SNAP Data QAQC</a>
-      <div class="nav-collapse collapse">
-        <ul class="nav">
+      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
           <li><a href="code_sankey.html">Code flow</a></li>
 
           <li class="dropdown">
-            <a href="gcm-climate-outputs" class="dropdown-toggle" data-toggle="dropdown">GCM climate outputs <b class="caret"></b></a>
+            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate-data" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate data <b class="caret"></b></a>
+            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
               <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
               <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="fire-and-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire and Vegetation <b class="caret"></b></a>
+            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Extraction</li>
+              <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
               <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
               <li class="divider"></li>
-              <li class="nav-header">Organization</li>
+              <li class="dropdown-header">Organization</li>
               <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="additional-r-code" class="dropdown-toggle" data-toggle="dropdown">Additional R Code <b class="caret"></b></a>
+            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
         </ul>
-        <ul class="nav pull-right">
-          <a class="btn btn-primary" href="https://github.com/leonawicz/SNAPQAQC">
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
             <i class="fa fa-github fa-lg"></i>
             Github
           </a>
@@ -188,7 +162,6 @@ img {
       </div><!--/.nav-collapse -->
     </div>
   </div>
-</div>
 
 <div id="header">
 <h1 class="title">Code Flow</h1>
@@ -204,87 +177,6 @@ img {
 </div>
 <div id="snap-qaqc-code-flow" class="section level3">
 <h3>SNAP QAQC code flow</h3>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(igraph)
-<span class="kw">require</span>(rCharts)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> &quot;X:/leonawicz/projects/AR4_AR5_comparisons/docs/diagrams/codeflow.html&quot;</span>
-
-c0 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AR4_AR5_extract.slurm&quot;</span>, <span class="st">&quot;CRU_extract.slurm&quot;</span>)
-c1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AR4_AR5_extract.R&quot;</span>, <span class="st">&quot;CRU_extract.R&quot;</span>)
-c2a &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cities_setup.R&quot;</span>, <span class="st">&quot;stats_setup.R&quot;</span>, <span class="st">&quot;samples_setup.R&quot;</span>)
-c2b &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cities_setup_CRU31.R&quot;</span>, <span class="st">&quot;stats_setup_CRU31.R&quot;</span>, <span class="st">&quot;samples_setup_CRU31.R&quot;</span>)
-
-d1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;shapes2cells_AKCAN2km_5pct.RData&quot;</span>, <span class="st">&quot;Community location data: locs.csv&quot;</span>, <span class="st">&quot;2-km AK-CAN downscaled climate data&quot;</span>)
-d2 &lt;-<span class="st"> &quot;Regional shapefiles&quot;</span>
-
-c3 &lt;-<span class="st"> &quot;shapes2cells.R&quot;</span>
-
-e1 &lt;-<span class="st"> &quot;qaqc_app_metadata.R&quot;</span>
-e2 &lt;-<span class="st"> &quot;Master QAQC app: meta.RData&quot;</span>
-e3 &lt;-<span class="st"> &quot;cities_meta_akcan2km.RData&quot;</span>
-
-f1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;alfStatsByRep_Rmpi.slurm&quot;</span>, <span class="st">&quot;alfStatsByRep_Rmpi.R&quot;</span>, <span class="st">&quot;alfStatsByRep.R&quot;</span>, <span class="st">&quot;Intermediary data&quot;</span>, <span class="st">&quot;getAlfStatsAndDensities.R&quot;</span>)
-f2 &lt;-<span class="st"> &quot;1-km ALFRESCO outputs&quot;</span>
-f3 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;shapes2cells_AKCAN1km.RData&quot;</span>, <span class="st">&quot;shapes2cells_AKCAN1km_rmNA.RData&quot;</span>)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">from &lt;-<span class="st"> </span><span class="kw">c</span>(
-    c0,
-    <span class="kw">rep</span>(c1, <span class="dt">times=</span><span class="kw">c</span>(<span class="kw">length</span>(c2a), <span class="kw">length</span>(c2b))),
-    <span class="kw">rep</span>(d1, <span class="kw">length</span>(c1)),
-    d2,
-    <span class="kw">rep</span>(c3, <span class="dv">3</span>),
-    <span class="st">&quot;cities_setup.slurm&quot;</span>,
-    <span class="kw">c</span>(c2a[<span class="dv">2</span>:<span class="dv">3</span>], c2b[<span class="dv">3</span>], e1),
-    e1, e3,
-    <span class="kw">c</span>(f1[<span class="dv">1</span>], f3),
-    f1[<span class="dv">2</span>], f1[<span class="dv">3</span>], f1[<span class="dv">4</span>],
-    <span class="kw">rep</span>(f1[<span class="dv">5</span>], <span class="dv">3</span>),
-    <span class="kw">rep</span>(f2, <span class="dv">2</span>)
-)
-
-to &lt;-<span class="st"> </span><span class="kw">c</span>(
-    c1,
-    c2a, c2b,
-    <span class="kw">rep</span>(c1, <span class="dt">each=</span><span class="kw">length</span>(d1)),
-    c3,
-    <span class="kw">c</span>(d1[<span class="dv">1</span>], f3),
-    c2a[<span class="dv">1</span>],
-    <span class="kw">rep</span>(e2, <span class="dv">4</span>),
-    e3, e2,
-    <span class="kw">rep</span>(f1[<span class="dv">2</span>], <span class="dv">3</span>),
-    f1[<span class="dv">3</span>], f1[<span class="dv">4</span>], f1[<span class="dv">5</span>],
-    <span class="kw">c</span>(e2, <span class="st">&quot;App data&quot;</span>, <span class="st">&quot;Other QAQC analyses&quot;</span>),
-    f1[<span class="dv">2</span>:<span class="dv">3</span>]
-)
-
-val &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="kw">length</span>(to))</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">relations &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">from=</span>from, <span class="dt">to=</span>to)
-g &lt;-<span class="st"> </span><span class="kw">graph.data.frame</span>(relations, <span class="dt">directed=</span>T, <span class="dt">vertices=</span><span class="kw">data.frame</span>(<span class="kw">c</span>(c0, c1, c2a, c2b, c3, d1, d2, e1, e2, e3, f1, f2, f3, <span class="st">&quot;cities_setup.slurm&quot;</span>, <span class="st">&quot;App data&quot;</span>, <span class="st">&quot;Other QAQC analyses&quot;</span>)))
-
-gw &lt;-<span class="st"> </span><span class="kw">get.data.frame</span>(g)
-gw$value &lt;-<span class="st"> </span><span class="dv">1</span>
-<span class="kw">colnames</span>(gw) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;source&quot;</span>,<span class="st">&quot;target&quot;</span>,<span class="st">&quot;value&quot;</span>)
-gw$source &lt;-<span class="st"> </span><span class="kw">as.character</span>(gw$source)
-gw$target &lt;-<span class="st"> </span><span class="kw">as.character</span>(gw$target)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">p &lt;-<span class="st"> </span>rCharts$<span class="kw">new</span>()
-p$<span class="kw">setLib</span>(<span class="st">&#39;http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey&#39;</span>)
-p$<span class="kw">setTemplate</span>(<span class="dt">script =</span> <span class="st">&quot;http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey/layouts/chart.html&quot;</span>)
-p$<span class="kw">set</span>(<span class="dt">data=</span>gw, <span class="dt">nodeWidth=</span><span class="dv">15</span>, <span class="dt">nodePadding=</span><span class="dv">10</span>, <span class="dt">layout=</span><span class="dv">32</span>, <span class="dt">width=</span><span class="dv">900</span>, <span class="dt">height=</span><span class="dv">800</span>, <span class="dt">margin=</span><span class="kw">list</span>(<span class="dt">right=</span><span class="dv">20</span>, <span class="dt">left=</span><span class="dv">20</span>, <span class="dt">bottom=</span><span class="dv">50</span>, <span class="dt">top=</span><span class="dv">50</span>), <span class="dt">title=</span><span class="st">&quot;Code Flow&quot;</span>)
-
-p$<span class="kw">setTemplate</span>(
-  <span class="dt">afterScript=</span><span class="st">&quot;</span>
-<span class="st">&lt;script&gt;</span>
-<span class="st">  var cscale = d3.scale.category20b();</span>
-<span class="st">  d3.selectAll(&#39;#{{ chartId }} svg path.link&#39;)</span>
-<span class="st">    .style(&#39;stroke&#39;, function(d){</span>
-<span class="st">      return cscale(d.source.name);</span>
-<span class="st">    })</span>
-<span class="st">  d3.selectAll(&#39;#{{ chartId }} svg .node rect&#39;)</span>
-<span class="st">    .style(&#39;fill&#39;, function(d){</span>
-<span class="st">      return cscale(d.name)</span>
-<span class="st">    })</span>
-<span class="st">    .style(&#39;stroke&#39;, &#39;none&#39;)</span>
-<span class="st">&lt;/script&gt;</span>
-<span class="st">&quot;</span>)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">p$<span class="kw">show</span>(<span class="st">&quot;iframesrc&quot;</span>, <span class="dt">cdn=</span>T)</code></pre>
 <iframe srcdoc=" &lt;!doctype HTML&gt;
 &lt;meta charset = 'utf-8'&gt;
 &lt;html&gt;
@@ -307,7 +199,7 @@ p$<span class="kw">setTemplate</span>(
   &lt;/head&gt;
   &lt;body &gt;
     
-    &lt;div id = 'chart81824601c71' class = 'rChart d3_sankey'&gt;&lt;/div&gt;    
+    &lt;div id = 'chart818414c563b' class = 'rChart d3_sankey'&gt;&lt;/div&gt;    
     ï»¿&lt;!--Attribution:
 Mike Bostock https://github.com/d3/d3-plugins/tree/master/sankey
 Mike Bostock http://bost.ocks.org/mike/sankey/
@@ -316,7 +208,7 @@ Mike Bostock http://bost.ocks.org/mike/sankey/
 &lt;script&gt;
 (function(){
 var params = {
- &quot;dom&quot;: &quot;chart81824601c71&quot;,
+ &quot;dom&quot;: &quot;chart818414c563b&quot;,
 &quot;width&quot;:    900,
 &quot;height&quot;:    800,
 &quot;data&quot;: {
@@ -334,7 +226,7 @@ var params = {
 &quot;top&quot;:     50 
 },
 &quot;title&quot;: &quot;Code Flow&quot;,
-&quot;id&quot;: &quot;chart81824601c71&quot; 
+&quot;id&quot;: &quot;chart818414c563b&quot; 
 };
 
 params.units ? units = &quot; &quot; + params.units : units = &quot;&quot;;
@@ -454,11 +346,11 @@ node.append(&quot;text&quot;)
     
     &lt;script&gt;
       var cscale = d3.scale.category20b();
-      d3.selectAll('#chart81824601c71 svg path.link')
+      d3.selectAll('#chart818414c563b svg path.link')
         .style('stroke', function(d){
           return cscale(d.source.name);
         })
-      d3.selectAll('#chart81824601c71 svg .node rect')
+      d3.selectAll('#chart818414c563b svg .node rect')
         .style('fill', function(d){
           return cscale(d.name)
         })
@@ -466,7 +358,7 @@ node.append(&quot;text&quot;)
     &lt;/script&gt;
         
   &lt;/body&gt;
-&lt;/html&gt; " scrolling="no" frameBorder="0" seamless class="rChart  http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey  " id="iframe-chart81824601c71">
+&lt;/html&gt; " scrolling="no" frameBorder="0" seamless class="rChart  http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey  " id="iframe-chart818414c563b">
 </iframe>
 <style>iframe.rChart{ width: 100%; height: 400px;}</style>
 <style>iframe.rChart{ width: 100%; height: 840px;}</style>
