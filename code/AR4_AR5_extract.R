@@ -231,7 +231,7 @@ for(k in 1:2){
 		print(length(stats.out)-i)
 		}
 		save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames,
-			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
+			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
@@ -264,7 +264,7 @@ for(k in 1:2){
 			}
 		print(length(samples.out)-i)
 		}
-		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
+		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
 	}
 	if(k==2 & !is.null(cities)){
 		for(i in 1:length(stats)){
@@ -282,6 +282,6 @@ for(k in 1:2){
 			stats.out[[i]][na.rows2,11] <- stats.out[[i]][na.rows2,12] <- stats.out[[i]][na.rows2,10]
 		}
 		d <- stats.out[[1]]
-		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities/",models[1],"_",models[4],"_annual_cities_batch", cities.batch, "_", domain, ".RData"))
+		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/",models[1],"_",models[4],"_annual_cities_batch", cities.batch, "_", domain, ".RData"))
 	}
 }

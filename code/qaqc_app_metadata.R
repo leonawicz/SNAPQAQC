@@ -29,7 +29,7 @@ city.gcm.files <- gsub("city_files_CRU", "city_files_GCM", city.cru.files) # lis
 city.names <- gsub("APOS", "\\'", gsub("--", ", ", sapply(strsplit(basename(city.gcm.files), "__"), "[[", 1)))
 
 # subset cities metadata data frame to match CRU files
-cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/cities_meta_akcan2km.RData"
+cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta_akcan2km.RData"
 load(cities.meta.file)
 cities.meta.akcan2km <- subset(cities.meta.akcan2km, Location %in% city.names)
 save(cities.meta.akcan2km, file=cities.meta.file) # okay to save over original file
@@ -39,5 +39,5 @@ rm(cities.meta.file, topDir)
 city.names <- city.names[city.names %in% cities.meta.akcan2km$Location]
 
 # @knitr save_metadata
-load("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta.RData")
-save.image(file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta.RData"))
+load("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData")
+save.image(file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData"))

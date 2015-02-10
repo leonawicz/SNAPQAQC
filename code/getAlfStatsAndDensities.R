@@ -156,8 +156,8 @@ get_AgeDensities <- function(j, dirs, n.samples=20, n.samples.in, samples.index,
 	rownames(d.alf.age) <- NULL
 	for(p in 1:length(veg.labels)) d.alf.age$VegID[d.alf.age$VegID==p] <- veg.labels[p]
 	names(d.alf.age)[which(names(d.alf.age)=="VegID")] <- "Vegetation"
-	#dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	#dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
 	d.alf.age$Val <- round(d.alf.age$Val)
 	d.alf.age$Prob <- round(d.alf.age$Prob,8)*multiplier[2] # round to eight seems decent for now
 	r.alf.age <- unlist(d.alf.age[,samples.index])
@@ -206,8 +206,8 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples=20, stats.index, sam
 	d.alf.fire$Decade <- paste0(substr(d.alf.fire$Year,1,3),0)
 	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
 	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
 	d.alf.fire$Prob <- round(d.alf.fire$Prob,8)*multiplier[2] # round to eight seems decent for now
 	r.alf.fire <- unlist(subset(d.alf.fire, Var=="Burn Area")[,samples.index])
 	names(r.alf.fire) <- NULL
@@ -269,8 +269,8 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples=20, stats.index, sampl
 	d.alf.veg$Decade <- paste0(substr(d.alf.veg$Year,1,3),0)
 	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
 	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
 	d.alf.veg$Prob <- round(d.alf.veg$Prob,8)*multiplier[2] # round to eight seems decent for now
 	r.alf.veg <- unlist(d.alf.veg[,samples.index])
 	names(r.alf.veg) <- NULL
@@ -343,5 +343,5 @@ getSamples, getStats, lapply_C, n.cores, n.regions, n.samples, samples.columns, 
 # Create a backup of the meta.RData file, load and save over that.
 # Inclusion of ALFRESCO output in QAQC R Shiny app is under early development.
 # All but one shiny-apps development repo branch should not include this version of meta.RData in the cmip3_cmip5 app
-load("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta_backup.RData")
-save.image("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta_backup.RData")
+load("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta_backup.RData")
+save.image("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta_backup.RData")
