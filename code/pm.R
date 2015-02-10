@@ -31,7 +31,7 @@ index.url <- "index.html"
 #file.copy(index.url, "index.html")
 
 proj.title <- "SNAP Data QAQC"
-proj.menu <- c("Overview", "Code flow", "GCM climate outputs", "CRU 3.1 climate data", "Fire and Vegetation", "Additional R Code", "All Projects")
+proj.menu <- c("Overview", "Code flow", "GCM climate", "CRU 3.1 climate", "Fire & Vegetation", "Other R Code", "All Projects")
 
 proj.submenu <- list(
 	c("empty"),
