@@ -233,6 +233,13 @@ img {
 <div id="setup" class="section level3">
 <h3>Setup</h3>
 <p>Setup is minimal. Set working directory. List CRU 3.1 files.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples&quot;</span>)
+
+<span class="kw">library</span>(data.table)
+
+files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;^CRU31.*.regions_samples.RData$&quot;</span>)
+
+models &lt;-<span class="st"> &quot;CRU31&quot;</span></code></pre>
 <div id="load-and-compile-data" class="section level4">
 <h4>Load and compile data</h4>
 <pre class="sourceCode r"><code class="sourceCode r">dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(files))
@@ -301,14 +308,6 @@ cru.samples.df$Location &lt;-<span class="st"> </span><span class="ot">NA</span>
 <span class="kw">rm</span>(d, f, out)
 <span class="kw">load</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)
 <span class="kw">save.image</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)</code></pre>
-<p>NEW_CODE_CHUNKS</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples&quot;</span>)
-
-<span class="kw">library</span>(data.table)
-
-files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;^CRU31.*.regions_samples.RData$&quot;</span>)
-
-models &lt;-<span class="st"> &quot;CRU31&quot;</span></code></pre>
 </div>
 </div>
 </div>

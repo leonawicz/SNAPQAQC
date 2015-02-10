@@ -229,6 +229,15 @@ img {
 <div id="setup" class="section level3">
 <h3>Setup</h3>
 <p>Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.1 files. SNAP’s ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples&quot;</span>)
+
+<span class="kw">library</span>(data.table)
+
+files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;regions_samples.RData$&quot;</span>)
+files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="dv">1</span>, <span class="dv">3</span>) !=<span class="st"> &quot;CRU&quot;</span>]
+
+models &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;CCCMAcgcm31&quot;</span>, <span class="st">&quot;CCSM4&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;GFDLcm21&quot;</span>, <span class="st">&quot;GFDLcm3&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MIROC32m&quot;</span>, 
+    <span class="st">&quot;GISSe2-r&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MPIecham5&quot;</span>, <span class="st">&quot;IPSLcm5a-lr&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ukmoHADcm3&quot;</span>, <span class="st">&quot;MRIcgcm3&quot;</span>))</code></pre>
 <div id="load-and-compile-data" class="section level4">
 <h4>Load and compile data</h4>
 <pre class="sourceCode r"><code class="sourceCode r">dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(files))
@@ -306,16 +315,6 @@ gcm.samples.df$Location &lt;-<span class="st"> </span><span class="ot">NA</span>
 <span class="kw">rm</span>(d, f, out)
 <span class="kw">load</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)
 <span class="kw">save.image</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)</code></pre>
-<p>NEW_CODE_CHUNKS</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples&quot;</span>)
-
-<span class="kw">library</span>(data.table)
-
-files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;regions_samples.RData$&quot;</span>)
-files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="dv">1</span>, <span class="dv">3</span>) !=<span class="st"> &quot;CRU&quot;</span>]
-
-models &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;CCCMAcgcm31&quot;</span>, <span class="st">&quot;CCSM4&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;GFDLcm21&quot;</span>, <span class="st">&quot;GFDLcm3&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MIROC32m&quot;</span>, 
-    <span class="st">&quot;GISSe2-r&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MPIecham5&quot;</span>, <span class="st">&quot;IPSLcm5a-lr&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ukmoHADcm3&quot;</span>, <span class="st">&quot;MRIcgcm3&quot;</span>))</code></pre>
 </div>
 </div>
 </div>
