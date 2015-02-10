@@ -1,0 +1,39 @@
+# ALFRESCO Statistics: Function Code
+
+
+
+## Introduction
+
+The `alfStatsByRep.R` script uses extract fire and vegetation statistics from calibrated, finalized ALFRESCO run output over the full Alaska-Canada 1-km resolution ALFRESCO extent.
+Data are saved to **R** workspaces (.RData files) for analysis and graphing by subsequent **R** code.
+
+### Details
+
+This script is called by the wrapper script, `alfStatsByRep_Rpmi.R` as part of a non-interactive **R** SLURM job process using `Rmpi`.
+The script consists of functions, which are loaded onto each CPU core.
+The execution calls still originate from the parent `Rpmi` script on the head node.
+
+### Files and Data
+The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations
+as well as raster layer cell indices pertaining to various regional shapefile polygons.
+All input data are passed directly from the `alfStatsByRep_Rpmi.R` master **R** session running on the head node.
+`alfStatsByRep.R` performs data extractions on multiple CPU cores across multiple compute nodes based on the data passed down to each CPU.
+Each CPU on the compute nodes is responsible for processing data for a unique ALFRESCO simulation spatial time series replicate.
+
+`alfStatsByRep.R` passed some computed ALFRESCO output statistics back to `alfStatsByRep_Rpmi.R` on the head node to be combined, organized and written to intermediary files:
+* Burn area by region
+* Fire frequency by region
+* Vegetated area by region and vegetation class
+
+Other data are written to files directly by `alfStatsByRep.R`, avoiding returning too much data to the head node.
+This consists of distributional information, in contrast to specific computed statistics,
+specifically semi-compact objects storing distributional properties of vegetation age by region, replicate, model and scenario in individual .RData workspace files.
+
+Intermediate outputs are handled by additional **R** scripts.
+
+## R code
+
+### Setup
+ADD_TEXT_HERE: EXAMPLE
+Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
+

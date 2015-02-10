@@ -1,0 +1,48 @@
+# ALFRESCO Statistics: Rmpi Code
+
+
+
+## Introduction
+
+The `alfStatsByRep_Rmpi.R` script uses `Rmpi` to efficiently extract fire and vegetation statistics from calibrated, finalized ALFRESCO run output over the full Alaska-Canada 1-km resolution ALFRESCO extent.
+Data are saved to **R** workspaces (.RData files) for analysis and graphing by subsequent **R** code.
+
+### Motivation
+The primary motivation for this code is not just to extract regional data from a large number of high-resolution geotiffs,
+but to limit the routine recurrence and redundancy of such extractions.
+It allows for storing commonly required data in a more compact format that can be quickly shared and digested by other projects.
+
+### Details
+
+#### Capabilities
+Extractions occur across multiple climate model and scenario-driven runs for multiple simulation replicates.
+Statistics are extracted from geotiff output map layers for the entire spatial extent as well as an arbitrary number of spatial subregions.
+
+#### Limitations
+This script is intended to run on a single climate model-driven set of ALFRESCO output files at a time; one model-scenario pair.
+This is because the outputs for each model-scenario pair consist of 200 simulation replicates.
+This is plenty to process at one time.
+Scripts further downstream are written with some expectation of this upstream process compiling output statistics based on all replicates,
+regardless of how many models or scenarios are processed at once.
+
+### Files and Data
+The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations
+as well as raster layer cell indices pertaining to various regional shapefile polygons.
+`alfStatsByRep_Rpmi.R` is called via slurm script, `alfStatsByRep_Rmpi.slurm` and is itself a wrapper around `alfStatsByRep.R` which performs data extractions on multiple CPU cores across multiple compute nodes.
+
+The `alfStatsByRep_Rpmi.R` gathers on a head node the data extracted from ALFRESCO outputs on the CPU cores across all the processing nodes and writes these data to intermediary .RData workspace files:
+* Burn area by region
+* Fire frequency by region
+* Vegetated area by region and vegetation class
+
+Other data are written to files directly by the compute nodes, avoiding returning too much data to the head node.
+This consists of distributional information, in contrast to specific computed statistics.
+
+Intermediate outputs are handled by additional **R** scripts.
+
+## R code
+
+### Setup
+ADD_TEXT_HERE: EXAMPLE
+Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
+

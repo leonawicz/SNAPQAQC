@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Matthew Leonawicz" />
+
+
+<title>SNAP data QAQC</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="index.html">SNAP Data QAQC</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li><a href="code_sankey.html">Code flow</a></li>
+
+          <li class="dropdown">
+            <a href="gcm-climate-outputs" class="dropdown-toggle" data-toggle="dropdown">GCM climate outputs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="cru-3.1-climate-data" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate data <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-and-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire and Vegetation <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="additional-r-code" class="dropdown-toggle" data-toggle="dropdown">Additional R Code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav pull-right">
+          <a class="btn btn-primary" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">SNAP data QAQC</h1>
+<h4 class="author"><em>Matthew Leonawicz</em></h4>
+</div>
+
+
+<p>SNAP data QAQC refers to multiple threads of collections of R code in the form of scripts and functions across various projects utilizing SNAP data sets. However, there is particular focus on SNAP’s gridded climate- and fire-related data products, including:</p>
+<ul>
+<li>2-km resolution, Alaska-Western Canada extent, downscaled global climate model (GCM) temperature and precipitation outputs</li>
+<li>2-km resolution, Alaska-Western Canada extent, downscaled Climatological Research Unit (CRU) 3.1 temperature and precipitation data.</li>
+<li>1-km resolution, Alaska-Western Canada extent, ALFRESCO fire and vegetation landscape transition simulation outputs.</li>
+</ul>
+<p>The two most prominent threads of QAQC relate to the climate data and ALFRESCO outputs noted above. The QAQC process involves extraction of data from geotiff layers of the above data products. Data are extracted based on:</p>
+<ul>
+<li>The full spatial extent</li>
+<li>A collection of spatial regions defined by shapefile polygons</li>
+<li>Individual grid cells corresponding to point locations of interest, e.g., cities</li>
+</ul>
+<p>The data extractions are intensive processes. Depending on user configurations, these processes can take a while to execute. Most of the scripts, particularly those upstream in the <strong>R</strong> code process chain which entail the heaviest I/O involving thousands of high-resolution geotiff files, are called via SLURM scripts and handled by the SLURM job manager on the Atlas cluster. This is considered best practice. The code is executed in non-interactive mode <strong>R</strong> and does not require an existing connection to the server by the user except to initially launch the SLURM job. Some of the downstream processes that perform relatively light organizational work on already parsed outputs do not use SLURM.</p>
+<p>The process chain involves the following:</p>
+<ul>
+<li>Initial data extraction from source files</li>
+<li>Calculation of statistics on extracted outputs</li>
+<li>Writing extracted output statistics to new files, usually .RData workspaces</li>
+<li>Compiling and organizing statistics in a series of data curation steps, which may require a series of intermediary output files depending on the type of input</li>
+<li>Fully curated data files are made available to various projects, some unrelated and others which perform further QAQC analyses, such as the master QAQC Shiny app.</li>
+</ul>
+<p>Currently, here you can find documentation, including <strong>R</strong> code, which covers most of the primary (extraction) and secondary (organization) stages pertaining to the two main threads of SNAP data QAQC. Before looking at the code, it may be helpful to capture the overall picture of the process chain by looking at the code flow diagram.</p>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

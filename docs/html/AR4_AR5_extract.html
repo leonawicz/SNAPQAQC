@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>AR4/CMIP3 and AR5/CMIP5 Data Extraction Code</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/cosmo.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="index.html">SNAP Data QAQC</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li><a href="code_sankey.html">Code flow</a></li>
+
+          <li class="dropdown">
+            <a href="gcm-climate-outputs" class="dropdown-toggle" data-toggle="dropdown">GCM climate outputs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="cru-3.1-climate-data" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate data <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-and-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire and Vegetation <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="additional-r-code" class="dropdown-toggle" data-toggle="dropdown">Additional R Code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav pull-right">
+          <a class="btn btn-primary" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">AR4/CMIP3 and AR5/CMIP5 Data Extraction Code</h1>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#r-code"><strong>R</strong> Code</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>AR4_AR5_extract.R</code> script extracts AR4/CMIP3 and AR5/CMIP5 temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent. Optionally it also extracts data for specific point locations via the raster grid cell in which given spatial coordinates fall. Data are saved to <strong>R</strong> workspaces (.RData files) for analysis and graphing by subsequent <strong>R</strong> code.</p>
+<div id="motivation" class="section level3">
+<h3>Motivation</h3>
+<p>The primary motivation for this code is not just to extract regional and point data from a large number of high-resolution geotiffs, but to limit the routine recurrence and redundancy of such extractions. It allows for storing commonly required data in a more compact format that can be quickly shared and digested by other projects.</p>
+</div>
+<div id="details" class="section level3">
+<h3>Details</h3>
+<div id="capabilities" class="section level4">
+<h4>Capabilities</h4>
+<p>This script uses parallel processing via the base <code>parallel</code> package and the function <code>mclapply</code>. It uses 12 CPU cores to process all 12 combinations of climate variable (precipitation and temperature) and emissions scenario (three per CMIP phase). These 12 processes are applied to one GCM at a time from each of the two phases. This is why they are listed in the code in pairs of models, one from each phase. Processing is serial across model pairs.</p>
+<p>The code ran be run strictly to obtain community data, regional data, or both. This allows for redoing only one type of extraction, for instance if new shapefiles or additional city locations are desired. It can be passed an arbitrary list of cities and/or regions.</p>
+</div>
+<div id="limitations" class="section level4">
+<h4>Limitations</h4>
+<p>This code is intended to be run on all ten models hard coded in the list of pairs below. It can be run on fewer and in fact is typically called via SLURM script with a command line argument referring to a specific batch pair. Outputs for each pair of two models are saved independently. However, subsequent <strong>R</strong> scripts assume that all ten GCM data extractions have been completed and that all necessary output files are available for further processing. The code does not make use of <code>Rmpi</code> or similar options so it cannot take advantage of multi-node cluster parallel processing.</p>
+<p>Cities coordinates are assumed to be WGS84 Lat/Lon and are projected to NAD 83 Alaska Albers prior to use in extraction. Regional information are expected in the form of a named nested list object of a specific type. Non-list type sub-elements are vectors of cell indices previously extracted from 2-km Alaska-Canada extent template rasters using named groups of various shapefiles. These objects are created in advance. There are multiple versions, as indexing by shapefile is based on the origin, resolution and extent of the rasters and geotiffs of intended use, as well as subsampling and/or NA-removal, if desired. The specific <strong>R</strong> workspace intended for use in data extraction by this script is hard coded and matches that used in <code>AR4_AR5_extract.R</code>.</p>
+</div>
+</div>
+<div id="files-and-data" class="section level3">
+<h3>Files and Data</h3>
+<p>The input files include 2-km Alaska-Canada extent data from 10 combined CMIP3 and CMIP5 downscaled GCMs as well as community locations and raster layer cell indices pertaining to various regional shapefile polygons. <code>AR4_AR5_extract.R</code> is called via SLURM script, <code>AR4_AR5_extract.slurm</code>.</p>
+<p>The <code>AR4_AR5_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
+<p>Each of these groups of outputs is handled separately by additional <strong>R</strong> scripts.</p>
+<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code> which performs similar operations on downscaled CRU 3.1 data.</p>
+</div>
+</div>
+<div id="r-code" class="section level2">
+<h2><strong>R</strong> Code</h2>
+<div id="setup" class="section level3">
+<h3>Setup</h3>
+<p>Setup consists of loading required <strong>R</strong> packages and additional files, preparing any command line arguments for use, and defining functions.</p>
+<div id="required-packages" class="section level4">
+<h4>Required packages</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)
+<span class="kw">library</span>(maptools)
+<span class="kw">library</span>(parallel)
+<span class="kw">library</span>(plyr)</code></pre>
+</div>
+<div id="command-line-arguments" class="section level4">
+<h4>Command line arguments</h4>
+<pre class="sourceCode r"><code class="sourceCode r">comArgs &lt;-<span class="st"> </span><span class="kw">commandArgs</span>(<span class="ot">TRUE</span>)
+if (<span class="kw">length</span>(comArgs)) for (i in <span class="dv">1</span>:<span class="kw">length</span>(comArgs)) <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> comArgs[[i]]))
+
+if (!<span class="kw">exists</span>(<span class="st">&quot;batch&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;Model pair batch integer not supplied.&quot;</span>)
+if (!<span class="kw">exists</span>(<span class="st">&quot;domain&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;domain argument not provided. Must be either &#39;akcan2km&#39; or &#39;world10min&#39;&quot;</span>)
+if (!<span class="kw">exists</span>(<span class="st">&quot;regions&quot;</span>)) regions &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+if (!<span class="kw">exists</span>(<span class="st">&quot;cities&quot;</span>)) cities &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+if (!(regions |<span class="st"> </span>cities)) <span class="kw">stop</span>(<span class="st">&quot;regions and cities both FALSE. Nothing to process.&quot;</span>)</code></pre>
+</div>
+<div id="sourced-code" class="section level4">
+<h4>Sourced code</h4>
+<pre class="sourceCode r"><code class="sourceCode r">if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) {
+    <span class="co"># For regions and/or cities</span>
+    topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/AK_CAN_2km&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;historical&quot;</span>, 
+        <span class="st">&quot;projected&quot;</span>))  <span class="co"># files are not read, but metadata parsed from filenames list</span>
+    if (regions) {
+        <span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData&quot;</span>)
+    } else cells_shp_list_5pct &lt;-<span class="st"> </span>region.names.out &lt;-<span class="st"> </span>n.shp &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv&quot;</span>)
+} else if (domain ==<span class="st"> &quot;world10min&quot;</span>) {
+    <span class="co"># Currently for cities only</span>
+    topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/World/World_10min&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;historical&quot;</span>, 
+        <span class="st">&quot;projected&quot;</span>))  <span class="co"># files are not read, but metadata parsed from filenames list</span>
+    #### Need to insert a load() command for a locs object analogous to that above
+}</code></pre>
+</div>
+<div id="define-r-objects" class="section level4">
+<h4>Define <strong>R</strong> objects</h4>
+<pre class="sourceCode r"><code class="sourceCode r">varid &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;tas&quot;</span>, <span class="st">&quot;pr&quot;</span>), <span class="dt">each =</span> <span class="dv">6</span>)
+scenid &lt;-<span class="st"> </span>if (<span class="kw">length</span>(topDir) ==<span class="st"> </span><span class="dv">2</span>) {
+    <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;&quot;</span>, <span class="dv">12</span>), <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;sresb1&quot;</span>, <span class="st">&quot;sresa1b&quot;</span>, <span class="st">&quot;sresa2&quot;</span>, <span class="st">&quot;rcp45&quot;</span>, <span class="st">&quot;rcp60&quot;</span>, <span class="st">&quot;rcp85&quot;</span>), 
+        <span class="dv">2</span>))
+} else if (<span class="kw">basename</span>(topDir) ==<span class="st"> &quot;projected&quot;</span>) {
+    <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;sresb1&quot;</span>, <span class="st">&quot;sresa1b&quot;</span>, <span class="st">&quot;sresa2&quot;</span>, <span class="st">&quot;rcp45&quot;</span>, <span class="st">&quot;rcp60&quot;</span>, <span class="st">&quot;rcp85&quot;</span>), <span class="dv">2</span>)
+} else if (<span class="kw">basename</span>(topDir) ==<span class="st"> &quot;historical&quot;</span>) {
+    <span class="kw">rep</span>(<span class="st">&quot;&quot;</span>, <span class="dv">12</span>)
+}
+arid &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;AR4_CMIP3_models&quot;</span>, <span class="st">&quot;AR5_CMIP5_models&quot;</span>), <span class="dt">each =</span> <span class="dv">3</span>), <span class="dv">2</span>)
+
+model.pairs &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;cccma-cgcm3-1t47&quot;</span>, <span class="st">&quot;CCSM4&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;gfdl-cm2-1&quot;</span>, <span class="st">&quot;GFDL-CM3&quot;</span>), 
+    <span class="kw">c</span>(<span class="st">&quot;miroc3-2-medres&quot;</span>, <span class="st">&quot;GISS-E2-R&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;mpi-echam5&quot;</span>, <span class="st">&quot;IPSL-CM5A-LR&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ukmo-hadcm3&quot;</span>, 
+        <span class="st">&quot;MRI-CGCM3&quot;</span>))
+
+if (<span class="kw">exists</span>(<span class="st">&quot;years&quot;</span>)) yr1 &lt;-<span class="st"> </span>years[<span class="dv">1</span>] else yr1 &lt;-<span class="st"> </span><span class="dv">1870</span>
+if (<span class="kw">exists</span>(<span class="st">&quot;years&quot;</span>)) yr2 &lt;-<span class="st"> </span><span class="kw">tail</span>(years, <span class="dv">1</span>) else yr2 &lt;-<span class="st"> </span><span class="dv">2099</span>
+years &lt;-<span class="st"> </span>yr1:yr2
+
+<span class="co"># if(!is.null(cities)){ cities &lt;- subset(locs, pop &gt;= 1000,</span>
+<span class="co"># c(&#39;lon_albers&#39;,&#39;lat_albers&#39;)) d.cities &lt;- subset(locs, pop &gt;=</span>
+<span class="co"># 1000)[-c(which(names(locs) %in% c(&#39;lon_albers&#39;,&#39;lat_albers&#39;)))] }</span>
+if (cities) {
+    locs &lt;-<span class="st"> </span>locs[locs$pop &gt;<span class="st"> </span><span class="dv">10</span>, ]
+    l &lt;-<span class="st"> </span><span class="kw">paste</span>(locs$region, locs$loc)
+    lu &lt;-<span class="st"> </span><span class="kw">unique</span>(l)
+    dup &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">duplicated</span>(l))
+    l.dup.u &lt;-<span class="st"> </span><span class="kw">unique</span>(l[dup])
+    drp &lt;-<span class="st"> </span><span class="kw">c</span>()
+    for (i in <span class="dv">1</span>:<span class="kw">length</span>(l.dup.u)) {
+        ind &lt;-<span class="st"> </span><span class="kw">which</span>(l ==<span class="st"> </span>l.dup.u[i])
+        ind &lt;-<span class="st"> </span>ind[-<span class="kw">which.max</span>(locs$pop[ind])[<span class="dv">1</span>]]
+        drp &lt;-<span class="st"> </span><span class="kw">c</span>(drp, ind)
+    }
+    cities &lt;-<span class="st"> </span>locs[-drp, ]
+    if (<span class="kw">exists</span>(<span class="st">&quot;cities.batch&quot;</span>)) {
+        batch.bounds &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(cities) +<span class="st"> </span><span class="dv">1</span>, <span class="dt">length =</span> <span class="dv">11</span>))[<span class="kw">c</span>(cities.batch, 
+            cities.batch +<span class="st"> </span><span class="dv">1</span>)] -<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)
+        cities &lt;-<span class="st"> </span>cities[batch.bounds[<span class="dv">1</span>]:batch.bounds[<span class="dv">2</span>], ]
+    } else cities.batch &lt;-<span class="st"> </span><span class="dv">1</span>
+    d.cities &lt;-<span class="st"> </span>cities[-<span class="kw">c</span>(<span class="kw">which</span>(<span class="kw">names</span>(locs) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lon_albers&quot;</span>, <span class="st">&quot;lat_albers&quot;</span>)))]
+    cities &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) 
+        <span class="kw">cbind</span>(cities$lon_albers, cities$lat_albers) else if (domain ==<span class="st"> &quot;world10min&quot;</span>) 
+        <span class="kw">cbind</span>(cities$lon, cities$lat)
+}
+
+n.samples &lt;-<span class="st"> </span><span class="dv">20</span>
+n2 &lt;-<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>n.samples
+agg.stat.colnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;SD&quot;</span>, <span class="kw">paste0</span>(<span class="st">&quot;Pct_&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;05&quot;</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">75</span>, 
+    <span class="dv">90</span>, <span class="dv">95</span>)))
+agg.stat.names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;Std Dev&quot;</span>, <span class="kw">paste0</span>(<span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">75</span>, <span class="dv">90</span>, <span class="dv">95</span>), 
+    <span class="st">&quot;th percentile&quot;</span>))
+agg.stat.names[agg.stat.names ==<span class="st"> &quot;50th percentile&quot;</span>] &lt;-<span class="st"> &quot;Median&quot;</span></code></pre>
+</div>
+<div id="support-functions" class="section level4">
+<h4>Support functions</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Density estimation</span>
+denFun &lt;-<span class="st"> </span>function(x, n, variable) {
+    x &lt;-<span class="st"> </span>x[!<span class="kw">is.na</span>(x)]
+    dif &lt;-<span class="st"> </span><span class="kw">diff</span>(<span class="kw">range</span>(x))
+    z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>dif, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span>
+<span class="st">        </span><span class="fl">0.05</span> *<span class="st"> </span>dif)
+    if (variable ==<span class="st"> &quot;pr&quot;</span> &amp;&amp;<span class="st"> </span><span class="kw">any</span>(z$x &lt;<span class="st"> </span><span class="dv">0</span>)) 
+        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>dif)
+    <span class="kw">as.numeric</span>(<span class="kw">c</span>(z$x, z$y))
+}</code></pre>
+<hr />
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Processing function</span>
+getData &lt;-<span class="st"> </span>function(i, model, <span class="dt">cells.list =</span> <span class="ot">NULL</span>, <span class="dt">shp.names =</span> <span class="ot">NULL</span>, <span class="dt">n.shp =</span> <span class="ot">NULL</span>, 
+    <span class="dt">seed =</span> <span class="dv">232</span>, <span class="dt">regions =</span> <span class="ot">TRUE</span>, <span class="dt">n.samples =</span> <span class="dv">512</span>, <span class="dt">cities =</span> <span class="ot">NULL</span>, <span class="dt">start.year =</span> <span class="ot">NULL</span>, 
+    <span class="dt">end.year =</span> <span class="ot">NULL</span>) {
+    <span class="kw">print</span>(i)
+    if (<span class="kw">length</span>(model) ==<span class="st"> </span><span class="dv">1</span>) 
+        model &lt;-<span class="st"> </span><span class="kw">rep</span>(model, i)
+    for (p in <span class="dv">1</span>:<span class="kw">length</span>(topDir)) {
+        if (p ==<span class="st"> </span><span class="dv">2</span>) 
+            <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Process&quot;</span>, i, <span class="st">&quot;beginning projected data extraction.&quot;</span>))
+        if (p ==<span class="st"> </span><span class="dv">1</span>) 
+            scenid.tmp &lt;-<span class="st"> </span>scenid[<span class="dv">1</span>:<span class="dv">12</span>] else if (p ==<span class="st"> </span><span class="dv">2</span>) 
+            scenid.tmp &lt;-<span class="st"> </span>scenid[<span class="dv">13</span>:<span class="dv">24</span>]
+        path &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;/remove&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;//&quot;</span>, <span class="st">&quot;/&quot;</span>, <span class="kw">file.path</span>(topDir[p], arid[i], 
+            scenid.tmp[i], model[i], varid[i])))
+        files &lt;-<span class="st"> </span><span class="kw">list.files</span>(path, <span class="dt">pattern =</span> <span class="st">&quot;.tif$&quot;</span>, <span class="dt">full =</span> T)
+        if (!<span class="kw">is.null</span>(start.year)) 
+            files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">7</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">4</span>) &gt;=<span class="st"> </span>
+<span class="st">                </span>start.year]
+        if (!<span class="kw">is.null</span>(end.year)) 
+            files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">7</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">4</span>) &lt;=<span class="st"> </span>
+<span class="st">                </span>end.year]
+        
+        if (!<span class="kw">is.null</span>(cities)) {
+            r &lt;-<span class="st"> </span><span class="kw">readAll</span>(<span class="kw">raster</span>(files[<span class="dv">1</span>]))  <span class="co"># template done</span>
+            cells_cities &lt;-<span class="st"> </span><span class="kw">extract</span>(r, cities, <span class="dt">cellnumbers =</span> T)[, <span class="dv">1</span>]
+            rank_cells_cities &lt;-<span class="st"> </span><span class="kw">rank</span>(cells_cities)
+            cells_cities &lt;-<span class="st"> </span><span class="kw">sort</span>(cells_cities)
+            <span class="kw">print</span>(<span class="st">&quot;Raster cell indices for point locations obtained.&quot;</span>)
+        }
+        
+        mo.tmp &lt;-<span class="st"> </span><span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">10</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">9</span>)
+        yr.tmp &lt;-<span class="st"> </span><span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">7</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">4</span>)
+        yr.mo.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(yr.tmp, mo.tmp)
+        files &lt;-<span class="st"> </span>files[<span class="kw">order</span>(yr.mo.tmp)]
+        yr.tmp &lt;-<span class="st"> </span><span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">7</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">4</span>)
+        yr.tmp &lt;-<span class="st"> </span><span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">7</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">4</span>)
+        if (regions) {
+            seq.q &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>, <span class="fl">0.95</span>)  <span class="co">#seq(0, 1, by=0.05) #Hard coded</span>
+            m &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="kw">length</span>(files), <span class="dt">ncol =</span> <span class="kw">length</span>(seq.q) +<span class="st"> </span><span class="dv">2</span>)  <span class="co"># +2 for mean and SD below</span>
+            
+            mden &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="dv">2</span> *<span class="st"> </span>n.samples, <span class="dt">ncol =</span> <span class="kw">length</span>(files))
+            samples.list &lt;-<span class="st"> </span><span class="kw">rapply</span>(cells.list, <span class="dt">f =</span> function(x, m) m, <span class="dt">classes =</span> <span class="st">&quot;integer&quot;</span>, 
+                <span class="dt">how =</span> <span class="st">&quot;replace&quot;</span>, <span class="dt">m =</span> mden)
+            <span class="kw">names</span>(samples.list) &lt;-<span class="st"> </span><span class="kw">names</span>(shp.names)
+            for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names)) <span class="kw">names</span>(samples.list[[l1]]) &lt;-<span class="st"> </span>shp.names[[l1]]
+        }
+        
+        if (regions) 
+            for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names)) for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names[[l1]])) <span class="kw">assign</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, 
+                <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>), m)
+        if (regions) 
+            <span class="kw">rm</span>(m)
+        <span class="kw">gc</span>()
+        if (!<span class="kw">is.null</span>(cities)) 
+            m.cities &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow =</span> <span class="kw">length</span>(cells_cities), <span class="dt">ncol =</span> <span class="kw">length</span>(files))
+        if ((i %in%<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">10</span>)) |<span class="st"> </span>p ==<span class="st"> </span><span class="dv">2</span>) {
+            <span class="co"># no need to read historical files more than once for each CMIP phase,</span>
+            <span class="co"># scenario, and variable.</span>
+            for (b in <span class="dv">1</span>:<span class="kw">length</span>(<span class="kw">unique</span>(yr.tmp))) {
+                pat &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;expression&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(<span class="kw">bquote</span>(<span class="kw">expression</span>(<span class="st">&quot;.&quot;</span>, .(<span class="kw">unique</span>(yr.tmp)[b]), 
+                  <span class="st">&quot;.tif$&quot;</span>)), <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>))
+                files.sub &lt;-<span class="st"> </span><span class="kw">list.files</span>(path, <span class="dt">pattern =</span> pat, <span class="dt">full =</span> T)
+                mat &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">stack</span>(files.sub))
+                n &lt;-<span class="st"> </span><span class="kw">ncol</span>(mat)
+                if (regions) {
+                  for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names)) {
+                    for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names[[l1]])) {
+                      cells.tmp &lt;-<span class="st"> </span>cells.list[[<span class="kw">names</span>(shp.names)[l1]]][[shp.names[[l1]][l2]]]
+                      m.tmp &lt;-<span class="st"> </span><span class="kw">get</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], 
+                        <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>))
+                      m.tmp[(<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>)), <span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">colMeans</span>(mat[cells.tmp, 
+                        ], <span class="dt">na.rm =</span> T))
+                      m.tmp[(<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>)), <span class="dv">2</span>] &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">apply</span>(mat[cells.tmp, 
+                        ], <span class="dv">2</span>, sd, <span class="dt">na.rm =</span> T))
+                      m.tmp[(<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>)), <span class="dv">2</span> +<span class="st"> </span>(<span class="dv">1</span>:<span class="kw">length</span>(seq.q))] &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">apply</span>(mat[cells.tmp, 
+                        ], <span class="dv">2</span>, quantile, <span class="dt">probs =</span> seq.q, <span class="dt">na.rm =</span> T))
+                      <span class="kw">assign</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], 
+                        <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>), m.tmp)
+                      samples.tmp &lt;-<span class="st"> </span><span class="kw">apply</span>(mat[cells.tmp, ], <span class="dv">2</span>, denFun, <span class="dt">n =</span> n.samples, 
+                        <span class="dt">variable =</span> varid[i])  <span class="co"># Time across columns</span>
+                      samples.list[[<span class="kw">names</span>(shp.names)[l1]]][[shp.names[[l1]][l2]]][, 
+                        (<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>))] &lt;-<span class="st"> </span>samples.tmp
+                    }
+                  }
+                  <span class="kw">gc</span>()
+                }
+                if (!<span class="kw">is.null</span>(cities)) {
+                  m.cities[, (<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>))] &lt;-<span class="st"> </span>mat[cells_cities[rank_cells_cities], 
+                    ]
+                }
+                <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">&quot;Process&quot;</span>, i, <span class="st">&quot;: &quot;</span>, <span class="kw">unique</span>(yr.tmp)[b]))
+            }
+        } else <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Process&quot;</span>, i, <span class="st">&quot;skipping historical files to avoid redundancy.&quot;</span>))
+        if (p ==<span class="st"> </span><span class="dv">1</span>) {
+            if (regions) {
+                for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names)) for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names[[l1]])) <span class="kw">assign</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, 
+                  <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], <span class="st">&quot;hold&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>), 
+                  <span class="kw">get</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], 
+                    <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>)))
+                samples.list.hold &lt;-<span class="st"> </span>samples.list
+            }
+            if (!<span class="kw">is.null</span>(cities)) 
+                m.cities.hold &lt;-<span class="st"> </span>m.cities
+            yr.hold &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(yr.tmp)
+        } else {
+            if (regions) {
+                for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names)) {
+                  for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names[[l1]])) {
+                    <span class="kw">assign</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], 
+                      <span class="st">&quot;hold&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>), <span class="kw">rbind</span>(<span class="kw">get</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, <span class="kw">names</span>(shp.names)[l1], 
+                      shp.names[[l1]][l2], <span class="st">&quot;hold&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>)), <span class="kw">get</span>(<span class="kw">paste</span>(<span class="st">&quot;m&quot;</span>, 
+                      <span class="kw">names</span>(shp.names)[l1], shp.names[[l1]][l2], <span class="dt">sep =</span> <span class="st">&quot;__&quot;</span>))))
+                  }
+                }
+                for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names)) {
+                  for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(shp.names[[l1]])) {
+                    samples.list.hold[[<span class="kw">names</span>(shp.names)[l1]]][[shp.names[[l1]][l2]]] &lt;-<span class="st"> </span><span class="kw">cbind</span>(samples.list.hold[[<span class="kw">names</span>(shp.names)[l1]]][[shp.names[[l1]][l2]]], 
+                      samples.list[[<span class="kw">names</span>(shp.names)[l1]]][[shp.names[[l1]][l2]]])  <span class="co"># Time across columns</span>
+                  }
+                }
+            }
+            if (!<span class="kw">is.null</span>(cities)) 
+                m.cities.hold &lt;-<span class="st"> </span><span class="kw">cbind</span>(m.cities.hold, m.cities)
+            yr.hold &lt;-<span class="st"> </span><span class="kw">c</span>(yr.hold, <span class="kw">as.numeric</span>(yr.tmp))
+        }
+    }
+    if (regions) {
+        output.names &lt;-<span class="st"> </span><span class="kw">ls</span>(<span class="dt">pattern =</span> <span class="st">&quot;^m__.*.__hold$&quot;</span>)
+        m.list &lt;-<span class="st"> </span><span class="kw">mget</span>(output.names)
+        regions.list &lt;-<span class="st"> </span><span class="kw">c</span>(m.list, <span class="kw">list</span>(<span class="dt">yr =</span> yr.hold), <span class="kw">list</span>(samples.list.hold))
+        <span class="kw">names</span>(regions.list) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">sapply</span>(<span class="kw">strsplit</span>(output.names, <span class="st">&quot;__&quot;</span>), <span class="st">&quot;[[&quot;</span>, 
+            <span class="dv">3</span>), <span class="st">&quot;yr&quot;</span>, <span class="st">&quot;samples&quot;</span>)
+    }
+    if (regions &amp;<span class="st"> </span><span class="kw">is.null</span>(cities)) 
+        l &lt;-<span class="st"> </span><span class="kw">list</span>(regions.list, <span class="kw">list</span>(<span class="st">&quot;No cities&quot;</span>))
+    if (regions &amp;<span class="st"> </span>!<span class="kw">is.null</span>(cities)) 
+        l &lt;-<span class="st"> </span><span class="kw">list</span>(regions.list, <span class="kw">list</span>(<span class="dt">m.cities =</span> m.cities.hold))
+    if (!regions &amp;<span class="st"> </span>!<span class="kw">is.null</span>(cities)) 
+        l &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="kw">list</span>(<span class="dt">yr =</span> yr.hold), <span class="kw">list</span>(<span class="st">&quot;empty&quot;</span>)), <span class="kw">list</span>(<span class="dt">m.cities =</span> m.cities.hold))
+    l
+}</code></pre>
+</div>
+</div>
+<div id="processing" class="section level3">
+<h3>Processing</h3>
+<p>Compile annual average time series data for each model, scenario/rcp, variable, from CMIP3 and CMIP5, two models at a time (one from each phase) <strong>batch</strong> is passed as a command line argument</p>
+<pre class="sourceCode r"><code class="sourceCode r">models &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(model.pairs[[batch]], <span class="dt">each =</span> <span class="dv">3</span>), <span class="dv">2</span>)
+results &lt;-<span class="st"> </span><span class="kw">mclapply</span>(<span class="dt">X =</span> <span class="dv">1</span>:<span class="dv">12</span>, <span class="dt">FUN =</span> getData, <span class="dt">model =</span> models, <span class="dt">cells.list =</span> cells_shp_list_5pct, 
+    <span class="dt">shp.names =</span> region.names.out, <span class="dt">n.shp =</span> n.shp, <span class="dt">regions =</span> regions, <span class="dt">n.samples =</span> n.samples, 
+    <span class="dt">cities =</span> cities, <span class="dt">start.year =</span> yr1, <span class="dt">end.year =</span> yr2, <span class="dt">mc.cores =</span> <span class="dv">12</span>)</code></pre>
+</div>
+<div id="results" class="section level3">
+<h3>Results</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Organize and save results</span>
+for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
+    if (!regions &amp;<span class="st"> </span>k ==<span class="st"> </span><span class="dv">1</span>) 
+        next
+    stats &lt;-<span class="st"> </span><span class="kw">lapply</span>(results, <span class="st">&quot;[[&quot;</span>, k)
+    if (<span class="kw">is.character</span>(stats[[<span class="dv">1</span>]])) 
+        next
+    len &lt;-<span class="st"> </span><span class="kw">ifelse</span>(k ==<span class="st"> </span><span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>)
+    if (k ==<span class="st"> </span><span class="dv">1</span>) {
+        <span class="co"># regional stats</span>
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats)) {
+            results.years &lt;-<span class="st"> </span>results[[i]][[<span class="dv">1</span>]][[<span class="kw">length</span>(results[[i]][[<span class="dv">1</span>]]) -<span class="st"> </span>
+<span class="st">                </span><span class="dv">1</span>]]
+            for (j in <span class="dv">1</span>:(<span class="kw">length</span>(stats[[i]]) -<span class="st"> </span>len)) stats[[i]][[j]] &lt;-<span class="st"> </span>stats[[i]][[j]][<span class="kw">which</span>(results.years %in%<span class="st"> </span>
+<span class="st">                </span>years), ]  <span class="co"># matrix (regional stats)</span>
+        }
+        stats.out.names &lt;-<span class="st"> </span><span class="kw">names</span>(results[[<span class="dv">1</span>]][[<span class="dv">1</span>]])
+        stats.out.names &lt;-<span class="st"> </span>stats.out.names[-<span class="kw">which</span>(stats.out.names %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;yr&quot;</span>, 
+            <span class="st">&quot;samples&quot;</span>))]
+        stats.out &lt;-<span class="st"> </span><span class="kw">list</span>()
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats.out.names)) stats.out[[i]] &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, 
+            <span class="kw">lapply</span>(stats, <span class="st">&quot;[[&quot;</span>, i))
+        <span class="kw">names</span>(stats.out) &lt;-<span class="st"> </span>stats.out.names
+        time.seq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(years[<span class="dv">1</span>], <span class="dt">length.out =</span> <span class="kw">nrow</span>(stats.out[[<span class="dv">1</span>]])/(<span class="dv">12</span> *<span class="st"> </span>
+<span class="st">            </span><span class="dv">12</span>)), <span class="dt">each =</span> <span class="dv">12</span>)
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats.out)) {
+            <span class="kw">colnames</span>(stats.out[[i]]) &lt;-<span class="st"> </span>agg.stat.colnames
+            <span class="kw">rownames</span>(stats.out[[i]]) &lt;-<span class="st"> </span><span class="kw">rep</span>(time.seq, <span class="dv">12</span>)
+            for (block in <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">11</span>)) {
+                block.rows &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="kw">length</span>(time.seq) +<span class="st"> </span><span class="kw">length</span>(time.seq) *<span class="st"> </span>(block -<span class="st"> </span>
+<span class="st">                  </span><span class="dv">1</span>)
+                na.rows &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">is.na</span>(stats.out[[i]][block.rows, <span class="dv">1</span>]))
+                stats.out[[i]][block.rows[na.rows], ] &lt;-<span class="st"> </span>stats.out[[i]][block.rows[na.rows] +<span class="st"> </span>
+<span class="st">                  </span><span class="kw">length</span>(time.seq), ] &lt;-<span class="st"> </span>stats.out[[i]][block.rows[na.rows] -<span class="st"> </span>
+<span class="st">                  </span><span class="kw">length</span>(time.seq), ]
+            }
+            <span class="kw">print</span>(<span class="kw">length</span>(stats.out) -<span class="st"> </span>i)
+        }
+        <span class="kw">save</span>(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames, 
+            <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats/&quot;</span>, 
+                models[<span class="dv">1</span>], <span class="st">&quot;_&quot;</span>, models[<span class="dv">4</span>], <span class="st">&quot;_annual_regions_stats.RData&quot;</span>))
+        
+        <span class="co"># regional samples</span>
+        samples &lt;-<span class="st"> </span><span class="kw">lapply</span>(results, function(x) x[[<span class="dv">1</span>]][[<span class="st">&quot;samples&quot;</span>]])
+        list2df &lt;-<span class="st"> </span>function(x) {
+            x &lt;-<span class="st"> </span><span class="kw">ldply</span>(x, data.frame)
+            x[, <span class="st">&quot;.id&quot;</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(x[, <span class="st">&quot;.id&quot;</span>], <span class="kw">names</span>(x)[<span class="dv">2</span>], <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)
+            <span class="kw">names</span>(x) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Location&quot;</span>, <span class="kw">paste</span>(<span class="st">&quot;T&quot;</span>, <span class="dv">1</span>:(<span class="kw">ncol</span>(x) -<span class="st"> </span><span class="dv">1</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>))
+            x
+        }
+        for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(samples)) for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(samples[[l1]])) samples[[l1]][[l2]] &lt;-<span class="st"> </span><span class="kw">list2df</span>(samples[[l1]][[l2]])
+        for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(samples)) samples[[l1]] &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, samples[[l1]])
+        samples.names &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="kw">unique</span>(samples[[<span class="dv">1</span>]]$Location), <span class="st">&quot;_&quot;</span>), 
+            <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>)
+        samples &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, samples)
+        samples$Location &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(samples.names, <span class="dt">each =</span> n2), <span class="dv">12</span>)
+        <span class="kw">names</span>(samples)[-<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(results.years, month.abb, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)
+        <span class="kw">rownames</span>(samples) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+        samples.out &lt;-<span class="st"> </span><span class="kw">list</span>()
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(samples.names)) {
+            samples.out[[i]] &lt;-<span class="st"> </span><span class="kw">subset</span>(samples, Location ==<span class="st"> </span>samples.names[i])
+            <span class="kw">rownames</span>(samples.out[[i]]) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+        }
+        <span class="kw">names</span>(samples.out) &lt;-<span class="st"> </span>samples.names
+        nc &lt;-<span class="st"> </span><span class="kw">ncol</span>(samples.out[[<span class="dv">1</span>]])
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(samples.out)) {
+            for (cols in <span class="dv">2</span>:nc) {
+                if (<span class="kw">all</span>(<span class="kw">is.na</span>(samples.out[[i]][(n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">2</span> *<span class="st"> </span>n2), cols]))) 
+                  samples.out[[i]][(n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">2</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">2</span> *<span class="st"> </span>
+<span class="st">                    </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">3</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][<span class="dv">1</span>:n2, cols]
+                if (<span class="kw">all</span>(<span class="kw">is.na</span>(samples.out[[i]][(<span class="dv">4</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">5</span> *<span class="st"> </span>n2), cols]))) 
+                  samples.out[[i]][(<span class="dv">4</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">5</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">5</span> *<span class="st"> </span>
+<span class="st">                    </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">6</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">3</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">4</span> *<span class="st"> </span>
+<span class="st">                    </span>n2), cols]
+                if (<span class="kw">all</span>(<span class="kw">is.na</span>(samples.out[[i]][(<span class="dv">7</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">8</span> *<span class="st"> </span>n2), cols]))) 
+                  samples.out[[i]][(<span class="dv">7</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">8</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">8</span> *<span class="st"> </span>
+<span class="st">                    </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">9</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">6</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">7</span> *<span class="st"> </span>
+<span class="st">                    </span>n2), cols]
+                if (<span class="kw">all</span>(<span class="kw">is.na</span>(samples.out[[i]][(<span class="dv">10</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">11</span> *<span class="st"> </span>n2), cols]))) 
+                  samples.out[[i]][(<span class="dv">10</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">11</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">11</span> *<span class="st"> </span>
+<span class="st">                    </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">12</span> *<span class="st"> </span>n2), cols] &lt;-<span class="st"> </span>samples.out[[i]][(<span class="dv">9</span> *<span class="st"> </span>n2 +<span class="st"> </span><span class="dv">1</span>):(<span class="dv">10</span> *<span class="st"> </span>
+<span class="st">                    </span>n2), cols]
+            }
+            <span class="kw">print</span>(<span class="kw">length</span>(samples.out) -<span class="st"> </span>i)
+        }
+        <span class="kw">save</span>(samples.out, samples.names, region.names.out, n.samples, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples/&quot;</span>, 
+            models[<span class="dv">1</span>], <span class="st">&quot;_&quot;</span>, models[<span class="dv">4</span>], <span class="st">&quot;_annual_regions_samples.RData&quot;</span>))
+    }
+    if (k ==<span class="st"> </span><span class="dv">2</span> &amp;<span class="st"> </span>!<span class="kw">is.null</span>(cities)) {
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats)) {
+            results.years &lt;-<span class="st"> </span>results[[i]][[<span class="dv">1</span>]][[<span class="kw">length</span>(results[[i]][[<span class="dv">1</span>]]) -<span class="st"> </span>
+<span class="st">                </span><span class="dv">1</span>]]
+            for (j in <span class="dv">1</span>:(<span class="kw">length</span>(stats[[i]]) -<span class="st"> </span>len)) stats[[i]][[j]] &lt;-<span class="st"> </span>stats[[i]][[j]][, 
+                <span class="kw">which</span>(results.years %in%<span class="st"> </span>years)]  <span class="co"># matrix (multiple cities)</span>
+        }
+        stats.out &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">cities =</span> <span class="kw">sapply</span>(stats, function(x) <span class="kw">t</span>(x[[<span class="dv">1</span>]])))
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats.out)) {
+            <span class="kw">rownames</span>(stats.out[[i]]) &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">seq</span>(yr1, yr2), <span class="dt">each =</span> <span class="dv">12</span>), <span class="kw">nrow</span>(cities))
+            na.rows1 &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">is.na</span>(stats.out[[i]][, <span class="dv">2</span>]))
+            na.rows2 &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">is.na</span>(stats.out[[i]][, <span class="dv">5</span>]))
+            stats.out[[i]][na.rows1, <span class="dv">2</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows1, <span class="dv">3</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows1, 
+                <span class="dv">1</span>]
+            stats.out[[i]][na.rows2, <span class="dv">5</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows2, <span class="dv">6</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows2, 
+                <span class="dv">4</span>]
+            stats.out[[i]][na.rows1, <span class="dv">8</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows1, <span class="dv">9</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows1, 
+                <span class="dv">7</span>]
+            stats.out[[i]][na.rows2, <span class="dv">11</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows2, <span class="dv">12</span>] &lt;-<span class="st"> </span>stats.out[[i]][na.rows2, 
+                <span class="dv">10</span>]
+        }
+        d &lt;-<span class="st"> </span>stats.out[[<span class="dv">1</span>]]
+        <span class="kw">save</span>(d, d.cities, results.years, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities/&quot;</span>, 
+            models[<span class="dv">1</span>], <span class="st">&quot;_&quot;</span>, models[<span class="dv">4</span>], <span class="st">&quot;_annual_cities_batch&quot;</span>, cities.batch, 
+            <span class="st">&quot;_&quot;</span>, domain, <span class="st">&quot;.RData&quot;</span>))
+    }
+}</code></pre>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

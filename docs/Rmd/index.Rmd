@@ -1,5 +1,13 @@
-# SNAP data QAQC
-Matthew Leonawicz  
+---
+title: SNAP data QAQC
+author: Matthew Leonawicz
+output:
+  html_document:
+    toc: false
+    theme: flatly
+    highlight: espresso
+    keep_md: true
+---
 
 SNAP data QAQC refers to multiple threads of collections of R code in the form of scripts and functions across various projects utilizing SNAP data sets.
 However, there is particular focus on SNAP's gridded climate- and fire-related data products, including:
