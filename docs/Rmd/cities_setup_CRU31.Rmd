@@ -56,6 +56,9 @@ As a result, this script and its two companion scripts mentioned above are relat
 
 Setup is minimal. Set working directory. List CRU 3.1 files.
 
+```{r setup}
+```
+
 #### Load and compile data
 
 ```{r load}
@@ -69,8 +72,4 @@ Setup is minimal. Set working directory. List CRU 3.1 files.
 #### Save output files
 
 ```{r save}
-```
-
-NEW_CODE_CHUNKS
-```{r setup}
 ```

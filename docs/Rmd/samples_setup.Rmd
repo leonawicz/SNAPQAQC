@@ -55,6 +55,9 @@ As a result, this script and its two companion scripts mentioned above are relat
 Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.1 files.
 SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.
 
+```{r setup}
+```
+
 #### Load and compile data
 
 ```{r load}
@@ -68,8 +71,4 @@ SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the par
 #### Save output files
 
 ```{r save}
-```
-
-NEW_CODE_CHUNKS
-```{r setup}
 ```
