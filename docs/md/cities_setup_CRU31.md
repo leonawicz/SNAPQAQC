@@ -45,6 +45,23 @@ As a result, this script and its two companion scripts mentioned above are relat
 
 Setup is minimal. Set working directory. List CRU 3.1 files.
 
+
+```r
+comArgs <- commandArgs(TRUE)
+if (length(comArgs)) for (i in 1:length(comArgs)) eval(parse(text = comArgs[[i]]))
+if (!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
+if (!exists("cities.batch")) cities.batch <- ""
+
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities")
+
+library(data.table)
+
+files <- list.files(pattern = paste0("^CRU31.*.batch", cities.batch, ".*.", 
+    domain, ".RData$"))
+
+models <- "CRU31"
+```
+
 #### Load and compile data
 
 
@@ -106,22 +123,4 @@ assign(paste0("cities.meta.", domain), cities.meta)
 rm(d.cities.cru31, f, cities.meta, domain)
 save(cities.meta.akcan2km, file = "../final/cities_meta_akcan2km.RData")
 # load('../final/meta.RData') save.image('../final/meta.RData')
-```
-
-NEW_CODE_CHUNKS
-
-```r
-comArgs <- commandArgs(TRUE)
-if (length(comArgs)) for (i in 1:length(comArgs)) eval(parse(text = comArgs[[i]]))
-if (!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
-if (!exists("cities.batch")) cities.batch <- ""
-
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities")
-
-library(data.table)
-
-files <- list.files(pattern = paste0("^CRU31.*.batch", cities.batch, ".*.", 
-    domain, ".RData$"))
-
-models <- "CRU31"
 ```

@@ -44,6 +44,19 @@ As a result, this script and its two companion scripts mentioned above are relat
 Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.1 files.
 SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.
 
+
+```r
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples")
+
+library(data.table)
+
+files <- list.files(pattern = "regions_samples.RData$")
+files <- files[substr(files, 1, 3) != "CRU"]
+
+models <- list(c("CCCMAcgcm31", "CCSM4"), c("GFDLcm21", "GFDLcm3"), c("MIROC32m", 
+    "GISSe2-r"), c("MPIecham5", "IPSLcm5a-lr"), c("ukmoHADcm3", "MRIcgcm3"))
+```
+
 #### Load and compile data
 
 
@@ -129,18 +142,4 @@ gcm.samples.df$Location <- NA
 rm(d, f, out)
 load("../../final/meta.RData")
 save.image("../../final/meta.RData")
-```
-
-NEW_CODE_CHUNKS
-
-```r
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples")
-
-library(data.table)
-
-files <- list.files(pattern = "regions_samples.RData$")
-files <- files[substr(files, 1, 3) != "CRU"]
-
-models <- list(c("CCCMAcgcm31", "CCSM4"), c("GFDLcm21", "GFDLcm3"), c("MIROC32m", 
-    "GISSe2-r"), c("MPIecham5", "IPSLcm5a-lr"), c("ukmoHADcm3", "MRIcgcm3"))
 ```

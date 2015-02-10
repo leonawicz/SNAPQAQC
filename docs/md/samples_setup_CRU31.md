@@ -53,6 +53,17 @@ Similarly, outputs from this script and its companion scripts are used across a 
 
 Setup is minimal. Set working directory. List CRU 3.1 files.
 
+
+```r
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples")
+
+library(data.table)
+
+files <- list.files(pattern = "^CRU31.*.regions_samples.RData$")
+
+models <- "CRU31"
+```
+
 #### Load and compile data
 
 
@@ -129,16 +140,4 @@ cru.samples.df$Location <- NA
 rm(d, f, out)
 load("../../final/meta.RData")
 save.image("../../final/meta.RData")
-```
-
-NEW_CODE_CHUNKS
-
-```r
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples")
-
-library(data.table)
-
-files <- list.files(pattern = "^CRU31.*.regions_samples.RData$")
-
-models <- "CRU31"
 ```

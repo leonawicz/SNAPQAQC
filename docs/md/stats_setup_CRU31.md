@@ -44,6 +44,17 @@ As a result, this script and its two companion scripts mentioned above are relat
 
 Setup is minimal. Set working directory. List CRU 3.1 files.
 
+
+```r
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats")
+
+library(data.table)
+
+files <- list.files(pattern = "^CRU31.*.regions_stats.RData$")
+
+models <- "CRU31"
+```
+
 #### Load and compile data
 
 
@@ -104,16 +115,4 @@ f <- function(i) {
 }
 
 mclapply(1:length(unique(d$Location)), f, mc.cores = 32)
-```
-
-NEW_CODE_CHUNKS
-
-```r
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats")
-
-library(data.table)
-
-files <- list.files(pattern = "^CRU31.*.regions_stats.RData$")
-
-models <- "CRU31"
 ```
