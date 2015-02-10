@@ -58,11 +58,11 @@ val <- rep(1, length(to))
 
 # @knitr igraph
 relations <- data.frame(from=from, to=to)
-g <- graph.data.frame(relations, directed=T, vertices=data.frame(c(c0, c1, c2a, c2b, c3, d1, d2)))
+g <- graph.data.frame(relations, directed=T, vertices=data.frame(c(c0, c1, c2a, c2b, c3, d1, d2, e1, e2, e3, f1, f2, f3, "cities_setup.slurm", "App data", "Other QAQC analyses")))
 
 gw <- get.data.frame(g)
-colnames(gw) <- c("source","target","value")
 gw$value <- 1
+colnames(gw) <- c("source","target","value")
 gw$source <- as.character(gw$source)
 gw$target <- as.character(gw$target)
 
