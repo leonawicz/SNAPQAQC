@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>CRU 3.1 Samples Setup Code</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/cosmo.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="index.html">SNAP Data QAQC</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li><a href="code_sankey.html">Code flow</a></li>
+
+          <li class="dropdown">
+            <a href="gcm-climate-outputs" class="dropdown-toggle" data-toggle="dropdown">GCM climate outputs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="cru-3.1-climate-data" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate data <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-and-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire and Vegetation <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="nav-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="nav-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="additional-r-code" class="dropdown-toggle" data-toggle="dropdown">Additional R Code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav pull-right">
+          <a class="btn btn-primary" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">CRU 3.1 Samples Setup Code</h1>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#related-items">Related items</a></li>
+<li><a href="#r-code"><strong>R</strong> Code</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>samples_setup_CRU31.R</code> script prepares extracted CRU 3.1 regional temperature and precipitation data for direct use.</p>
+<div id="motivation" class="section level3">
+<h3>Motivation</h3>
+<p>This script transforms and organizes output data from a parent script into a format that is easier to work with in certain frameworks.</p>
+</div>
+<div id="details" class="section level3">
+<h3>Details</h3>
+<p>The data are extracted based on regional shapefiles and the full Alaska-Canada 2-km extent for SNAP’s CRU 3.1 data set. Data manipulation is performed to organize the inputs into more usefully formatted outputs.</p>
+<div id="capabilities" class="section level4">
+<h4>Capabilities</h4>
+<p>This script uses parallel processing via the base <code>parallel</code> package and the function <code>mclapply</code>. It uses as many CPU cores as are available since it is parallelized across regions, which exceed the number of cores. It becomes serial beyond the number of cores simultaneously in use.</p>
+</div>
+<div id="limitations" class="section level4">
+<h4>Limitations</h4>
+<p>This code expects CRU 3.1 data have been processed by the parent script. The code does not make use of <code>Rmpi</code> or similar options so it cannot take advantage of multi-node cluster parallel processing.</p>
+</div>
+</div>
+</div>
+<div id="related-items" class="section level2">
+<h2>Related items</h2>
+<div id="files-and-data" class="section level3">
+<h3>Files and Data</h3>
+<p>The input files are produced by the <strong>R</strong> script, <code>CRU_extract.R</code>. <code>samples_setup_CRU31.R</code> assumes a complete and successful run of this precursory code.</p>
+<p>The <code>CRU_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
+<p>For this reason, <code>samples_setup_CRU31.R</code> has two companion <strong>R</strong> scripts which share the parent script, <code>CRU_extract.R</code>. These are <code>cities_setup_CRU31.R</code> and <code>stats_setup_CRU31.R</code>.</p>
+<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted GCM data.</p>
+</div>
+<div id="code-flow" class="section level3">
+<h3>Code flow</h3>
+<p>The collection of project code of which this script is a part exists within the context of a broader hierarchy of <strong>R</strong> code and data sets (shown below) spanning a multitude of other projects (not shown). Similarly, outputs from this script and its companion scripts are used across a range of other projects.</p>
+</div>
+</div>
+<div id="r-code" class="section level2">
+<h2><strong>R</strong> Code</h2>
+<div id="setup" class="section level3">
+<h3>Setup</h3>
+<p>Setup is minimal. Set working directory. List CRU 3.1 files.</p>
+<div id="load-and-compile-data" class="section level4">
+<h4>Load and compile data</h4>
+<pre class="sourceCode r"><code class="sourceCode r">dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(files))
+for (i in <span class="dv">1</span>:<span class="kw">length</span>(files)) {
+    <span class="kw">load</span>(files[i])
+    m &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, samples.out)
+    n &lt;-<span class="st"> </span><span class="kw">nrow</span>(m)
+    dlist[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Temperature&quot;</span>, <span class="st">&quot;Precipitation&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">2</span> *<span class="st"> </span>
+<span class="st">        </span><span class="kw">length</span>(samples.out))), m, <span class="dt">stringsAsFactors =</span> F)
+    <span class="kw">print</span>(i)
+}
+d &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">rbindlist</span>(dlist))
+<span class="kw">rm</span>(samples.out, n, m, i, files, models, dlist)
+<span class="kw">names</span>(d)[<span class="dv">3</span>:<span class="kw">ncol</span>(d)] &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">names</span>(d)[<span class="dv">3</span>:<span class="kw">ncol</span>(d)])
+<span class="co"># save.image(&#39;../../final/CRU31_region_samples_data.RData&#39;)</span></code></pre>
+</div>
+<div id="organize-data-frame-and-support-objects" class="section level4">
+<h4>Organize data frame and support objects</h4>
+<pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span>function(i, n, index, multiplier) {
+    name.tmp &lt;-<span class="st"> </span>samples.names[i]
+    rsd &lt;-<span class="st"> </span><span class="kw">subset</span>(d, Location ==<span class="st"> </span>name.tmp)
+    rsd &lt;-<span class="st"> </span><span class="kw">melt</span>(rsd, <span class="dt">id.vars =</span> <span class="kw">names</span>(rsd)[<span class="dv">1</span>:<span class="dv">2</span>], <span class="dt">measure.vars =</span> <span class="kw">names</span>(rsd)[-<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">2</span>)], 
+        <span class="dt">variable.name =</span> <span class="st">&quot;Time&quot;</span>, <span class="dt">value.name =</span> <span class="st">&quot;Vals_Probs&quot;</span>)
+    rsd$vals.ind &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">c</span>(T, F), <span class="dt">each =</span> n), <span class="dt">length =</span> <span class="kw">nrow</span>(rsd))
+    rsd$dcastIsDumb &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>:n, <span class="dt">length =</span> <span class="kw">nrow</span>(rsd))
+    rsd &lt;-<span class="st"> </span><span class="kw">dcast</span>(rsd, Var +<span class="st"> </span>Location +<span class="st"> </span>Time +<span class="st"> </span>dcastIsDumb ~<span class="st"> </span>vals.ind, <span class="dt">value.var =</span> <span class="st">&quot;Vals_Probs&quot;</span>)
+    <span class="kw">names</span>(rsd)[<span class="dv">6</span>:<span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Prob&quot;</span>)
+    rsd$Year &lt;-<span class="st"> </span><span class="kw">substr</span>(<span class="kw">as.character</span>(rsd$Time), <span class="dv">1</span>, <span class="dv">4</span>)
+    rsd$Month &lt;-<span class="st"> </span><span class="kw">substr</span>(<span class="kw">as.character</span>(rsd$Time), <span class="dv">6</span>, <span class="dv">8</span>)
+    rsd$Month &lt;-<span class="st"> </span><span class="kw">factor</span>(rsd$Month, <span class="dt">levels =</span> month.abb)
+    rsd$Decade &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(rsd$Year, <span class="dv">1</span>, <span class="dv">3</span>), <span class="dv">0</span>)
+    <span class="kw">rownames</span>(rsd) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    rsd &lt;-<span class="st"> </span>rsd[<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">7</span>:<span class="dv">9</span>)]
+    grp &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">names</span>(region.names.out), <span class="dt">times =</span> <span class="kw">sapply</span>(region.names.out, length))[i]
+    <span class="kw">dir.create</span>(outDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;../../final/region_files_CRU/samples&quot;</span>, grp, 
+        name.tmp), <span class="dt">recursive =</span> T, <span class="dt">showWarnings =</span> F)
+    rsd$Val &lt;-<span class="st"> </span><span class="kw">round</span>(rsd$Val, <span class="dv">1</span>) *<span class="st"> </span>multiplier[<span class="dv">1</span>]
+    rsd$Prob &lt;-<span class="st"> </span><span class="kw">round</span>(rsd$Prob, <span class="dv">8</span>) *<span class="st"> </span>multiplier[<span class="dv">2</span>]
+    if (i ==<span class="st"> </span><span class="dv">1</span>) 
+        x &lt;-<span class="st"> </span><span class="kw">subset</span>(rsd, Var ==<span class="st"> &quot;Precipitation&quot;</span>) else x &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    <span class="kw">gc</span>()
+    rsd.cru &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">subset</span>(rsd, Var ==<span class="st"> &quot;Precipitation&quot;</span>)[, index])
+    <span class="kw">names</span>(rsd.cru) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    <span class="kw">save</span>(rsd.cru, <span class="dt">file =</span> <span class="kw">paste0</span>(outDir, <span class="st">&quot;/&quot;</span>, <span class="st">&quot;precipitation.RData&quot;</span>))
+    <span class="kw">gc</span>()
+    rsd.cru &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">subset</span>(rsd, Var ==<span class="st"> &quot;Temperature&quot;</span>)[, index])
+    <span class="kw">names</span>(rsd.cru) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    <span class="kw">save</span>(rsd.cru, <span class="dt">file =</span> <span class="kw">paste0</span>(outDir, <span class="st">&quot;/&quot;</span>, <span class="st">&quot;temperature.RData&quot;</span>))
+    <span class="kw">gc</span>()
+    <span class="kw">print</span>(i)
+    x
+}</code></pre>
+</div>
+<div id="save-output-files" class="section level4">
+<h4>Save output files</h4>
+<pre class="sourceCode r"><code class="sourceCode r">samples.columns.cru &lt;-<span class="st"> </span><span class="dv">3</span>:<span class="dv">4</span>
+samples.multipliers.cru &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="fl">1e+08</span>)
+
+out &lt;-<span class="st"> </span><span class="kw">mclapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(samples.names), f, <span class="dt">n =</span> n.samples, <span class="dt">index =</span> samples.columns.cru, 
+    <span class="dt">multiplier =</span> samples.multipliers.cru, <span class="dt">mc.cores =</span> <span class="dv">32</span>)
+cru.samples.df &lt;-<span class="st"> </span>out[[<span class="dv">1</span>]]
+cru.samples.df[, samples.columns.cru] &lt;-<span class="st"> </span><span class="ot">NA</span>
+cru.samples.df$Var &lt;-<span class="st"> </span><span class="ot">NA</span>
+cru.samples.df$Location &lt;-<span class="st"> </span><span class="ot">NA</span>
+
+<span class="kw">rm</span>(d, f, out)
+<span class="kw">load</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)
+<span class="kw">save.image</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)</code></pre>
+<p>NEW_CODE_CHUNKS</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples&quot;</span>)
+
+<span class="kw">library</span>(data.table)
+
+files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;^CRU31.*.regions_samples.RData$&quot;</span>)
+
+models &lt;-<span class="st"> &quot;CRU31&quot;</span></code></pre>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

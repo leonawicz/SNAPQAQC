@@ -8,14 +8,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
-<meta name="author" content="Matthew Leonawicz" />
 
 
-<title>SNAP data QAQC</title>
+<title>ALFRESCO Statistics: Function Code</title>
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
 <script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
@@ -165,33 +164,32 @@ img {
 </div>
 
 <div id="header">
-<h1 class="title">SNAP data QAQC</h1>
-<h4 class="author"><em>Matthew Leonawicz</em></h4>
+<h1 class="title">ALFRESCO Statistics: Function Code</h1>
 </div>
 
 
-<p>SNAP data QAQC refers to multiple threads of collections of R code in the form of scripts and functions across various projects utilizing SNAP data sets. However, there is particular focus on SNAP’s gridded climate- and fire-related data products, including:</p>
-<ul>
-<li>2-km resolution, Alaska-Western Canada extent, downscaled global climate model (GCM) temperature and precipitation outputs</li>
-<li>2-km resolution, Alaska-Western Canada extent, downscaled Climatological Research Unit (CRU) 3.1 temperature and precipitation data.</li>
-<li>1-km resolution, Alaska-Western Canada extent, ALFRESCO fire and vegetation landscape transition simulation outputs.</li>
-</ul>
-<p>The two most prominent threads of QAQC relate to the climate data and ALFRESCO outputs noted above. The QAQC process involves extraction of data from geotiff layers of the above data products. Data are extracted based on:</p>
-<ul>
-<li>The full spatial extent</li>
-<li>A collection of spatial regions defined by shapefile polygons</li>
-<li>Individual grid cells corresponding to point locations of interest, e.g., cities</li>
-</ul>
-<p>The data extractions are intensive processes. Depending on user configurations, these processes can take a while to execute. Most of the scripts, particularly those upstream in the <strong>R</strong> code process chain which entail the heaviest I/O involving thousands of high-resolution geotiff files, are called via SLURM scripts and handled by the SLURM job manager on the Atlas cluster. This is considered best practice. The code is executed in non-interactive mode <strong>R</strong> and does not require an existing connection to the server by the user except to initially launch the SLURM job. Some of the downstream processes that perform relatively light organizational work on already parsed outputs do not use SLURM.</p>
-<p>The process chain involves the following:</p>
-<ul>
-<li>Initial data extraction from source files</li>
-<li>Calculation of statistics on extracted outputs</li>
-<li>Writing extracted output statistics to new files, usually .RData workspaces</li>
-<li>Compiling and organizing statistics in a series of data curation steps, which may require a series of intermediary output files depending on the type of input</li>
-<li>Fully curated data files are made available to various projects, some unrelated and others which perform further QAQC analyses, such as the master QAQC Shiny app.</li>
-</ul>
-<p>Currently, here you can find documentation, including <strong>R</strong> code, which covers most of the primary (extraction) and secondary (organization) stages pertaining to the two main threads of SNAP data QAQC. Before looking at the code, it may be helpful to capture the overall picture of the process chain by looking at the code flow diagram.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>alfStatsByRep.R</code> script uses extract fire and vegetation statistics from calibrated, finalized ALFRESCO run output over the full Alaska-Canada 1-km resolution ALFRESCO extent. Data are saved to <strong>R</strong> workspaces (.RData files) for analysis and graphing by subsequent <strong>R</strong> code.</p>
+<div id="details" class="section level3">
+<h3>Details</h3>
+<p>This script is called by the wrapper script, <code>alfStatsByRep_Rpmi.R</code> as part of a non-interactive <strong>R</strong> SLURM job process using <code>Rmpi</code>. The script consists of functions, which are loaded onto each CPU core. The execution calls still originate from the parent <code>Rpmi</code> script on the head node.</p>
+</div>
+<div id="files-and-data" class="section level3">
+<h3>Files and Data</h3>
+<p>The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations as well as raster layer cell indices pertaining to various regional shapefile polygons. All input data are passed directly from the <code>alfStatsByRep_Rpmi.R</code> master <strong>R</strong> session running on the head node. <code>alfStatsByRep.R</code> performs data extractions on multiple CPU cores across multiple compute nodes based on the data passed down to each CPU. Each CPU on the compute nodes is responsible for processing data for a unique ALFRESCO simulation spatial time series replicate.</p>
+<p><code>alfStatsByRep.R</code> passed some computed ALFRESCO output statistics back to <code>alfStatsByRep_Rpmi.R</code> on the head node to be combined, organized and written to intermediary files: * Burn area by region * Fire frequency by region * Vegetated area by region and vegetation class</p>
+<p>Other data are written to files directly by <code>alfStatsByRep.R</code>, avoiding returning too much data to the head node. This consists of distributional information, in contrast to specific computed statistics, specifically semi-compact objects storing distributional properties of vegetation age by region, replicate, model and scenario in individual .RData workspace files.</p>
+<p>Intermediate outputs are handled by additional <strong>R</strong> scripts.</p>
+</div>
+</div>
+<div id="r-code" class="section level2">
+<h2>R code</h2>
+<div id="setup" class="section level3">
+<h3>Setup</h3>
+<p>ADD_TEXT_HERE: EXAMPLE Setup consists of loading required <strong>R</strong> packages and additional files, preparing any command line arguments for use, and defining functions and other <strong>R</strong> objects.</p>
+</div>
+</div>
 
 
 </div>
