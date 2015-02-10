@@ -15,7 +15,6 @@ for(i in 1:length(files)){
 	n <- nrow(m)
 	dlist[[i]] <- data.frame(
 		Var=rep(c("Temperature","Precipitation"),each=n/(2*length(samples.out))),
-		#Location=rep(names(means.out),each=n/length(samples.out)),
 		m,
 		stringsAsFactors=F
 	)

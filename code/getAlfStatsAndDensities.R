@@ -12,22 +12,24 @@ vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg"
 
 # @knitr functions1
 # Support functions
+# include later: # CCSM4="CCSM4", GFDLcm3="GFDLcm3", GISSe2-r="GISSe2-r", IPSLcm5a-lr="IPSLcm5a-lr", MRIcgcm3="MRIcgcm3"
 swapModelName <- function(x){
 	switch(x,
-		cccma_cgcm3_1="CCCMAcgcm31", gfdl_cm2_1="GFDLcm21", miroc3_2_medres="MIROC32m", mpi_echam5="MPIecham5", ukmo_hadcm3="ukmoHADcm3"#,
-		#CCSM4="CCSM4", GFDLcm3="GFDLcm3", GISSe2-r="GISSe2-r", IPSLcm5a-lr="IPSLcm5a-lr", MRIcgcm3="MRIcgcm3"
+		cccma_cgcm3_1="CCCMAcgcm31", gfdl_cm2_1="GFDLcm21", miroc3_2_medres="MIROC32m", mpi_echam5="MPIecham5", ukmo_hadcm3="ukmoHADcm3"
 	)
 }
 
+# include later: # rcp45="RCP 4.5", rcp60="RCP 6.0", rcp85="RCP 8.5"
 swapScenarioName <- function(x){
 	switch(x,
-		sresb1="SRES B1", sresa1b="SRES A1B", sresa2="SRES A2"#, rcp45="RCP 4.5", rcp60="RCP 6.0", rcp85="RCP 8.5"
+		sresb1="SRES B1", sresa1b="SRES A1B", sresa2="SRES A2"
 	)
 }
 
+# include later: # rcp45="CMIP5", rcp60="CMIP5", rcp85="CMIP5"
 getPhase <- function(x){
 	switch(x,
-		sresb1="CMIP3",	sresa1b="CMIP3", sresa2="CMIP3"#, rcp45="CMIP5", rcp60="CMIP5", rcp85="CMIP5"
+		sresb1="CMIP3",	sresa1b="CMIP3", sresa2="CMIP3"
 	)
 }
 
