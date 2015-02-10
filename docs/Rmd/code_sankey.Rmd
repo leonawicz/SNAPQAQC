@@ -3,13 +3,13 @@ title: Code Flow
 output:
   html_document:
     toc: false
-    theme: united
-    highlight: zenburn
+    theme: flatly
+    highlight: espresso
     keep_md: true
 ---
 
 ```{r knitr_setup, echo=FALSE}
-opts_chunk$set(cache=FALSE, eval=TRUE, tidy=FALSE, message=FALSE, warning=FALSE)
+opts_chunk$set(cache=FALSE, echo=FALSE, eval=TRUE, tidy=FALSE, message=FALSE, warning=FALSE)
 read_chunk("../../code/code_sankey.R")
 ```
 

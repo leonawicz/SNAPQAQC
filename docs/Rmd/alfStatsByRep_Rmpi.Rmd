@@ -3,8 +3,8 @@ title: "ALFRESCO Statistics: Rmpi Code"
 output:
   html_document:
     toc: false
-    theme: united
-    highlight: zenburn
+    theme: flatly
+    highlight: espresso
     keep_md: true
 ---
 
@@ -57,3 +57,33 @@ Intermediate outputs are handled by additional **R** scripts.
 ADD_TEXT_HERE: EXAMPLE
 Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
 
+```{r setup}
+```
+
+### Functions
+Define support functions.
+
+```{r functions}
+```
+
+### Send information from head node to CPUs on compute nodes
+Send **R** objects from master to slaves.
+
+```{r obj2slaves}
+```
+
+Send **R** commands from master to slaves.
+
+```{r commands2slaves}
+```
+
+### Gather data
+Extract and compile fire statistics.
+
+```{r fire_stats}
+```
+
+Extract and compile vegetation class and age statistics.
+
+```{r age_veg_stats}
+```

@@ -3,8 +3,8 @@ title: ALFRESCO Statistics and Densities
 output:
   html_document:
     toc: false
-    theme: united
-    highlight: zenburn
+    theme: flatly
+    highlight: espresso
     keep_md: true
 ---
 

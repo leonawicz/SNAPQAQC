@@ -3,8 +3,8 @@ title: "ALFRESCO Statistics: Function Code"
 output:
   html_document:
     toc: false
-    theme: united
-    highlight: zenburn
+    theme: flatly
+    highlight: espresso
     keep_md: true
 ---
 
@@ -45,6 +45,23 @@ Intermediate outputs are handled by additional **R** scripts.
 ## R code
 
 ### Setup
-ADD_TEXT_HERE: EXAMPLE
-Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
 
+```{r setup}
+```
+
+### Processing functions
+#### getFireStats
+
+```{r getFireStats}
+```
+
+#### getAgeVegStats
+
+```{r getAgeVegStats}
+```
+
+#### getAlfStats
+This function is not currently in use.
+
+```{r getAlfStats}
+```
