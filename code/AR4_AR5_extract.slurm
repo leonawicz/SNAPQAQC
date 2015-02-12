@@ -14,5 +14,5 @@
 #### $3/$4 are regions=TRUE and/or cities=TRUE, defaults to FALSE, at least one must be specified TRUE;
 #### $5 optional, is years=1870:2099, or similar;
 #### $6 optional, recommended for large number of cities, integer 1-10, e.g., cities.batch=1, run ten times with regions FALSE;
-Rscript /workspace/UA/mfleonawicz/leonawicz/Projects/active/AR4_AR5_comparisons/code/AR4_AR5_extract.R $1 $2 $3 $4 $5 $6
+Rscript /workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/AR4_AR5_extract.R $1 $2 $3 $4 $5 $6
 
