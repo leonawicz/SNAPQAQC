@@ -16,27 +16,20 @@ region.cru.samples.files <- lapply(region.cru.samples.path, list.files, full=T)
 names(region.cru.stats.files) <- names(region.gcm.stats.files) <- names(region.cru.samples.files) <- names(region.gcm.samples.files) <- basename(region.gcm.stats.path)
 
 # @knitr cities
-# City inclusion is not perfect, some cities are dropped out
-# CRU has fewer city files, no time to investigate yet
+city.gcm.files.path <- file.path(topDir, "city_files_GCM")
+city.gcm.files <- list.files(city.gcm.files.path, full=T)
 city.cru.files.path <- file.path(topDir, "city_files_CRU")
 city.cru.files <- list.files(city.cru.files.path, full=T)
 
-city.gcm.files.path <- file.path(topDir, "city_files_GCM")
-# restrict GCM files to subset with corresponding CRU files
-city.gcm.files <- gsub("city_files_CRU", "city_files_GCM", city.cru.files) # list.files(city.gcm.files.path, full=T)
-
 # city names to appear in app menu
-city.names <- gsub("APOS", "\\'", gsub("--", ", ", sapply(strsplit(basename(city.gcm.files), "__"), "[[", 1)))
+city.names <- gsub("FSLASH", "/", gsub("PER", "\\.", gsub("APOS", "\\'", gsub("--", ", ", sapply(strsplit(basename(city.gcm.files), "__"), "[[", 1)))))
 
-# subset cities metadata data frame to match CRU files
+# subset cities metadata data frame to match final files
 cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta_akcan2km.RData"
 load(cities.meta.file)
 cities.meta.akcan2km <- subset(cities.meta.akcan2km, Location %in% city.names)
 save(cities.meta.akcan2km, file=cities.meta.file) # okay to save over original file
 rm(cities.meta.file, topDir)
-
-# reverse for consistency, extra precaution
-city.names <- city.names[city.names %in% cities.meta.akcan2km$Location]
 
 # @knitr save_metadata
 load("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData")
