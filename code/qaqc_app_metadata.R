@@ -17,18 +17,21 @@ names(region.cru.stats.files) <- names(region.gcm.stats.files) <- names(region.c
 
 # @knitr cities
 city.gcm.files.path <- file.path(topDir, "city_files_GCM")
-city.gcm.files <- list.files(city.gcm.files.path, full=T)
+city.gcm.files.2km <- list.files(file.path(city.gcm.files.path, "akcan2km"), full=T)
+city.gcm.files.10min <- list.files(file.path(city.gcm.files.path, "world10min"), full=T)
 city.cru.files.path <- file.path(topDir, "city_files_CRU")
-city.cru.files <- list.files(city.cru.files.path, full=T)
+city.cru.files.2km <- list.files(file.path(city.cru.files.path, "akcan2km"), full=T)
+city.cru.files.10min <- list.files(file.path(city.cru.files.path, "world10min"), full=T)
 
 # city names to appear in app menu
-city.names <- gsub("FSLASH", "/", gsub("PER", "\\.", gsub("APOS", "\\'", gsub("--", ", ", sapply(strsplit(basename(city.gcm.files), "__"), "[[", 1)))))
+# use one group of cities from above, all four sets are identical
+city.names <- gsub("FSLASH", "/", gsub("PER", "\\.", gsub("APOS", "\\'", gsub("--", ", ", sapply(strsplit(basename(city.gcm.files.2km), "__"), "[[", 1)))))
 
-# subset cities metadata data frame to match final files
-cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta_akcan2km.RData"
+# subset cities metadata data frame to match final files, same for all sets
+cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta.RData"
 load(cities.meta.file)
-cities.meta.akcan2km <- subset(cities.meta.akcan2km, Location %in% city.names)
-save(cities.meta.akcan2km, file=cities.meta.file) # okay to save over original file
+cities.meta <- subset(cities.meta, Location %in% city.names)
+save(cities.meta, file=cities.meta.file) # okay to save over original file
 rm(cities.meta.file, topDir)
 
 # @knitr save_metadata

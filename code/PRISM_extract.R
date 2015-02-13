@@ -1,8 +1,9 @@
 # @knitr setup
 setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final")
 library(raster)
-domain <- "akcan2km"
-#domain <- "world10min"
+# At this time, no buffered 10-minute resolution WGS84 mean value version extracted for domain='world10min'
+#domain <- "akcan2km"
+domain <- "world10min"
 
 mainDir <- "/Data/Base_Data/Climate/AK_CAN_2km/historical/singleBand/prism/AK_CAN_2km_PRISM/AK_CAN_geotiffs"
 pDir <- if(domain=="akcan2km") "pr/ak83albers" else "pr/wgs84"
@@ -36,5 +37,5 @@ prism.t <- round(extract(s.t, cities), 1)
 
 # @knitr save
 # Save results
-load("cc4lite/cc4lite.RData")
-save(d, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism.RData")
+load(paste0("cc4lite/cc4lite_", domain, ".RData"))
+save(d, locs, prism.p, prism.t, prism.cities, file=paste0("cc4lite/cc4lite_", domain, "_prism.RData"))

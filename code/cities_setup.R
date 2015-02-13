@@ -66,7 +66,7 @@ library(parallel)
 f <- function(i){
 	name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
 	city.dat <- subset(d.cities, Location==cities.meta$Location[i])
-	save(city.dat, file=paste0("../final/city_files_GCM/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
+	save(city.dat, file=paste0("../final/city_files_GCM/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
 	print(i)
 }
 

@@ -52,15 +52,13 @@ library(parallel)
 f <- function(i){
 	name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
 	city.cru.dat <- subset(d.cities.cru31, Location==cities.meta$Location[i])
-	save(city.cru.dat, file=paste0("../final/city_files_CRU/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
+	save(city.cru.dat, file=paste0("../final/city_files_CRU/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
 	print(i)
 }
 
 mclapply(1:length(cities.meta$Location), f, mc.cores=32)
 
-assign(paste0("cities.meta.", domain), cities.meta)
-
-rm(d.cities.cru31, f, cities.meta, domain)
-save(cities.meta.akcan2km, file="../final/cities_meta_akcan2km.RData")
+rm(d.cities.cru31, f, domain)
+save(cities.meta, file="../final/cities_meta.RData")
 #load("../final/meta.RData")
 #save.image("../final/meta.RData")
