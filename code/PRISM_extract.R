@@ -2,8 +2,8 @@
 setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final")
 library(raster)
 # At this time, no buffered 10-minute resolution WGS84 mean value version extracted for domain='world10min'
-#domain <- "akcan2km"
-domain <- "world10min"
+domain <- "akcan2km"
+#domain <- "world10min"
 
 mainDir <- "/Data/Base_Data/Climate/AK_CAN_2km/historical/singleBand/prism/AK_CAN_2km_PRISM/AK_CAN_geotiffs"
 pDir <- if(domain=="akcan2km") "pr/ak83albers" else "pr/wgs84"
@@ -37,5 +37,21 @@ prism.t <- round(extract(s.t, cities), 1)
 
 # @knitr save
 # Save results
-load(paste0("cc4lite/cc4lite_", domain, ".RData"))
-save(d, locs, prism.p, prism.t, prism.cities, file=paste0("cc4lite/cc4lite_", domain, "_prism.RData"))
+file1 <- "cc4lite/cc4lite_cru31_prism_akcan2km.RData"
+file2 <- "cc4lite/cc4lite_cru31_prism_world10min.RData"
+if(domain=="akcan2km"){
+	load(paste0("cc4lite/cc4lite_cru31_akcan2km.RData"))
+	save(d.2km, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism_akcan2km.RData")
+	save(d.2km, d.cru.2km, locs, prism.p, prism.t, prism.cities, file=file1)
+} else if(domain=="world10min") {
+	load(paste0("cc4lite/cc4lite_cru31_world10min.RData"))
+	save(d.10min, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism_world10min.RData")
+	save(d.10min, d.cru.10min, locs, prism.p, prism.t, prism.cities, file=file2)
+}
+
+if(all(file.exists(file1, file2))){
+	load(file1)
+	load(file2)
+	save(d.2km, d.10min, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism_2km10min.RData")
+	save(d.2km, d.10min, d.cru.2km, d.cru.10min, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_cru31_prism_2km10min.RData")
+}
