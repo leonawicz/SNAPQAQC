@@ -20,11 +20,13 @@ if(domain=="akcan2km"){ # For regions and/or cities
 	if(regions){
 		load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
 	} else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
-	locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
 } else if(domain=="world10min") { # Currently for cities only
 	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",c("historical","projected")) # files are not read, but metadata parsed from filenames list
-	#### Need to insert a load() command for a locs object analogous to that above
+	cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
+	#### Need to insert a load() command analogous to that above for regions
 }
+
+locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
 
 # @knitr setup
 varid <- rep(c("tas","pr"),each=6)
@@ -38,7 +40,7 @@ scenid <- if(length(topDir)==2){
 arid <- rep(rep(c("AR4_CMIP3_models","AR5_CMIP5_models"),each=3),2)
 
 model.pairs <- list(
-	c("cccma-cgcm3-1t47","CCSM4"),
+	c("cccma-cgcm3-1-t47","CCSM4"),
 	c("gfdl-cm2-1","GFDL-CM3"),
 	c("miroc3-2-medres","GISS-E2-R"),
 	c("mpi-echam5","IPSL-CM5A-LR"),
@@ -71,7 +73,7 @@ if(cities){
 		cities <- cities[batch.bounds[1]:batch.bounds[2],]
 	} else cities.batch <- 1
 	d.cities <- cities[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
-	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon, cities$lat)
+	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon+180, cities$lat) # +360 for PC lat lon rasters
 }
 
 n.samples <- 20
