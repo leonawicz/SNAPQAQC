@@ -73,7 +73,7 @@ if(cities){
 		cities <- cities[batch.bounds[1]:batch.bounds[2],]
 	} else cities.batch <- 1
 	d.cities <- cities[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
-	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon+180, cities$lat) # +360 for PC lat lon rasters
+	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon+360, cities$lat) # +360 for PC lat lon rasters
 }
 
 n.samples <- 20
