@@ -3,9 +3,10 @@ setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats
 
 library(data.table)
 
-files <- list.files(pattern="^CRU31.*.regions_stats.RData$")
+cru <- "32"
+files <- list.files(pattern=paste0("^CRU", cru, ".*.regions_stats.RData$"))
 
-models <- "CRU31"
+models <- paste0("CRU", cru)
 
 # @knitr load
 dlist <- vector("list", length(files))
@@ -36,21 +37,18 @@ d$Decade <- paste0(substr(d$Year,1,3),0)
 
 #agg.stat.names <- c("Mean", "Std. Dev.", "5th percentile","10th percentile", "25th percentile", "50th (Median)", "75th percentile", "90th percentile", "95th percentile")
 stats.columns.cru <- seq(which(names(d)=="Mean"), length.out=length(agg.stat.names))
-#save.image("../../final/CRU31_region_stats_data.RData")
 
 # @knitr save
 library(parallel)
 
-f <- function(i){
+f <- function(i, cru){
 	name.tmp <- as.character(unlist(region.names.out))[i]
-	#assign(name.tmp, subset(d.cities, Location==cities.meta$Location[i]))
-	#save(list=c(name.tmp), file=paste0("../final/city_files_GCM/", gsub(", ", "--", name.tmp), ".RData"))
 	region.cru.dat <- subset(d, Location==name.tmp)
 	names(region.cru.dat)[stats.columns.cru] <- agg.stat.colnames
 	grp <- rep(names(region.names.out), times=sapply(region.names.out, length))[i]
-	dir.create(outDir <- file.path("../../final/region_files_CRU/stats", grp, name.tmp), recursive=T, showWarnings=F)
+	dir.create(outDir <- paste0("../../final/region_files_CRU", cru, "/stats/", grp, "/", name.tmp), recursive=T, showWarnings=F)
 	save(region.cru.dat, file=file.path(outDir, "stats_climate.RData"))
 	print(i)
 }
 
-mclapply(1:length(unique(d$Location)), f, mc.cores=32)
+mclapply(1:length(unique(d$Location)), f, cru=cru, mc.cores=32)

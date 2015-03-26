@@ -18,16 +18,16 @@ Final preparations of region and city data file path locations are completed.
 This new workspace is saved over the original.
 
 This script current handles subsetting of city files as best it can,
-but ultimately time is needed to investigate why GCM and CRU extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.
+but ultimately time is needed to investigate why GCM and CRU 3.x extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.
 
 ## R code
 
-File path information for GCM and CRU files are finalized.
+File path information for GCM and CRU 3.x files are finalized.
 
 ```{r regions}
 ```
 
-File path information for GCM and CRU cities, and associated metadata, are fortified as best as currently possible.
+File path information for GCM and CRU 3.x cities, and associated metadata, are fortified as best as currently possible.
 See code comments for details regarding pending investigation of discrepancies between data sets.
 
 ```{r cities}

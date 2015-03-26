@@ -3,9 +3,10 @@ setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/sampl
 
 library(data.table)
 
-files <- list.files(pattern="^CRU31.*.regions_samples.RData$")
+cru <- "32"
+files <- list.files(pattern=paste0("^CRU", cru, ".*.regions_samples.RData$"))
 
-models <- "CRU31"
+models <- paste0("CRU", cru)
 
 # @knitr load
 dlist <- vector("list", length(files))
@@ -26,7 +27,7 @@ names(d)[3:ncol(d)] <- gsub("X", "", names(d)[3:ncol(d)])
 #save.image("../../final/CRU31_region_samples_data.RData")
 
 # @knitr organize
-f <- function(i, n, index, multiplier){
+f <- function(i, n, index, multiplier, cru){
 	name.tmp <- samples.names[i]
 	rsd <- subset(d, Location==name.tmp)
 	rsd <- melt(rsd, id.vars=names(rsd)[1:2], measure.vars=names(rsd)[-c(1:2)], variable.name="Time", value.name="Vals_Probs")
@@ -41,7 +42,7 @@ f <- function(i, n, index, multiplier){
 	rownames(rsd) <- NULL
 	rsd <- rsd[c(1:2,6,5,7:9)]
 	grp <- rep(names(region.names.out), times=sapply(region.names.out, length))[i]
-	dir.create(outDir <- file.path("../../final/region_files_CRU/samples", grp, name.tmp), recursive=T, showWarnings=F)
+	dir.create(outDir <- paste0("../../final/region_files_CRU", cru, "/samples/", grp, "/", name.tmp), recursive=T, showWarnings=F)
 	rsd$Val <- round(rsd$Val,1)*multiplier[1]
 	rsd$Prob <- round(rsd$Prob,8)*multiplier[2]
 	if(i==1) x <- subset(rsd, Var=="Precipitation") else x <- NULL
@@ -62,7 +63,7 @@ f <- function(i, n, index, multiplier){
 samples.columns.cru <- 3:4
 samples.multipliers.cru <- c(1e1, 1e8)
 
-out <- mclapply(1:length(samples.names), f, n=n.samples, index=samples.columns.cru, multiplier=samples.multipliers.cru, mc.cores=32)
+out <- mclapply(1:length(samples.names), f, n=n.samples, index=samples.columns.cru, multiplier=samples.multipliers.cru, cru=cru, mc.cores=32)
 cru.samples.df <- out[[1]]
 cru.samples.df[,samples.columns.cru] <- NA
 cru.samples.df$Var <- NA

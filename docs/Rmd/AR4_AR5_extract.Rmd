@@ -62,7 +62,7 @@ The `AR4_AR5_extract.R` script produces three main sets of output data:
 
 Each of these groups of outputs is handled separately by additional **R** scripts.
 
-In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R` which performs similar operations on downscaled CRU 3.1 data.
+In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R` which performs similar operations on downscaled CRU 3.x data.
 
 ## **R** Code
 

@@ -1,5 +1,5 @@
 ---
-title: CRU 3.1 Statistics Setup Code
+title: CRU 3.x Statistics Setup Code
 output:
   html_document:
     toc: false
@@ -10,18 +10,18 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, messages=FALSE, warnings=FALSE)
-read_chunk("../../code/stats_setup_CRU31.R")
+read_chunk("../../code/stats_setup_CRU.R")
 ```
 
 
 ## Introduction
-The `stats_setup_CRU31.R` script prepares extracted CRU 3.1 regional temperature and precipitation data for direct use.
+The `stats_setup_CRU.R` script prepares extracted CRU 3.x regional temperature and precipitation data for direct use.
 
 ### Motivation
 This script transforms and organizes output data from a parent script into a format that is easier to work with in certain frameworks.
 
 ### Details
-The data are extracted based on regional shapefiles and the full Alaska-Canada 2-km extent for SNAP's CRU 3.1 data set.
+The data are extracted based on regional shapefiles and the full Alaska-Canada 2-km extent for SNAP's CRU 3.x data set.
 Data manipulation is performed to organize the inputs into more usefully formatted outputs.
 
 
@@ -31,20 +31,20 @@ It uses as many CPU cores as are available since it is parallelized across regio
 It becomes serial beyond the number of cores simultaneously in use.
 
 #### Limitations
-This code expects CRU 3.1 data have been processed by the parent script.
+This code expects CRU 3.x data have been processed by the parent script.
 The code does not make use of `Rmpi` or similar options so it cannot take advantage of multi-node cluster parallel processing.
 
 ## Related items
 
 ### Files and Data
-The input files are produced by the **R** script, `CRU_extract.R`. `stats_setup_CRU31.R` assumes a complete and successful run of this precursory code.
+The input files are produced by the **R** script, `CRU_extract.R`. `stats_setup_CRU.R` assumes a complete and successful run of this precursory code.
 
 The `CRU_extract.R` script produces three main sets of output data:
 * Data for variables at the scale and location of individual communities
 * Spatially aggregated summary statistics of this data over larger regions
 * Regional probability distribution estimates for these same regions.
 
-For this reason, `stats_setup_CRU31.R` has two companion **R** scripts which share the parent script, `CRU_extract.R`. These are `cities_setup_CRU31.R` and `samples_setup_CRU31.R`.
+For this reason, `stats_setup_CRU.R` has two companion **R** scripts which share the parent script, `CRU_extract.R`. These are `cities_setup_CRU.R` and `samples_setup_CRU.R`.
 
 In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R`.
 As a result, this script and its two companion scripts mentioned above are related to a similar set of three **R** scripts which perform similar intermediary data manipulation on extracted GCM data.
@@ -53,7 +53,7 @@ As a result, this script and its two companion scripts mentioned above are relat
 
 ### Setup
 
-Setup is minimal. Set working directory. List CRU 3.1 files.
+Setup is minimal. Set working directory. List CRU 3.x files.
 
 ```{r setup}
 ```

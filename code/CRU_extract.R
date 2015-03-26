@@ -6,7 +6,7 @@ if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2
 if(!exists("regions")) regions <- FALSE
 if(!exists("cities")) cities <- FALSE
 if(!(regions | cities)) stop("regions and cities both FALSE. Nothing to process.")
-
+if(!exists("cru")) cru <- "32"
 
 # @knitr packages
 library(raster)
@@ -16,12 +16,12 @@ library(plyr)
 
 # @knitr source
 if(domain=="akcan2km"){ # For regions and/or cities
-	topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",c("historical/singleBand/CRU/cru_TS31/historical"))
+	topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",paste0("historical/singleBand/CRU/cru_TS", cru, "/historical"))
 	if(regions){
 		load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
 	} else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 } else if(domain=="world10min") { # Currently for cities only
-	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",c("historical/CRU/CRU_TS31")) # files are not read, but metadata parsed from filenames list
+	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",paste0("historical/CRU/CRU_TS", cru)) # files are not read, but metadata parsed from filenames list
 	#### Need to insert a load() command analogous to that above for regions
 }
 
@@ -206,7 +206,7 @@ for(k in 1:2){
 		print(length(stats.out)-i)
 		}
 		save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames,
-			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/","CRU31","_",seasons[1],"_regions_stats.RData"))
+			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/","CRU", cru, "_",seasons[1],"_regions_stats.RData"))
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
@@ -232,7 +232,7 @@ for(k in 1:2){
 			rownames(samples.out[[i]]) <- NULL
 		}
 		names(samples.out) <- samples.names
-		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/","CRU31","_",seasons[1],"_regions_samples.RData"))
+		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/","CRU", cru, "_",seasons[1],"_regions_samples.RData"))
 	
 	}
 	if(k==2 & is.matrix(cities)){
@@ -243,6 +243,6 @@ for(k in 1:2){
 		stats.out <- list(cities=sapply(stats, function(x) t(x[[1]])))
 		for(i in 1:length(stats.out)) rownames(stats.out[[i]]) <- rep( rep( rep(seq(yr1, yr2), each=12), nrow(cities) ), length(varid) )
 		d <- stats.out[[1]]
-		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/","CRU31_annual_cities_batch", cities.batch, "_", domain, ".RData"))
+		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/","CRU", cru, "_annual_cities_batch", cities.batch, "_", domain, ".RData"))
 	}
 }

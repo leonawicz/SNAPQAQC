@@ -1,5 +1,5 @@
 ---
-title: CRU 3.1 Data Extraction Code
+title: CRU 3.x Data Extraction Code
 output:
   html_document:
     toc: false
@@ -15,7 +15,7 @@ read_chunk("../../code/CRU_extract.R")
 
 ## Introduction
 
-The `CRU_extract.R` script extracts CRU 3.1 temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent.
+The `CRU_extract.R` script extracts CRU 3.x temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent.
 Optionally it also extracts data for specific point locations via the raster grid cell in which given spatial coordinates fall.
 Data are saved to **R** workspaces (.RData files) for analysis and graphing by subsequent **R** code.
 
@@ -29,9 +29,9 @@ It allows for storing commonly required data in a more compact format that can b
 #### Capabilities
 This script is set up to use parallel processing via the base `parallel` package and the function `mclapply` similar to its companion script, `AR4_AR5_extract.R`.
 However, there are some subtle differences. First, it processes precipitation and temperature back to back, serially.
-Between this and the fact that CRU 3.1 is a single data set, compared to the multiple climate models and scenarios, there is nothing remaining to parallelize across.
+Between this and the fact that CRU 3.x is a single data set, compared to the multiple climate models and scenarios, there is nothing remaining to parallelize across.
 The `mclapply` call only runs the extraction function on a single CPU core.
-But in the future this code can easily be extended in parallel across more than just CRU 3.1, should other comparable data products become available.
+But in the future this code can easily be extended in parallel across more than just CRU 3.x, should other comparable data products become available.
 
 The code ran be run strictly to obtain community data, regional data, or both. This allows for redoing only one type of extraction, for instance if new shapefiles or additional city locations are desired.
 It can be passed an arbitrary list of cities and/or regions.

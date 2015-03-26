@@ -31,13 +31,13 @@ index.url <- "index.html"
 #file.copy(index.url, "index.html")
 
 proj.title <- "SNAP Data QAQC"
-proj.menu <- c("Overview", "Code flow", "GCM climate", "CRU 3.1 climate", "Fire & Vegetation", "Other R Code", "All Projects")
+proj.menu <- c("Overview", "Code flow", "GCM climate", "CRU 3.x climate", "Fire & Vegetation", "Other R Code", "All Projects")
 
 proj.submenu <- list(
 	c("empty"),
 	c("empty"),
 	c("Extraction", "Downscaled GCMs", "divider", "Organization", "Regions: stats", "Regions: densities", "Cities: stats"),
-	c("Extraction", "Downscaled CRU 3.1", "divider", "Organization", "Regions: stats", "Regions: densities", "Cities: stats"),
+	c("Extraction", "Downscaled CRU 3.x", "divider", "Organization", "Regions: stats", "Regions: densities", "Cities: stats"),
 	c("Extraction", "ALFRESCO: Rmpi", "ALFRESCO: functions", "divider", "Organization", "ALFRESCO: stats and densities"),
 	c("QAQC App Metadata"),
 	c("empty")
@@ -47,7 +47,7 @@ proj.files <- list(
 	c("index.html"),
 	c("code_sankey.html"),
 	c("header", "AR4_AR5_extract.html", "divider", "header", "stats_setup.html", "samples_setup.html", "cities_setup.html"),
-	c("header", "CRU_extract.html", "divider", "header", "stats_setup_CRU31.html", "samples_setup_CRU31.html", "cities_setup_CRU31.html"),
+	c("header", "CRU_extract.html", "divider", "header", "stats_setup_CRU.html", "samples_setup_CRU.html", "cities_setup_CRU.html"),
 	c("header", "alfStatsByRep_Rmpi.html", "alfStatsByRep.html", "divider", "header", "getAlfStatsAndDensities.html"),
 	c("qaqc_app_metadata.html"),
 	c("http://leonawicz.github.io")

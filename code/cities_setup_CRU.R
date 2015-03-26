@@ -3,14 +3,15 @@ comArgs <- commandArgs(TRUE)
 if(length(comArgs)) for(i in 1:length(comArgs)) eval(parse(text=comArgs[[i]]))
 if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
 if(!exists("cities.batch")) cities.batch <- 1
+if(!exists("cru")) cru <- "32"
 
 setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities")
 
 library(data.table)
 
-files <- list.files(pattern=paste0("^CRU31.*.batch", cities.batch, "_", domain, ".RData$"))
+files <- list.files(pattern=paste0("^CRU", cru, ".*.batch", cities.batch, "_", domain, ".RData$"))
 
-models <- "CRU31"
+models <- paste0("CRU", cru)
 
 # @knitr load
 dlist <- vector("list", length(files))
@@ -52,7 +53,7 @@ library(parallel)
 f <- function(i){
 	name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
 	city.cru.dat <- subset(d.cities.cru31, Location==cities.meta$Location[i])
-	save(city.cru.dat, file=paste0("../final/city_files_CRU/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
+	save(city.cru.dat, file=paste0("../final/city_files_CRU", cru, "/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
 	print(i)
 }
 
