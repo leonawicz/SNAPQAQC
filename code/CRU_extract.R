@@ -16,12 +16,14 @@ library(plyr)
 
 # @knitr source
 if(domain=="akcan2km"){ # For regions and/or cities
-	topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",paste0("historical/singleBand/CRU/cru_TS", cru, "/historical"))
+	if(as.numeric(cru)==31) topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",paste0("historical/singleBand/CRU/cru_TS", cru, "/historical"))
+	if(as.numeric(cru)==32) topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",paste0("historical/CRU/CRU_TS", cru))
 	if(regions){
 		load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
 	} else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 } else if(domain=="world10min") { # Currently for cities only
 	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",paste0("historical/CRU/CRU_TS", cru)) # files are not read, but metadata parsed from filenames list
+	cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 	#### Need to insert a load() command analogous to that above for regions
 }
 
@@ -89,8 +91,6 @@ getData <- function(i, varid, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=
 		if(!is.null(cities)){
 			r <- readAll(raster(files[1])) # template done
 			cells_cities <- extract(r, cities, cellnumbers=T)[,1]
-			rank_cells_cities <- rank(cells_cities)
-			cells_cities <- sort(cells_cities)
 			print("Raster cell indices for point locations obtained.")
 		}
 
@@ -134,9 +134,7 @@ getData <- function(i, varid, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=
 				}
 				gc()
 			}
-			if(!is.null(cities)){
-				m.cities[,(1:n)+(12*(b-1))] <- mat[cells_cities[rank_cells_cities],]
-			}
+			if(!is.null(cities)) m.cities[,(1:n)+(12*(b-1))] <- mat[cells_cities,]
 			print(paste0("Process",i,": ",unique(yr.tmp)[b]))
 		}
 		if(p==1){

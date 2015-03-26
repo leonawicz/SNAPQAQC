@@ -108,8 +108,6 @@ getData <- function(i, model, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=
 		if(!is.null(cities)){
 			r <- readAll(raster(files[1])) # template done
 			cells_cities <- extract(r, cities, cellnumbers=T)[,1]
-			rank_cells_cities <- rank(cells_cities)
-			cells_cities <- sort(cells_cities)
 			print("Raster cell indices for point locations obtained.")
 		}
 		
@@ -154,9 +152,7 @@ getData <- function(i, model, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=
 					}
 					gc()
 				}
-				if(!is.null(cities)){
-					m.cities[,(1:n)+(12*(b-1))] <- mat[cells_cities[rank_cells_cities],]
-				}
+				if(!is.null(cities)) m.cities[,(1:n)+(12*(b-1))] <- mat[cells_cities,]
 				print(paste0("Process",i,": ",unique(yr.tmp)[b]))
 			}
 		} else print(paste("Process",i,"skipping historical files to avoid redundancy."))
