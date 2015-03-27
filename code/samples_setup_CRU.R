@@ -2,6 +2,7 @@
 setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples")
 
 library(data.table)
+library(reshape2)
 
 cru <- "32"
 files <- list.files(pattern=paste0("^CRU", cru, ".*.regions_samples.RData$"))
@@ -60,6 +61,8 @@ f <- function(i, n, index, multiplier, cru){
 }
 
 # @knitr save
+library(parallel)
+
 samples.columns.cru <- 3:4
 samples.multipliers.cru <- c(1e1, 1e8)
 
@@ -68,7 +71,7 @@ cru.samples.df <- out[[1]]
 cru.samples.df[,samples.columns.cru] <- NA
 cru.samples.df$Var <- NA
 cru.samples.df$Location <- NA
-
-rm(d, f, out)
+if(as.numeric(cru)==31) cru31.samples.df <- cru.samples.df else if(as.numeric(cru)==32) cru32.samples.df <- cru.samples.df
+rm(cru, cru.samples.df, d, f, out)
 load("../../final/meta.RData")
 save.image("../../final/meta.RData")
