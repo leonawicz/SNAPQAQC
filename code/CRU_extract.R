@@ -58,8 +58,7 @@ if(cities){
 	} else cities.batch <- 1
 	d.cities <- cities[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
 	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon+360, cities$lat) # +360 for PC lat lon rasters
-	
-}
+} else cities <- NULL
 
 seasons <- "annual"
 n.samples <- 20
@@ -204,7 +203,7 @@ for(k in 1:2){
 		print(length(stats.out)-i)
 		}
 		save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames,
-			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/","CRU", cru, "_",seasons[1],"_regions_stats.RData"))
+			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/","CRU", cru, "_annual_regions_stats.RData"))
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
@@ -230,7 +229,7 @@ for(k in 1:2){
 			rownames(samples.out[[i]]) <- NULL
 		}
 		names(samples.out) <- samples.names
-		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/","CRU", cru, "_",seasons[1],"_regions_samples.RData"))
+		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/","CRU", cru, "_annual_regions_samples.RData"))
 	
 	}
 	if(k==2 & is.matrix(cities)){
