@@ -43,7 +43,7 @@ cities.meta <- cities.meta[c(1,3:6)]
 names(cities.meta) <- c("Country", "Location", "Population", "Lat", "Lon")
 d$Decade <- paste0(substr(d$Year,1,3),0)
 gc()
-d.cities.cru31 <- d
+d.cities.cru <- d
 rm(d, results.years)
 gc()
 #save.image("../final/data_cities_CRU31.RData")
@@ -52,14 +52,14 @@ gc()
 library(parallel)
 f <- function(i){
 	name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
-	city.cru.dat <- subset(d.cities.cru31, Location==cities.meta$Location[i])
+	city.cru.dat <- subset(d.cities.cru, Location==cities.meta$Location[i])
 	save(city.cru.dat, file=paste0("../final/city_files_CRU", cru, "/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
 	print(i)
 }
 
 mclapply(1:length(cities.meta$Location), f, mc.cores=32)
 
-rm(d.cities.cru31, f, domain)
-save(cities.meta, file="../final/cities_meta.RData")
+rm(cru, d.cities.cru, f, domain)
+save(cities.meta, file="../final/cities_meta.RData") # only necessary one time out of all versions of CRU and GCMs
 #load("../final/meta.RData")
 #save.image("../final/meta.RData")
