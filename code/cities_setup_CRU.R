@@ -41,7 +41,7 @@ d$Month <- factor(d$Month, levels=d$Month[1:12])
 cities.meta$loc <- paste0(cities.meta$loc, ", ", cities.meta$region)
 cities.meta <- cities.meta[c(1,3:6)]
 names(cities.meta) <- c("Country", "Location", "Population", "Lat", "Lon")
-d$Decade <- paste0(substr(d$Year,1,3),0)
+d$Decade <- as.character(d$Year - d$Year %% 10)
 gc()
 d.cities.cru <- d
 rm(d, results.years)
@@ -50,16 +50,19 @@ gc()
 
 # @knitr save
 library(parallel)
-f <- function(i){
+f <- function(i, overwrite=FALSE){
 	name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
-	city.cru.dat <- subset(d.cities.cru, Location==cities.meta$Location[i])
-	save(city.cru.dat, file=paste0("../final/city_files_CRU", cru, "/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
+	filename <- paste0("../final/city_files_CRU", cru, "/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData")
+	if(overwrite | !file.exists(filename)){
+		city.cru.dat <- subset(d.cities.cru, Location==cities.meta$Location[i])
+		save(city.cru.dat, file=filename)
+	}
 	print(i)
 }
 
 mclapply(1:length(cities.meta$Location), f, mc.cores=32)
 
 rm(cru, d.cities.cru, f, domain)
-save(cities.meta, file="../final/cities_meta.RData") # only necessary one time out of all versions of CRU and GCMs
+save(cities.meta, file="../final/cities_meta.RData") # only necessary one time out of all versions of CRU and GCMs, 10-minute resolution inputs provide larger city set (NWT)
 #load("../final/meta.RData")
 #save.image("../final/meta.RData")

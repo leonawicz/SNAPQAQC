@@ -63,10 +63,13 @@ gc()
 # Save individual R workspace files for each city for use in master QAQC Shiny app
 library(parallel)
 
-f <- function(i){
+f <- function(i, overwrite=FALSE){
 	name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
-	city.dat <- subset(d.cities, Location==cities.meta$Location[i])
-	save(city.dat, file=paste0("../final/city_files_GCM/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData"))
+	filename <- paste0("../final/city_files_GCM/", domain, "/", gsub(", ", "--", name.tmp), "__", domain, ".RData")
+	if(overwrite | !file.exists(filename)){
+		city.dat <- subset(d.cities, Location==cities.meta$Location[i])
+		save(city.dat, file=filename)
+	}
 	print(i)
 }
 
