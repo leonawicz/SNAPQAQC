@@ -27,7 +27,7 @@ if(domain=="akcan2km"){ # For regions and/or cities
 	#### Need to insert a load() command analogous to that above for regions
 }
 
-locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
+locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
 
 # @knitr setup
 if(exists("years")) yr1 <- years[1] else yr1 <- 1901
@@ -40,7 +40,8 @@ varid <- c("tas","pr")
 #	d.cities <- subset(locs, pop >= 1000)[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
 #}
 if(cities){
-	locs <- locs[locs$pop > 10,]
+	if(domain!="world10min") locs <- subset(locs, region!="NWT")
+	#locs <- locs[is.na(locs$pop) | locs$pop > 10,]
 	l <- paste(locs$region, locs$loc)
 	lu <- unique(l)
 	dup <- which(duplicated(l))

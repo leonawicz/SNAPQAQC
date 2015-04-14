@@ -26,7 +26,7 @@ if(domain=="akcan2km"){ # For regions and/or cities
 	#### Need to insert a load() command analogous to that above for regions
 }
 
-locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
+locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
 
 # @knitr setup
 varid <- rep(c("tas","pr"),each=6)
@@ -56,7 +56,8 @@ years <- yr1:yr2
 #	d.cities <- subset(locs, pop >= 1000)[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
 #}
 if(cities){
-	locs <- locs[locs$pop > 10,]
+	if(domain!="world10min") locs <- subset(locs, region!="NWT")
+	#locs <- locs[is.na(locs$pop) | locs$pop > 10,]
 	l <- paste(locs$region, locs$loc)
 	lu <- unique(l)
 	dup <- which(duplicated(l))
@@ -84,11 +85,11 @@ agg.stat.names[agg.stat.names=="50th percentile"] <- "Median"
 
 # @knitr functions1
 # Density estimation
-denFun <- function(x, n, variable){
+denFun <- function(x, n, adj=0.25, variable){
 	x <- x[!is.na(x)]
 	dif <- diff(range(x))
-	z <- density(x, adjust=2, n=n, from=min(x)-0.05*dif, to=max(x)+0.05*dif)
-	if(variable=="pr" && any(z$x < 0)) z <- density(x, adjust=2, n=n, from=0, to=max(x)+0.05*dif)
+	z <- density(x, adjust=adj, n=n, from=min(x)-0.05*dif, to=max(x)+0.05*dif)
+	if(variable=="pr" && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+0.05*dif)
 	as.numeric(c(z$x, z$y))
 }
 
