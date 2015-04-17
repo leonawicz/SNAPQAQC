@@ -13,6 +13,7 @@ library(raster)
 library(maptools)
 library(parallel)
 library(plyr)
+library(data.table)
 
 # @knitr source
 if(domain=="akcan2km"){ # For regions and/or cities
@@ -51,10 +52,6 @@ if(exists("years")) yr1 <- years[1] else yr1 <- 1870
 if(exists("years")) yr2 <- tail(years, 1) else yr2 <- 2099
 years <- yr1:yr2
 
-#if(!is.null(cities)){
-#	cities <- subset(locs, pop >= 1000, c("lon_albers","lat_albers"))
-#	d.cities <- subset(locs, pop >= 1000)[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
-#}
 if(cities){
 	if(domain!="world10min") locs <- subset(locs, region!="NWT")
 	#locs <- locs[is.na(locs$pop) | locs$pop > 10,]
@@ -77,7 +74,7 @@ if(cities){
 	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon+360, cities$lat) # +360 for PC lat lon rasters
 } else cities <- NULL
 
-n.samples <- 20
+n.samples <- 100
 n2 <- 2*n.samples
 agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)))
 agg.stat.names <- c("Mean", "Std Dev", paste0(c(5,10,25,50,75,90,95), "th percentile"))
@@ -234,36 +231,25 @@ for(k in 1:2){
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
-		list2df <- function(x){
+		list2df <- function(x, yr_mo){
 			x <- ldply(x, data.frame)
-			x[,".id"] <- paste(x[,".id"], names(x)[2], sep="_")
-			names(x) <- c("Location", paste("T", 1:(ncol(x)-1), sep="_"))
+			names(x) <- c("Location", yr_mo)
 			x
 		}
-		for(l1 in 1:length(samples)) for(l2 in 1:length(samples[[l1]])) samples[[l1]][[l2]] <- list2df(samples[[l1]][[l2]])
-		for(l1 in 1:length(samples)) samples[[l1]] <- do.call(rbind, samples[[l1]])
-		samples.names <- sapply(strsplit(unique(samples[[1]]$Location), "_"), "[[", 1)
-		samples <- do.call(rbind, samples)
-		samples$Location <- rep(rep(samples.names, each=n2), 12)
-		names(samples)[-1] <- paste(results.years, month.abb, sep="_")
-		rownames(samples) <- NULL
-		samples.out <- list()
-		for(i in 1:length(samples.names)){
-			samples.out[[i]] <- subset(samples, Location==samples.names[i])
-			rownames(samples.out[[i]]) <- NULL
-		}
-		names(samples.out) <- samples.names
-		nc <- ncol(samples.out[[1]])
-		for(i in 1:length(samples.out)){
-			for(cols in 2:nc){
-				if(all(is.na(samples.out[[i]][(n2+1):(2*n2), cols]))) samples.out[[i]][(n2+1):(2*n2), cols] <- samples.out[[i]][(2*n2+1):(3*n2), cols] <- samples.out[[i]][1:n2, cols]
-				if(all(is.na(samples.out[[i]][(4*n2+1):(5*n2), cols]))) samples.out[[i]][(4*n2+1):(5*n2), cols] <- samples.out[[i]][(5*n2+1):(6*n2), cols] <- samples.out[[i]][(3*n2+1):(4*n2), cols]
-				if(all(is.na(samples.out[[i]][(7*n2+1):(8*n2), cols]))) samples.out[[i]][(7*n2+1):(8*n2), cols] <- samples.out[[i]][(8*n2+1):(9*n2), cols] <- samples.out[[i]][(6*n2+1):(7*n2), cols]
-				if(all(is.na(samples.out[[i]][(10*n2+1):(11*n2), cols]))) samples.out[[i]][(10*n2+1):(11*n2), cols] <- samples.out[[i]][(11*n2+1):(12*n2), cols] <- samples.out[[i]][(9*n2+1):(10*n2), cols]
+		for(z in 1:length(arid)){ # 12 combinations
+			lab <- paste(substr(arid[z], 1, 3), scenid[scenid!=""][z], models[z], varid[z], sep="_")
+			samples.sub <- samples[[z]]
+			for(l1 in 1:length(samples.sub)) samples.sub[[l1]] <- list2df(samples.sub[[l1]], yr_mo=paste(results.years, month.abb, sep="_"))
+			samples.sub <- rbindlist(samples.sub)
+			samples.names <- unique(samples.sub$Location)
+			samples.out <- list()
+			for(i in 1:length(samples.names)){
+				samples.out[[i]] <- subset(samples.sub, Location==samples.names[i])
+				rownames(samples.out[[i]]) <- NULL
 			}
-		print(length(samples.out)-i)
+			names(samples.out) <- samples.names
+			save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/",lab,"_annual_regions_samples.RData"))
 		}
-		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/",models[1],"_",models[4],"_annual_regions_samples.RData"))
 	}
 	if(k==2 & !is.null(cities)){
 		for(i in 1:length(stats)){
