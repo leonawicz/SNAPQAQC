@@ -25,7 +25,6 @@ for(i in 1:length(files)){
 d <- as.data.frame(rbindlist(dlist))
 rm(samples.out,n,m,i,files,models,dlist)
 names(d)[3:ncol(d)] <- gsub("X", "", names(d)[3:ncol(d)])
-#save.image("../../final/CRU31_region_samples_data.RData")
 
 # @knitr organize
 f <- function(i, n, index, multiplier, cru){

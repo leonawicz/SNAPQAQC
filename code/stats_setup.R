@@ -53,7 +53,6 @@ modnames <- lapply(1:length(phases), function(i,x,p) unique(x$Model[x$Phase==p[i
 scennames <- lapply(1:length(phases), function(i,x,p) unique(as.character(x$Scenario)[x$Phase==p[i]]), x=d, p=phases)
 stats.columns <- seq(which(names(d)=="Mean"), length.out=length(agg.stat.names))
 stats.multiplier <- 1  # Multiply by 10 to shrink file size (doesn't seem to help with files this small)
-#save.image("../../final/region_stats_data.RData")
 
 # @knitr save
 library(parallel)
