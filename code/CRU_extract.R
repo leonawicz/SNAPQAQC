@@ -13,6 +13,7 @@ library(raster)
 library(maptools)
 library(parallel)
 library(plyr)
+library(data.table)
 
 # @knitr source
 if(domain=="akcan2km"){ # For regions and/or cities
@@ -31,14 +32,10 @@ locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/loc
 
 # @knitr setup
 if(exists("years")) yr1 <- years[1] else yr1 <- 1901
-if(exists("years")) yr2 <- tail(years, 1) else yr2 <- 2009
+if(exists("years")) yr2 <- tail(years, 1) else if(as.numeric(cru)==32) yr2 <- 2013 else yr2 <- 2009
 years <- yr1:yr2
 varid <- c("tas","pr")
 
-#if(!is.null(cities)){
-#	cities <- subset(locs, pop >= 1000, c("lon_albers","lat_albers"))
-#	d.cities <- subset(locs, pop >= 1000)[-c(which(names(locs) %in% c("lon_albers","lat_albers")))]
-#}
 if(cities){
 	if(domain!="world10min") locs <- subset(locs, region!="NWT")
 	#locs <- locs[is.na(locs$pop) | locs$pop > 10,]
@@ -62,7 +59,7 @@ if(cities){
 } else cities <- NULL
 
 seasons <- "annual"
-n.samples <- 20
+n.samples <- 100
 n2 <- 2*n.samples
 agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)))
 agg.stat.names <- c("Mean", "Std Dev", paste0(c(5,10,25,50,75,90,95), "th percentile"))
@@ -70,11 +67,11 @@ agg.stat.names[agg.stat.names=="50th percentile"] <- "Median"
 
 # @knitr functions1
 # Density estimation
-denFun <- function(x, n, variable){
+denFun <- function(x, n, adj=0.25, variable){
 	x <- x[!is.na(x)]
 	dif <- diff(range(x))
-	z <- density(x, adjust=2, n=n, from=min(x)-0.05*dif, to=max(x)+0.05*dif)
-	if(variable=="pr" && any(z$x < 0)) z <- density(x, adjust=2, n=n, from=0, to=max(x)+0.05*dif)
+	z <- density(x, adjust=adj, n=n, from=min(x)-0.05*dif, to=max(x)+0.05*dif)
+	if(variable=="pr" && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+0.05*dif)
 	as.numeric(c(z$x, z$y))
 }
 
@@ -208,22 +205,19 @@ for(k in 1:2){
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
-		list2df <- function(x){
+		samples <- samples[[1]]
+		list2df <- function(x, yr_mo){
 			x <- ldply(x, data.frame)
-			x[,".id"] <- paste(x[,".id"], names(x)[2], sep="_")
-			names(x) <- c("Location", paste("T", 1:(ncol(x)-1), sep="_"))
+			names(x) <- c("Location", yr_mo)
 			x
 		}
-		for(l1 in 1:length(samples)) for(l2 in 1:length(samples[[l1]])) samples[[l1]][[l2]] <- list2df(samples[[l1]][[l2]])
-		for(l1 in 1:length(samples)) samples[[l1]] <- do.call(rbind, samples[[l1]])
-		samples.names <- sapply(strsplit(unique(samples[[1]]$Location), "_"), "[[", 1)
-		samples <- samples[[1]]
+		for(l1 in 1:length(samples)) samples[[l1]] <- list2df(samples[[l1]], yr_mo=paste(results.years, month.abb, sep="_"))
+		samples <- rbindlist(samples)
+		samples.names <- unique(samples$Location)
 		mid <- (ncol(samples)-1)/2 + 1
 		names.hold <- names(samples)[1:mid]
 		samples <- data.frame(Location=samples$Location, rbind(as.matrix(samples[, 2:mid]), as.matrix(samples[, (mid+1):ncol(samples)])))
 		samples$Location <- rep(rep(samples.names, each=n2))
-
-		names(samples)[-1] <- paste(results.years[1:(length(results.years)/2)], month.abb, sep="_")
 		samples.out <- list()
 		for(i in 1:length(samples.names)){
 			samples.out[[i]] <- subset(samples, Location==samples.names[i])
