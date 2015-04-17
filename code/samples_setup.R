@@ -1,46 +1,36 @@
 # @knitr setup
 setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples")
 
+library(parallel)
+library(reshape2)
 library(data.table)
 
 files <- list.files(pattern="regions_samples.RData$")
 files <- files[substr(files, 1, 3) != "CRU"]
+lab <- do.call(rbind, strsplit(files, "_"))[,1:4]
+scen.levels <- c("SRES B1","SRES A1B","SRES A2","RCP 4.5","RCP 6.0","RCP 8.5")
 
-models <- list(
-	c("CCCMAcgcm31","CCSM4"),
-	c("GFDLcm21","GFDLcm3"),
-	c("MIROC32m","GISSe2-r"),
-	c("MPIecham5","IPSLcm5a-lr"),
-	c("ukmoHADcm3","MRIcgcm3")
-)
-
-# @knitr load
-dlist <- vector("list", length(files))
-for(i in 1:length(files)){
-	load(files[i])
-	m <- do.call(rbind, samples.out)
-	n <- nrow(m)
-	dlist[[i]] <- data.frame(
-		Phase=rep(c("CMIP3","CMIP5"),each=n/(4*length(samples.out))),
-		Scenario=rep(c("SRES B1","SRES A1B","SRES A2","RCP 4.5","RCP 6.0","RCP 8.5"),each=n/(12*length(samples.out))),
-		Model=rep(models[[i]],each=n/(4*length(samples.out))),
-		Var=rep(c("Temperature","Precipitation"),each=n/(2*length(samples.out))),
-		m,
-		stringsAsFactors=F
+swapVar <- function(x) switch(x, pr="Precipitation", tas="Temperature")
+swapScen <- function(x) switch(x, sresb1="SRES B1", sresa1b="SRES A1B", sresa2="SRES A2", rcp45="RCP 4.5", rcp60="RCP 6.0", rcp85="RCP 8.5")
+swapMod <- function(x){
+	switch(x,
+		"cccma-cgcm3-1-t47"="CCCMAcgcm31", "gfdl-cm2-1"="GFDLcm21", "miroc3-2-medres"="MIROC32m", "mpi-echam5"="MPIecham5", "ukmo-hadcm3"="ukmoHADcm3",
+		"CCSM4"="CCSM4", "GFDL-CM3"="GFDLcm3", "GISS-E2-R"="GISSe2-r", "IPSL-CM5A-LR"="IPSLcm5a-lr", "MRI-CGCM3"="MRIcgcm3"
 	)
-	print(i)
 }
-d <- as.data.frame(rbindlist(dlist))
-rm(samples.out,n,m,i,files,models,dlist)
-names(d)[6:ncol(d)] <- gsub("X", "", names(d)[6:ncol(d)])
-gc()
-#save.image("../../final/region_samples_data.RData")
 
-# @knitr organize
-f <- function(i, n, index, multiplier){
-	name.tmp <- samples.names[i]
-	rsd1 <- subset(d, Location==name.tmp)
-	scen.levels <- unique(rsd1$Scenario)
+lab[,2:4] <- cbind(sapply(lab[,2], swapScen), sapply(lab[,3], swapMod), sapply(lab[,4], swapVar))
+samples.multipliers <- c(1e1, 1e8)
+rm(swapVar, swapScen, swapMod)
+
+# @knitr func_organize_save
+f <- function(i, d, n, grp.names, s.names, scen.levels, outfile, multiplier){
+	AR <- strsplit(outfile, "_")[[1]][1]
+	scen <- strsplit(outfile, "_")[[1]][2]
+	outfile.h <- gsub(scen, "Hist", outfile)
+	yr1.projected <- if(AR=="AR4") 2001 else 2006
+	
+	rsd1 <- subset(d, Location==s.names[i])
 	rsd1 <- melt(rsd1, id.vars=names(rsd1)[1:5], measure.vars=names(rsd1)[-c(1:5)], variable.name="Time", value.name="Vals_Probs")
 	rsd1$vals.ind <- rep(rep(c(T,F), each=n), length=nrow(rsd1))
 	rsd1$dcastIsDumb <- rep(1:n, length=nrow(rsd1))
@@ -52,37 +42,30 @@ f <- function(i, n, index, multiplier){
 	rsd1$Scenario <- factor(rsd1$Scenario, levels=scen.levels)
 	rsd1$Decade <- paste0(substr(rsd1$Year,1,3),0)
 	rsd1 <- rsd1[c(1:5,9,8,10:12)]
-	rownames(rsd1) <- NULL
-	grp <- rep(names(region.names.out), times=sapply(region.names.out, length))[i]
-	dir.create(outDir <- file.path("../../final/region_files_GCM/samples", grp, name.tmp), recursive=T, showWarnings=F)
+	grp <- rep(names(grp.names), times=sapply(grp.names, length))[i]
+	dir.create(outDir <- file.path("../../final/region_files_GCM/samples", grp, s.names[i], "climate"), recursive=T, showWarnings=F)
 	rsd1$Val <- round(rsd1$Val,1)*multiplier[1]
 	rsd1$Prob <- round(rsd1$Prob,8)*multiplier[2]
-	if(i==1) x <- subset(rsd1, Var=="Precipitation") else x <- NULL
-	gc()
-	rsd <- unlist(subset(rsd1, Var=="Precipitation")[,index])
-	names(rsd) <- NULL
-	save(rsd, file=paste0(outDir, "/", "precipitation.RData"))
-	gc()
-	rsd <- unlist(subset(rsd1, Var=="Temperature")[,index])
-	names(rsd) <- NULL
-	save(rsd, file=paste0(outDir, "/", "temperature.RData"))
-	gc()
+	
+	rsd.h <- subset(rsd1, Year < yr1.projected)
+	rsd <- subset(rsd1, Year >= yr1.projected)
+	rownames(rsd) <- rownames(rsd.h) <- NULL
+	if(!any(is.na(rsd.h$Val))) save(rsd.h, file=file.path(outDir, outfile.h))
+	save(rsd, file=file.path(outDir, outfile))
 	print(i)
-	x
 }
 
-# @knitr save
-library(reshape2)
-library(parallel)
-samples.columns <- 6:7
-samples.multipliers <- c(1e1, 1e8)
+# @knitr proc
+for(i in 1:length(files)){
+	outfile <- paste0(gsub(" ", "", paste(lab[i,], collapse="_")), ".RData")
+	load(files[i])
+	d <- rbindlist(samples.out)
+	d <- data.frame(Phase=lab[i,1], Scenario=lab[i,2], Model=lab[i,3], Var=lab[i,4], d, stringsAsFactors=F)
+	names(d)[6:ncol(d)] <- gsub("X", "", names(d)[6:ncol(d)])
+	mclapply(1:length(samples.names), f, d=d, n=n.samples, grp.names=region.names.out, s.names=samples.names, scen.levels=scen.levels, outfile=outfile, multiplier=samples.multipliers, mc.cores=32)
+	print(i)
+}
 
-out <- mclapply(1:length(samples.names), f, n=n.samples, index=samples.columns, multiplier=samples.multipliers, mc.cores=27)
-gcm.samples.df <- out[[1]]
-gcm.samples.df[,samples.columns] <- NA
-gcm.samples.df$Var <- NA
-gcm.samples.df$Location <- NA
-
-rm(d, f, out)
+rm(lab, samples.out, i, files, d, outfile, f)
 load("../../final/meta.RData")
 save.image("../../final/meta.RData")
