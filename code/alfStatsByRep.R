@@ -1,20 +1,27 @@
 # @knitr setup
 library(raster)
+library(data.table)
 rasterOptions(chunksize=10^12,maxmemory=10^11)
 
 # @knitr getFireStats
 getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, ...){
 	rep.lab <- paste0("_",c(0:199),"_")[i]
 	pat <- gsub("expression","",paste(bquote(expression("^FireS.*.",.(rep.lab),".*.tif$")),collapse=""))
-	files <- list.files(mainDir, pattern=pat, full=T)
-	files.years <- as.numeric(substr(files,nchar(files)-7,nchar(files)-4))
-	if(is.numeric(years)) { p <- files.years %in% years; if(any(p)) { files <- files[which(p)]; files.years <- files.years[which(p)] } }
+	filesF <- list.files(mainDir, pattern=pat, full=T)
+	patV <- gsub("expression","",paste(bquote(expression("^V.*.",.(rep.lab),".*.tif$")),collapse=""))
+	filesV <- list.files(mainDir, pattern=patV, full=T)
+	#files.years <- as.numeric(substr(files,nchar(files)-7,nchar(files)-4))
+	files.years <- as.numeric(gsub("FireScar_\\d+_", "", gsub(".tif", "", basename(filesF)))) # test line
+	ord <- order(files.years) # test line
+	filesF <- filesF[ord] # test line
+	filesV <- filesV[ord] # test line
+	if(is.numeric(years)) { p <- files.years %in% years; if(any(p)) { filesF <- filesF[which(p)]; filesV <- filesV[which(p)]; files.years <- files.years[which(p)] } } # test filesV addition
 	years <- unique(files.years)
 	grp.names.vec <- rep(names(cells.list), times=sapply(cells.list, length))
 	loc.names.vec <- as.character(unlist(lapply(cells.list, names)))
 	
 	getABFC <- function(x, values, index){
-		x <- intersect(index, x)
+		#x <- intersect(index, x)
 		if(length(x)){
 			AB <- length(which(values[x] > 0))
 			FC <- length(unique(values[x]))
@@ -22,27 +29,69 @@ getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, 
 		c(AB, FC)
 	}
 	
+	# fire size by vegetation class
+	fsByVeg <- function(cells, i, v, v.fid, f.ind){
+		if(!length(cells)) return(data.frame())
+		dlist <- vector("list", length(i))
+		ind <- match(cells, f.ind)
+		if(length(ind) < length(f.ind)) v[-ind] <- NA
+		for(k in 1:length(i)){
+			x <- v
+			x[x!=i[k]] <- NA
+			x <- v.fid[!is.na(x) & !is.na(v.fid)]
+			if(length(x)){
+				x <- tapply(x, x, length)
+				ord <- order(as.numeric(x))
+				dlist[[k]] <- data.frame(Vegetation=i[k], FS=as.numeric(x)[ord], FID=as.numeric(names(x))[ord])
+			}
+		}
+		as.data.frame(rbindlist(dlist))
+	}
+	
 	print("Beginning processing loop")
+	dlist <- vector("list", length(years))
 	for(j in 1:length(years)){
-		rvals <- getValues(raster(files[j], band=2))
-		f.ind <- which(!is.na(rvals))
-		if(j==1) m <- matrix(NA,length(files),2*n) # create matrix for multiple subdomains
-		v <- rapply(cells.list, f=getABFC, classes="integer", how="unlist", values=rvals, index=f.ind)
+		
+		# fire size by vegetation class
+		v.fid <- getValues(raster(filesF[j], band=2))
+		v.veg <- getValues(raster(filesV[j]))
+		f.ind <- which(!is.na(v.fid))
+		v.fid.rmNA <- v.fid[f.ind]
+		v.veg.rmNA <- v.veg[f.ind]
+		cells.rmNA <- rapply(cells.list, f=function(x, i) intersect(i, x), classes="integer", how="replace", i=f.ind)
+		#v.veg[v.veg==2 | v.veg==3] <- 1 # 2 and 3 tree classes combine into class 1 to become 'forest', tundra types 4, 5, and 6 remain as before
+		vid <- 1:5 #vid <- sort(unique(v.veg[!is.na(v.veg) & v.veg > 0]))
+		if(!all(is.na(v.fid))){
+			system.time( dl <- rapply(cells.rmNA, f=fsByVeg, classes="integer", how="replace", i=vid, v=v.veg.rmNA, v.fid=v.fid.rmNA, f.ind=f.ind) )
+			n.fires <- unlist(sapply(1:length(dl), function(x, l) sapply(l[[x]], nrow), l=dl))
+			d.j <- rbindlist(lapply(dl, rbindlist))
+			dlist[[j]] <- data.frame(LocGroup=rep(grp.names.vec, times=n.fires), Location=rep(loc.names.vec, times=n.fires), VegID=d.j$Vegetation, FID=d.j$FID, Val=d.j$FS, Year=years[j], Replicate=i, stringsAsFactors=FALSE) # end test lines
+		}
+		
+		# basic aggregate burn area and fire frequency
+		
+		if(j==1) m <- matrix(NA,length(filesF),2*n) # create matrix for multiple subdomains
+		v <- rapply(cells.rmNA, f=getABFC, classes="integer", how="unlist", values=v.fid.rmNA, index=f.ind)
 		m[j,1:(2*n)] <- v
+		
 		print(years[j])
 	}
+	d.fs <- as.data.frame(rbindlist(dlist))
+
+	#d.fs$Vegetation <- v.names[d.fs.veg$Vegetation]
 	varid <- rep(c("AB", "FC"), n)
 	ab <- as.integer(m[, which(varid=="AB")])
 	fc <- as.integer(m[, which(varid=="FC")])
 	m <- data.frame(LocGroup=rep(grp.names.vec, each=length(years)), Location=rep(loc.names.vec, each=length(years)), Var=rep(c("Burn Area", "Fire Count"), each=length(ab)), Val=c(ab, fc), Year=years, Replicate=i, stringsAsFactors=FALSE)
 	rownames(m) <- NULL
-	print(paste("Returning area burned and fire frequency data frame."))
-	m
+	#print(paste("Returning area burned and fire frequency data frame."))
+	#m
+	print(paste("Returning list of (1) area burned and fire frequency data frame and (2) fire size by vegetation class data frame."))
+	list(m, d.fs)
 }
 
 # @knitr getAgeVegStats
-getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, breaks, age.lab, veg.lab, n.samples, replace.deciduous=FALSE, ...){
-	id.vals <- as.numeric(paste0(rep(1:(length(age.lab)), length(veg.lab)), rep(1:length(veg.lab), each=length(age.lab))))
+getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, n.samples, ...){
 	rep.lab <- paste0("_",c(0:199),"_")[i]
 	patA <- gsub("expression","",paste(bquote(expression("^A.*.",.(rep.lab),".*.tif$")),collapse=""))
 	filesA <- list.files(mainDir, pattern=patA, full=T)
@@ -56,52 +105,41 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	x <- rapply(cells.list, f=function(x) lapply(1:length(filesA), function(x) 0L), classes="integer", how="replace")
 	
 	# Density estimation
-	denFun <- function(x, n, min.zero=TRUE, diversify=FALSE){
+	denFun <- function(x, n, adj=0.25, min.zero=TRUE, diversify=FALSE){
 		x <- x[!is.na(x)]
 		lx <- length(x)
 		if(diversify && length(unique(x))==1) x <- rnorm(max(10, lx), mean=x[1]) # diversify constant values
 		if(lx==1) x <- x + c(-1:1) #single pixel of veg type, add and subtract one age year to make procedure possible
 		dif <- diff(range(x))
-		z <- density(x, adjust=2, n=n, from=min(x)-max(1, 0.05*dif), to=max(x)+max(1, 0.05*dif))
-		if(min.zero && any(z$x < 0)) z <- density(x, adjust=2, n=n, from=0, to=max(x)+max(1, 0.05*dif))
+		z <- density(x, adjust=adj, n=n, from=min(x)-max(1, 0.05*dif), to=max(x)+max(1, 0.05*dif))
+		if(min.zero && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+max(1, 0.05*dif))
 		as.numeric(c(z$x, z$y))
 	}
 	
+	print("Beginning processing loop")
+	dlist <- vector("list", length(years))
 	for(j in 1:length(years)){
 		a <- getValues(raster(filesA[j]))[data.ind]
 		v <- getValues(raster(filesV[j]))[data.ind]
 		#a[a<0] <- a[a<0] + 2147483647 # temporary hack
+		dlist1 <- vector("list", length(x))
 		for(l1 in 1:length(x)){
+			dlist2 <- vector("list", length(x[[l1]]))
 			for(l2 in 1:length(x[[l1]])){
 				cells.tmp <- cells.list[[l1]][[l2]]
 				a.tmp <- a[cells.tmp]
 				v.tmp <- v[cells.tmp]
-				#x[[l1]][[l2]][[j]] <- table(10*.bincode(a.tmp, breaks=breaks) + v.tmp)
-				#uni.veg.tmp <- sort(unique(v.tmp))
 				v.tmp.n <- tapply(cells.tmp, v.tmp, length)
 				den.tmp <- tapply(a.tmp, v.tmp, denFun, n=n.samples)
-				x[[l1]][[l2]][[j]] <- data.frame(LocGroup=names(x)[l1], Location=names(x[[l1]])[l2], VegID=rep(as.numeric(names(den.tmp)), each=2*n.samples), VegArea=rep(v.tmp.n, each=2*n.samples), Val=unlist(den.tmp), Year=years[j], stringsAsFactors=FALSE)
+				dlist2[[l2]] <- data.frame(LocGroup=names(x)[l1], Location=names(x[[l1]])[l2], VegID=rep(as.numeric(names(den.tmp)), each=2*n.samples), VegArea=rep(v.tmp.n, each=2*n.samples), Val=unlist(den.tmp), Year=years[j], stringsAsFactors=FALSE)
 			}
+			dlist1[[l1]] <- rbindlist(dlist2)
 		}
+		dlist[[j]] <- rbindlist(dlist1)
 		print(paste("Age and veg maps:", years[j]))
 	}
 	
-	#makeTable <- function(l, id, years, age, veg, loc, loc.grp){
-	#	nr <- length(id)
-	#	nc <- length(l)
-	#	n.age <- length(age)
-	#	n.veg <- length(veg)
-	#	d <- matrix(0,nrow=nr,ncol=nc)
-	#	x <- lapply(l, names)
-	#	for(k in 1:nc) d[match(x[[k]], id), k] <- l[[k]]
-	#	d <- data.frame(Veg=rep(veg, each=n.age), Age=rep(age, n.veg), LocGroup=loc.grp, Location=loc, Area=as.integer(d), Year=rep(years, each=n.age*n.veg), stringsAsFactors=FALSE)
-	#	rownames(d) <- NULL
-	#	d
-	#}
-	
-	#for(l1 in 1:length(x)) for(l2 in 1:length(x[[l1]])) x[[l1]][[l2]] <- makeTable(l=x[[l1]][[l2]], id=id.vals, years=years, age=age.lab, veg=veg.lab, loc=names(x[[l1]])[l2], loc.grp=names(x)[l1])
-	for(l1 in 1:length(x)) for(l2 in 1:length(x[[l1]])) x[[l1]][[l2]] <- do.call(rbind, x[[l1]][[l2]])
-	x <- do.call(rbind, lapply(x, do.call, what=rbind))
+	x <- rbindlist(dlist)
 	x$Replicate <- i
 	veg.area <- x[seq(1, nrow(x), by=2*n.samples), -5]
 	names(veg.area)[4] <- "Val"
@@ -109,7 +147,7 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	veg.area <- veg.area[,c(1,2,7,4,3,5,6)]
 	locs <- unique(x$Location)
 	for(j in 1:length(locs)){
-		obj.name.tmp <- paste0("veg.age.loc", j, ".rep", i)
+		obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
 		assign(obj.name.tmp, x[x$Location==locs[j], -c(4,7)])
 		save(list=c("locs", obj.name.tmp), file=paste0(denDir, "/", obj.name.tmp, ".RData"))
 		print(paste(obj.name.tmp, "object of", length(locs), "saved."))
@@ -123,8 +161,7 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 }
 
 # @knitr getAlfStats
-getAlfStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, breaks, age.lab, veg.lab, n.samples, replace.deciduous=FALSE, ...){
-	id.vals <- as.numeric(paste0(rep(1:(length(age.lab)), length(veg.lab)), rep(1:length(veg.lab), each=length(age.lab))))
+getAlfStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, n.samples, replace.deciduous=FALSE, ...){
 	rep.lab <- paste0("_",c(0:199),"_")[i]
 	patF <- gsub("expression","",paste(bquote(expression("^FireS.*.",.(rep.lab),".*.tif$")),collapse=""))
 	filesF <- list.files(mainDir, pattern=patF, full=T)
@@ -150,17 +187,17 @@ getAlfStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.li
 		c(AB, FC)
 	}
 	# Density estimation function
-	denFun <- function(x, n, min.zero=TRUE, diversify=FALSE){
+	denFun <- function(x, n, adj=0.25, min.zero=TRUE, diversify=FALSE){
 		x <- x[!is.na(x)]
 		lx <- length(x)
 		if(diversify && length(unique(x))==1) x <- rnorm(max(10, lx), mean=x[1]) # diversify constant values
 		if(lx==1) x <- x + c(-1:1) #single pixel of veg type, add and subtract one age year to make procedure possible
 		dif <- diff(range(x))
-		z <- density(x, adjust=2, n=n, from=min(x)-max(1, 0.05*dif), to=max(x)+max(1, 0.05*dif))
-		if(min.zero && any(z$x < 0)) z <- density(x, adjust=2, n=n, from=0, to=max(x)+max(1, 0.05*dif))
+		z <- density(x, adjust=adj, n=n, from=min(x)-max(1, 0.05*dif), to=max(x)+max(1, 0.05*dif))
+		if(min.zero && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+max(1, 0.05*dif))
 		as.numeric(c(z$x, z$y))
 	}
-	print("Support functions defined and setup completed. Beginning annual prcoessing...")
+	print("Support functions defined and setup completed. Beginning annual processing...")
 	for(j in 1:length(years)){
 		ff <- getValues(raster(filesF[j], band=2))
 		f.ind <- which(!is.na(ff))
