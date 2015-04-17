@@ -4,6 +4,7 @@
 #SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --ntasks=12
 #SBATCH --nodes=1
+####SBATCH --nodelist=atlas05
 #SBATCH --account=snap
 #SBATCH -p main
 #SBATCH --job-name=GCM_clim_extract
