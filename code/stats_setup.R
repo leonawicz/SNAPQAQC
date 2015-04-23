@@ -22,7 +22,7 @@ for(i in 1:length(files)){
 	n <- nrow(m)
 	p <- length(stats.out)
 	dlist[[i]] <- data.frame(
-		Phase=rep(c("CMIP3","CMIP5"),each=n/(4*p)),
+		Phase=rep(c("AR4","AR5"),each=n/(4*p)),
 		Scenario=rep(c("SRES B1","SRES A1B","SRES A2","RCP 4.5","RCP 6.0","RCP 8.5"),each=n/(12*p)),
 		Model=rep(models[[i]],each=n/(4*p)),
 		Var=rep(c("Temperature","Precipitation"),each=n/(2*p)),
