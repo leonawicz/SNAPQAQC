@@ -1,6 +1,7 @@
 # @knitr setup
 setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples")
 
+library(parallel)
 library(data.table)
 library(reshape2)
 
@@ -27,7 +28,7 @@ rm(samples.out,n,m,i,files,models,dlist)
 names(d)[3:ncol(d)] <- gsub("X", "", names(d)[3:ncol(d)])
 
 # @knitr organize
-f <- function(i, n, index, multiplier, cru){
+f <- function(i, n, index, cru, multiplier=c(1,1), decimals=NULL){
 	name.tmp <- samples.names[i]
 	rsd <- subset(d, Location==name.tmp)
 	rsd <- melt(rsd, id.vars=names(rsd)[1:2], measure.vars=names(rsd)[-c(1:2)], variable.name="Time", value.name="Vals_Probs")
@@ -43,8 +44,8 @@ f <- function(i, n, index, multiplier, cru){
 	rsd <- rsd[c(1:2,6,5,7:9)]
 	grp <- rep(names(region.names.out), times=sapply(region.names.out, length))[i]
 	dir.create(outDir <- paste0("../../final/region_files_CRU", cru, "/samples/", grp, "/", name.tmp), recursive=T, showWarnings=F)
-	rsd$Val <- round(rsd$Val,1)*multiplier[1]
-	rsd$Prob <- round(rsd$Prob,8)*multiplier[2]
+	if(!is.null(decimals)) rsd$Val <- round(rsd$Val, decimals[1])*multiplier[1]
+	if(!is.null(decimals)) rsd$Prob <- round(rsd$Prob, decimals[2])*multiplier[2]
 	if(i==1) x <- subset(rsd, Var=="Precipitation") else x <- NULL
 	gc()
 	rsd.cru <- unlist(subset(rsd, Var=="Precipitation")[,index])
@@ -60,17 +61,16 @@ f <- function(i, n, index, multiplier, cru){
 }
 
 # @knitr save
-library(parallel)
-
+if(file.exists("../../final/meta.RData")) load("../../final/meta.RData")
 samples.columns.cru <- 3:4
-samples.multipliers.cru <- c(1e1, 1e8)
+samples.multipliers.cru <- c(1e1, 1e16) # see function arguments 'multiplier' and 'decimals'
 
-out <- mclapply(1:length(samples.names), f, n=n.samples, index=samples.columns.cru, multiplier=samples.multipliers.cru, cru=cru, mc.cores=32)
+out <- mclapply(1:length(samples.names), f, n=n.samples, index=samples.columns.cru, cru=cru, multiplier=samples.multipliers.cru, decimals=c(1, 16), mc.cores=32)
 cru.samples.df <- out[[1]]
 cru.samples.df[,samples.columns.cru] <- NA
 cru.samples.df$Var <- NA
 cru.samples.df$Location <- NA
 if(as.numeric(cru)==31) cru31.samples.df <- cru.samples.df else if(as.numeric(cru)==32) cru32.samples.df <- cru.samples.df
+
 rm(cru, cru.samples.df, d, f, out)
-load("../../final/meta.RData")
 save.image("../../final/meta.RData")
