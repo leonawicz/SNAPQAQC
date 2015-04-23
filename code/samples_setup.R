@@ -20,11 +20,10 @@ swapMod <- function(x){
 }
 
 lab[,2:4] <- cbind(sapply(lab[,2], swapScen), sapply(lab[,3], swapMod), sapply(lab[,4], swapVar))
-samples.multipliers <- c(1e1, 1e8)
 rm(swapVar, swapScen, swapMod)
 
 # @knitr func_organize_save
-f <- function(i, d, n, grp.names, s.names, scen.levels, outfile, multiplier){
+f <- function(i, d, n, grp.names, s.names, scen.levels, outfile, multiplier=c(1,1), decimals=NULL){
 	AR <- strsplit(outfile, "_")[[1]][1]
 	scen <- strsplit(outfile, "_")[[1]][2]
 	outfile.h <- gsub(scen, "Hist", outfile)
@@ -44,28 +43,32 @@ f <- function(i, d, n, grp.names, s.names, scen.levels, outfile, multiplier){
 	rsd1 <- rsd1[c(1:5,9,8,10:12)]
 	grp <- rep(names(grp.names), times=sapply(grp.names, length))[i]
 	dir.create(outDir <- file.path("../../final/region_files_GCM/samples", grp, s.names[i], "climate"), recursive=T, showWarnings=F)
-	rsd1$Val <- round(rsd1$Val,1)*multiplier[1]
-	rsd1$Prob <- round(rsd1$Prob,8)*multiplier[2]
+	if(!is.null(decimals)) rsd1$Val <- round(rsd1$Val, decimals[1])*multiplier[1]
+	if(!is.null(decimals)) rsd1$Prob <- round(rsd1$Prob, decimals[2])*multiplier[2]
 	
 	rsd.h <- subset(rsd1, Year < yr1.projected)
 	rsd <- subset(rsd1, Year >= yr1.projected)
 	rownames(rsd) <- rownames(rsd.h) <- NULL
+	rsd.h <- data.table(rsd.h)
+	rsd <- data.table(rsd)
 	if(!any(is.na(rsd.h$Val))) save(rsd.h, file=file.path(outDir, outfile.h))
 	save(rsd, file=file.path(outDir, outfile))
 	print(i)
 }
 
 # @knitr proc
+if(file.exists("../../final/meta.RData")) load("../../final/meta.RData")
+samples.multipliers <- c(1e1, 1e16) # see function arguments 'multiplier' and 'decimals'
+
 for(i in 1:length(files)){
 	outfile <- paste0(gsub(" ", "", paste(lab[i,], collapse="_")), ".RData")
 	load(files[i])
 	d <- rbindlist(samples.out)
 	d <- data.frame(Phase=lab[i,1], Scenario=lab[i,2], Model=lab[i,3], Var=lab[i,4], d, stringsAsFactors=F)
 	names(d)[6:ncol(d)] <- gsub("X", "", names(d)[6:ncol(d)])
-	mclapply(1:length(samples.names), f, d=d, n=n.samples, grp.names=region.names.out, s.names=samples.names, scen.levels=scen.levels, outfile=outfile, multiplier=samples.multipliers, mc.cores=32)
+	mclapply(1:length(samples.names), f, d=d, n=n.samples, grp.names=region.names.out, s.names=samples.names, scen.levels=scen.levels, outfile=outfile, multiplier=samples.multipliers, decimals=c(1, 16), mc.cores=32)
 	print(i)
 }
 
 rm(lab, samples.out, i, files, d, outfile, f)
-load("../../final/meta.RData")
 save.image("../../final/meta.RData")
