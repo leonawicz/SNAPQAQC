@@ -27,7 +27,7 @@ for(i in 1:length(files)){
 	m <- as.numeric(d)
 	n <- length(m)
 	dlist[[i]] <- data.frame(
-		Phase=rep(c("CMIP3","CMIP5"), each=n/4),
+		Phase=rep(c("AR4","AR5"), each=n/4),
 		Scenario=rep(c("SRES B1","SRES A1B","SRES A2","RCP 4.5","RCP 6.0","RCP 8.5"),each=n/12),
 		Model=rep(models[[i]], each=n/4),
 		Var=rep(c("Temperature","Precipitation"), each=n/2),
