@@ -27,7 +27,7 @@ The app is complex and makes use of large amounts of external data files, loadin
 It is designed with this externalization of pre-processed data files so that it remains fast and responsive.
 The app itself contains very little data to be loaded at launch.
 
-See the interactive <a href="reactivity_at_launch.html" target="_blank">reactivity graph</a> for an limited illustration of the app's complexity.
+See the interactive <a href="reactivity_at_launch.html" target="_blank">reactivity graph</a> for a limited illustration of the app's complexity.
 Note that this graph is strictly of the reactivity which occurs at the instant the app is first launched.
 None of the vast array of combinations of user interactions are included in the graph.
 This is the initial state of the app.
