@@ -30,29 +30,46 @@ proj.github <- file.path("https://github.com", user, proj.name)
 index.url <- "index.html"
 #file.copy(index.url, "index.html")
 
-proj.title <- "SNAP Data QAQC"
-proj.menu <- c("Overview", "Code flow", "GCM climate", "CRU 3.x climate", "Fire & Vegetation", "Other R Code", "All Projects")
+proj.title <- "SNAP Data QA/QC"
+proj.menu <- c("Overview", "Climate", "Fire & Veg", "App docs", "App code", "All Projects")
 
 proj.submenu <- list(
 	c("empty"),
-	c("empty"),
-	c("Extraction", "Downscaled GCMs", "divider", "Organization", "Regions: stats", "Regions: densities", "Cities: stats"),
-	c("Extraction", "Downscaled CRU 3.x", "divider", "Organization", "Regions: stats", "Regions: densities", "Cities: stats"),
+	c("Extraction", "Downscaled GCMs", "Downscaled CRU 3.x", "divider", "GCM organization", "Regions: stats", "Regions: densities", "Cities: stats", "CRU organization", "Regions: stats", "Regions: densities", "Cities: stats"),
 	c("Extraction", "ALFRESCO: Rmpi", "ALFRESCO: functions", "divider", "Organization", "ALFRESCO: stats and densities"),
-	c("QAQC App Metadata"),
+	c("About", "divider", "Help documents",
+		"Getting started", "Working with data", "Graphical options", "Updating settings",
+			"Graphing: time series", "Graphing: scatter plots", "Graphing: heat maps", "Graphing: variability", "Graphing: distributions",
+		"divider", "Prep R code", c("QA/QC App Metadata")),
+	c("App R code",
+			c("global.R", "ui.R", "server.R", "about.R"), "divider",
+			c("sidebar.R", "main.R", "serverHead.R", "app.R"), "divider",
+			c("io_sidebar.R", "io_main.R", "reactives.R"), "divider",
+			c("plot_ts.R", "plot_scatter.R", "plot_heatmap.R", "plot_variability.R", "plot_spatial.R")),
 	c("empty")
 )
 
 proj.files <- list(
 	c("index.html"),
-	c("code_sankey.html"),
-	c("header", "AR4_AR5_extract.html", "divider", "header", "stats_setup.html", "samples_setup.html", "cities_setup.html"),
-	c("header", "CRU_extract.html", "divider", "header", "stats_setup_CRU.html", "samples_setup_CRU.html", "cities_setup_CRU.html"),
+	c("header", "AR4_AR5_extract.html", "CRU_extract.html", "divider", "header", "stats_setup.html", "samples_setup.html", "cities_setup.html", "header", "stats_setup_CRU.html", "samples_setup_CRU.html", "cities_setup_CRU.html"),
 	c("header", "alfStatsByRep_Rmpi.html", "alfStatsByRep.html", "divider", "header", "getAlfStatsAndDensities.html"),
-	c("qaqc_app_metadata.html"),
+	c("aboutapp.html", "divider", "header",
+		paste0("help0", c("1_start", "2_data", "3_plotOptions", "4_updating", "5_01_graphTS", "5_02_graphScatter", "5_03_graphHeat", "5_04_graphVar", "5_05_graphSpatial"), ".html"),
+		"divider", "header", c("qaqc_app_metadata.html")),
+	c("header",
+			c("header", "header", "header", "header"), "divider",
+			c("header", "header", "header", "header"), "divider",
+			c("header", "header", "header"), "divider",
+			c("header", "header", "header", "header", "header")),
 	c("http://leonawicz.github.io")
 )
 
+# save these for when app code documentation is ready
+			#c("appcode_global.html", "appcode_ui.html", "appcode_server.html", "appcode_about.html"), "divider",
+			#c("appcode_sidebar.html", "appcode_main.html", "appcode_serverHead.html", "appcode_app.html"), "divider",
+			#c("appcode_io_sidebar.html", "appcode_io_main.html", "appcode_reactives.html"), "divider",
+			#c("appcode_plot_ts.html", "appcode_plot_scatter.html", "appcode_plot_heatmap.html", "appcode_plot_variability.html", "appcode_plot_spatial.html")),
+			
 # generate navigation bar html file common to all pages
 genNavbar(htmlfile=file.path(proj.location, proj.name, "docs/Rmd/include/navbar.html"), title=proj.title, menu=proj.menu, submenus=proj.submenu, files=proj.files, title.url="index.html", home.url="index.html", site.url=proj.github, include.home=FALSE)
 
