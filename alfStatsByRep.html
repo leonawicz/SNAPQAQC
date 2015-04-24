@@ -19,43 +19,37 @@
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
 <style type="text/css">
-
 /* padding for bootstrap navbar */
 body {
-  padding-top: 50px;
-  padding-bottom: 40px;
+padding-top: 50px;
+padding-bottom: 40px;
 }
-@media (max-width: 979px) {
-  body {
-    padding-top: 0;
-  }
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-/* offset scroll position for anchor links (for fixed navbar)  */
-@media (min-width: 980px) {
-  .section h2 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
-  .section h3 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-
 /* don't use link color in navbar */
 .dropdown-menu>li>a {
-  color: black;
+color: black;
 }
-
 /* some padding for disqus */
 #disqus_thread {
-  margin-top: 45px;
+margin-top: 45px;
 }
-
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
-
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 
@@ -128,40 +122,31 @@ img {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
-          <li><a href="code_sankey.html">Code flow</a></li>
-
           <li class="dropdown">
-            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
               <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
+              <li class="dropdown-header">GCM organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li class="dropdown-header">Extraction</li>
-              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
-              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
-              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
-              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
-            </ul>
-
-          <li class="dropdown">
-            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
@@ -172,9 +157,48 @@ img {
             </ul>
 
           <li class="dropdown">
-            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
@@ -202,7 +226,7 @@ img {
 <p>This script is called by the wrapper script, <code>alfStatsByRep_Rpmi.R</code> as part of a non-interactive <strong>R</strong> SLURM job process using <code>Rmpi</code>. The script consists of functions, which are loaded onto each CPU core. The execution calls still originate from the parent <code>Rpmi</code> script on the head node.</p>
 </div>
 <div id="files-and-data" class="section level3">
-<h3>Files and Data</h3>
+<h3>Files and data</h3>
 <p>The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations as well as raster layer cell indices pertaining to various regional shapefile polygons. All input data are passed directly from the <code>alfStatsByRep_Rpmi.R</code> master <strong>R</strong> session running on the head node. <code>alfStatsByRep.R</code> performs data extractions on multiple CPU cores across multiple compute nodes based on the data passed down to each CPU. Each CPU on the compute nodes is responsible for processing data for a unique ALFRESCO simulation spatial time series replicate.</p>
 <p><code>alfStatsByRep.R</code> passed some computed ALFRESCO output statistics back to <code>alfStatsByRep_Rpmi.R</code> on the head node to be combined, organized and written to intermediary files: * Burn area by region * Fire frequency by region * Vegetated area by region and vegetation class</p>
 <p>Other data are written to files directly by <code>alfStatsByRep.R</code>, avoiding returning too much data to the head node. This consists of distributional information, in contrast to specific computed statistics, specifically semi-compact objects storing distributional properties of vegetation age by region, replicate, model and scenario in individual .RData workspace files.</p>
@@ -214,6 +238,7 @@ img {
 <div id="setup" class="section level3">
 <h3>Setup</h3>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)
+<span class="kw">library</span>(data.table)
 <span class="kw">rasterOptions</span>(<span class="dt">chunksize =</span> <span class="dv">10</span>^<span class="dv">12</span>, <span class="dt">maxmemory =</span> <span class="dv">10</span>^<span class="dv">11</span>)</code></pre>
 </div>
 <div id="processing-functions" class="section level3">
@@ -225,22 +250,30 @@ img {
     rep.lab &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;_&quot;</span>, <span class="kw">c</span>(<span class="dv">0</span>:<span class="dv">199</span>), <span class="st">&quot;_&quot;</span>)[i]
     pat &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;expression&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(<span class="kw">bquote</span>(<span class="kw">expression</span>(<span class="st">&quot;^FireS.*.&quot;</span>, .(rep.lab), 
         <span class="st">&quot;.*.tif$&quot;</span>)), <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>))
-    files &lt;-<span class="st"> </span><span class="kw">list.files</span>(mainDir, <span class="dt">pattern =</span> pat, <span class="dt">full =</span> T)
-    files.years &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(files, <span class="kw">nchar</span>(files) -<span class="st"> </span><span class="dv">7</span>, <span class="kw">nchar</span>(files) -<span class="st"> </span>
-<span class="st">        </span><span class="dv">4</span>))
-    if (<span class="kw">is.numeric</span>(years)) {
-        p &lt;-<span class="st"> </span>files.years %in%<span class="st"> </span>years
-        if (<span class="kw">any</span>(p)) {
-            files &lt;-<span class="st"> </span>files[<span class="kw">which</span>(p)]
-            files.years &lt;-<span class="st"> </span>files.years[<span class="kw">which</span>(p)]
-        }
-    }
+    filesF &lt;-<span class="st"> </span><span class="kw">list.files</span>(mainDir, <span class="dt">pattern =</span> pat, <span class="dt">full =</span> T)
+    patV &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;expression&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(<span class="kw">bquote</span>(<span class="kw">expression</span>(<span class="st">&quot;^V.*.&quot;</span>, .(rep.lab), 
+        <span class="st">&quot;.*.tif$&quot;</span>)), <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>))
+    filesV &lt;-<span class="st"> </span><span class="kw">list.files</span>(mainDir, <span class="dt">pattern =</span> patV, <span class="dt">full =</span> T)
+    <span class="co"># files.years &lt;- as.numeric(substr(files,nchar(files)-7,nchar(files)-4))</span>
+    files.years &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;FireScar_</span><span class="ch">\\</span><span class="st">d+_&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;.tif&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">basename</span>(filesF))))  <span class="co"># test line</span>
+    ord &lt;-<span class="st"> </span><span class="kw">order</span>(files.years)  <span class="co"># test line</span>
+    filesF &lt;-<span class="st"> </span>filesF[ord]  <span class="co"># test line</span>
+    filesV &lt;-<span class="st"> </span>filesV[ord]  <span class="co"># test line</span>
+    if (<span class="kw">is.numeric</span>(years)) 
+        {
+            p &lt;-<span class="st"> </span>files.years %in%<span class="st"> </span>years
+            if (<span class="kw">any</span>(p)) {
+                filesF &lt;-<span class="st"> </span>filesF[<span class="kw">which</span>(p)]
+                filesV &lt;-<span class="st"> </span>filesV[<span class="kw">which</span>(p)]
+                files.years &lt;-<span class="st"> </span>files.years[<span class="kw">which</span>(p)]
+            }
+        }  <span class="co"># test filesV addition</span>
     years &lt;-<span class="st"> </span><span class="kw">unique</span>(files.years)
     grp.names.vec &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">names</span>(cells.list), <span class="dt">times =</span> <span class="kw">sapply</span>(cells.list, length))
     loc.names.vec &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">unlist</span>(<span class="kw">lapply</span>(cells.list, names)))
     
     getABFC &lt;-<span class="st"> </span>function(x, values, index) {
-        x &lt;-<span class="st"> </span><span class="kw">intersect</span>(index, x)
+        <span class="co"># x &lt;- intersect(index, x)</span>
         if (<span class="kw">length</span>(x)) {
             AB &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">which</span>(values[x] &gt;<span class="st"> </span><span class="dv">0</span>))
             FC &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(values[x]))
@@ -248,17 +281,69 @@ img {
         <span class="kw">c</span>(AB, FC)
     }
     
+    <span class="co"># fire size by vegetation class</span>
+    fsByVeg &lt;-<span class="st"> </span>function(cells, i, v, v.fid, f.ind) {
+        if (!<span class="kw">length</span>(cells)) 
+            <span class="kw">return</span>(<span class="kw">data.frame</span>())
+        dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(i))
+        ind &lt;-<span class="st"> </span><span class="kw">match</span>(cells, f.ind)
+        if (<span class="kw">length</span>(ind) &lt;<span class="st"> </span><span class="kw">length</span>(f.ind)) 
+            v[-ind] &lt;-<span class="st"> </span><span class="ot">NA</span>
+        for (k in <span class="dv">1</span>:<span class="kw">length</span>(i)) {
+            x &lt;-<span class="st"> </span>v
+            x[x !=<span class="st"> </span>i[k]] &lt;-<span class="st"> </span><span class="ot">NA</span>
+            x &lt;-<span class="st"> </span>v.fid[!<span class="kw">is.na</span>(x) &amp;<span class="st"> </span>!<span class="kw">is.na</span>(v.fid)]
+            if (<span class="kw">length</span>(x)) {
+                x &lt;-<span class="st"> </span><span class="kw">tapply</span>(x, x, length)
+                ord &lt;-<span class="st"> </span><span class="kw">order</span>(<span class="kw">as.numeric</span>(x))
+                dlist[[k]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Vegetation =</span> i[k], <span class="dt">FS =</span> <span class="kw">as.numeric</span>(x)[ord], 
+                  <span class="dt">FID =</span> <span class="kw">as.numeric</span>(<span class="kw">names</span>(x))[ord])
+            }
+        }
+        <span class="kw">as.data.frame</span>(<span class="kw">rbindlist</span>(dlist))
+    }
+    
     <span class="kw">print</span>(<span class="st">&quot;Beginning processing loop&quot;</span>)
+    dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(years))
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(years)) {
-        rvals &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">raster</span>(files[j], <span class="dt">band =</span> <span class="dv">2</span>))
-        f.ind &lt;-<span class="st"> </span><span class="kw">which</span>(!<span class="kw">is.na</span>(rvals))
+        
+        <span class="co"># fire size by vegetation class</span>
+        v.fid &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">raster</span>(filesF[j], <span class="dt">band =</span> <span class="dv">2</span>))
+        v.veg &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">raster</span>(filesV[j]))
+        f.ind &lt;-<span class="st"> </span><span class="kw">which</span>(!<span class="kw">is.na</span>(v.fid))
+        v.fid.rmNA &lt;-<span class="st"> </span>v.fid[f.ind]
+        v.veg.rmNA &lt;-<span class="st"> </span>v.veg[f.ind]
+        cells.rmNA &lt;-<span class="st"> </span><span class="kw">rapply</span>(cells.list, <span class="dt">f =</span> function(x, i) <span class="kw">intersect</span>(i, x), 
+            <span class="dt">classes =</span> <span class="st">&quot;integer&quot;</span>, <span class="dt">how =</span> <span class="st">&quot;replace&quot;</span>, <span class="dt">i =</span> f.ind)
+        <span class="co"># v.veg[v.veg==2 | v.veg==3] &lt;- 1 # 2 and 3 tree classes combine into class</span>
+        <span class="co"># 1 to become &#39;forest&#39;, tundra types 4, 5, and 6 remain as before</span>
+        vid &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">5</span>  <span class="co">#vid &lt;- sort(unique(v.veg[!is.na(v.veg) &amp; v.veg &gt; 0]))</span>
+        if (!<span class="kw">all</span>(<span class="kw">is.na</span>(v.fid))) {
+            <span class="kw">system.time</span>(dl &lt;-<span class="st"> </span><span class="kw">rapply</span>(cells.rmNA, <span class="dt">f =</span> fsByVeg, <span class="dt">classes =</span> <span class="st">&quot;integer&quot;</span>, 
+                <span class="dt">how =</span> <span class="st">&quot;replace&quot;</span>, <span class="dt">i =</span> vid, <span class="dt">v =</span> v.veg.rmNA, <span class="dt">v.fid =</span> v.fid.rmNA, 
+                <span class="dt">f.ind =</span> f.ind))
+            n.fires &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">sapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(dl), function(x, l) <span class="kw">sapply</span>(l[[x]], 
+                nrow), <span class="dt">l =</span> dl))
+            d.j &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(<span class="kw">lapply</span>(dl, rbindlist))
+            dlist[[j]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">LocGroup =</span> <span class="kw">rep</span>(grp.names.vec, <span class="dt">times =</span> n.fires), 
+                <span class="dt">Location =</span> <span class="kw">rep</span>(loc.names.vec, <span class="dt">times =</span> n.fires), <span class="dt">VegID =</span> d.j$Vegetation, 
+                <span class="dt">FID =</span> d.j$FID, <span class="dt">Val =</span> d.j$FS, <span class="dt">Year =</span> years[j], <span class="dt">Replicate =</span> i, 
+                <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)  <span class="co"># end test lines</span>
+        }
+        
+        <span class="co"># basic aggregate burn area and fire frequency</span>
+        
         if (j ==<span class="st"> </span><span class="dv">1</span>) 
-            m &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="kw">length</span>(files), <span class="dv">2</span> *<span class="st"> </span>n)  <span class="co"># create matrix for multiple subdomains</span>
-        v &lt;-<span class="st"> </span><span class="kw">rapply</span>(cells.list, <span class="dt">f =</span> getABFC, <span class="dt">classes =</span> <span class="st">&quot;integer&quot;</span>, <span class="dt">how =</span> <span class="st">&quot;unlist&quot;</span>, 
-            <span class="dt">values =</span> rvals, <span class="dt">index =</span> f.ind)
+            m &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="kw">length</span>(filesF), <span class="dv">2</span> *<span class="st"> </span>n)  <span class="co"># create matrix for multiple subdomains</span>
+        v &lt;-<span class="st"> </span><span class="kw">rapply</span>(cells.rmNA, <span class="dt">f =</span> getABFC, <span class="dt">classes =</span> <span class="st">&quot;integer&quot;</span>, <span class="dt">how =</span> <span class="st">&quot;unlist&quot;</span>, 
+            <span class="dt">values =</span> v.fid.rmNA, <span class="dt">index =</span> f.ind)
         m[j, <span class="dv">1</span>:(<span class="dv">2</span> *<span class="st"> </span>n)] &lt;-<span class="st"> </span>v
+        
         <span class="kw">print</span>(years[j])
     }
+    d.fs &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">rbindlist</span>(dlist))
+    
+    <span class="co"># d.fs$Vegetation &lt;- v.names[d.fs.veg$Vegetation]</span>
     varid &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;AB&quot;</span>, <span class="st">&quot;FC&quot;</span>), n)
     ab &lt;-<span class="st"> </span><span class="kw">as.integer</span>(m[, <span class="kw">which</span>(varid ==<span class="st"> &quot;AB&quot;</span>)])
     fc &lt;-<span class="st"> </span><span class="kw">as.integer</span>(m[, <span class="kw">which</span>(varid ==<span class="st"> &quot;FC&quot;</span>)])
@@ -266,16 +351,15 @@ img {
         <span class="dt">each =</span> <span class="kw">length</span>(years)), <span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Burn Area&quot;</span>, <span class="st">&quot;Fire Count&quot;</span>), <span class="dt">each =</span> <span class="kw">length</span>(ab)), 
         <span class="dt">Val =</span> <span class="kw">c</span>(ab, fc), <span class="dt">Year =</span> years, <span class="dt">Replicate =</span> i, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
     <span class="kw">rownames</span>(m) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Returning area burned and fire frequency data frame.&quot;</span>))
-    m
+    <span class="co"># print(paste(&#39;Returning area burned and fire frequency data frame.&#39;)) m</span>
+    <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Returning list of (1) area burned and fire frequency data frame and (2) fire size by vegetation class data frame.&quot;</span>))
+    <span class="kw">list</span>(m, d.fs)
 }</code></pre>
 </div>
 <div id="getagevegstats" class="section level4">
 <h4>getAgeVegStats</h4>
 <pre class="sourceCode r"><code class="sourceCode r">getAgeVegStats &lt;-<span class="st"> </span>function(i, mainDir, denDir, <span class="dt">years =</span> <span class="ot">NULL</span>, cells.list, shp.names.list, 
-    n, breaks, age.lab, veg.lab, n.samples, <span class="dt">replace.deciduous =</span> <span class="ot">FALSE</span>, ...) {
-    id.vals &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">paste0</span>(<span class="kw">rep</span>(<span class="dv">1</span>:(<span class="kw">length</span>(age.lab)), <span class="kw">length</span>(veg.lab)), 
-        <span class="kw">rep</span>(<span class="dv">1</span>:<span class="kw">length</span>(veg.lab), <span class="dt">each =</span> <span class="kw">length</span>(age.lab))))
+    n, n.samples, ...) {
     rep.lab &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;_&quot;</span>, <span class="kw">c</span>(<span class="dv">0</span>:<span class="dv">199</span>), <span class="st">&quot;_&quot;</span>)[i]
     patA &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;expression&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(<span class="kw">bquote</span>(<span class="kw">expression</span>(<span class="st">&quot;^A.*.&quot;</span>, .(rep.lab), 
         <span class="st">&quot;.*.tif$&quot;</span>)), <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>))
@@ -300,7 +384,7 @@ img {
         <span class="dt">classes =</span> <span class="st">&quot;integer&quot;</span>, <span class="dt">how =</span> <span class="st">&quot;replace&quot;</span>)
     
     <span class="co"># Density estimation</span>
-    denFun &lt;-<span class="st"> </span>function(x, n, <span class="dt">min.zero =</span> <span class="ot">TRUE</span>, <span class="dt">diversify =</span> <span class="ot">FALSE</span>) {
+    denFun &lt;-<span class="st"> </span>function(x, n, <span class="dt">adj =</span> <span class="fl">0.25</span>, <span class="dt">min.zero =</span> <span class="ot">TRUE</span>, <span class="dt">diversify =</span> <span class="ot">FALSE</span>) {
         x &lt;-<span class="st"> </span>x[!<span class="kw">is.na</span>(x)]
         lx &lt;-<span class="st"> </span><span class="kw">length</span>(x)
         if (diversify &amp;&amp;<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(x)) ==<span class="st"> </span><span class="dv">1</span>) 
@@ -308,50 +392,41 @@ img {
         if (lx ==<span class="st"> </span><span class="dv">1</span>) 
             x &lt;-<span class="st"> </span>x +<span class="st"> </span><span class="kw">c</span>(-<span class="dv">1</span>:<span class="dv">1</span>)  <span class="co">#single pixel of veg type, add and subtract one age year to make procedure possible</span>
         dif &lt;-<span class="st"> </span><span class="kw">diff</span>(<span class="kw">range</span>(x))
-        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, <span class="fl">0.05</span> *<span class="st"> </span>dif), 
+        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> adj, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, <span class="fl">0.05</span> *<span class="st"> </span>dif), 
             <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, <span class="fl">0.05</span> *<span class="st"> </span>dif))
         if (min.zero &amp;&amp;<span class="st"> </span><span class="kw">any</span>(z$x &lt;<span class="st"> </span><span class="dv">0</span>)) 
-            z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, 
+            z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> adj, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, 
                 <span class="fl">0.05</span> *<span class="st"> </span>dif))
         <span class="kw">as.numeric</span>(<span class="kw">c</span>(z$x, z$y))
     }
     
+    <span class="kw">print</span>(<span class="st">&quot;Beginning processing loop&quot;</span>)
+    dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(years))
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(years)) {
         a &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">raster</span>(filesA[j]))[data.ind]
         v &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">raster</span>(filesV[j]))[data.ind]
         <span class="co"># a[a&lt;0] &lt;- a[a&lt;0] + 2147483647 # temporary hack</span>
+        dlist1 &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(x))
         for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(x)) {
+            dlist2 &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(x[[l1]]))
             for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(x[[l1]])) {
                 cells.tmp &lt;-<span class="st"> </span>cells.list[[l1]][[l2]]
                 a.tmp &lt;-<span class="st"> </span>a[cells.tmp]
                 v.tmp &lt;-<span class="st"> </span>v[cells.tmp]
-                <span class="co"># x[[l1]][[l2]][[j]] &lt;- table(10*.bincode(a.tmp, breaks=breaks) + v.tmp)</span>
-                <span class="co"># uni.veg.tmp &lt;- sort(unique(v.tmp))</span>
                 v.tmp.n &lt;-<span class="st"> </span><span class="kw">tapply</span>(cells.tmp, v.tmp, length)
                 den.tmp &lt;-<span class="st"> </span><span class="kw">tapply</span>(a.tmp, v.tmp, denFun, <span class="dt">n =</span> n.samples)
-                x[[l1]][[l2]][[j]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">LocGroup =</span> <span class="kw">names</span>(x)[l1], <span class="dt">Location =</span> <span class="kw">names</span>(x[[l1]])[l2], 
+                dlist2[[l2]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">LocGroup =</span> <span class="kw">names</span>(x)[l1], <span class="dt">Location =</span> <span class="kw">names</span>(x[[l1]])[l2], 
                   <span class="dt">VegID =</span> <span class="kw">rep</span>(<span class="kw">as.numeric</span>(<span class="kw">names</span>(den.tmp)), <span class="dt">each =</span> <span class="dv">2</span> *<span class="st"> </span>n.samples), 
                   <span class="dt">VegArea =</span> <span class="kw">rep</span>(v.tmp.n, <span class="dt">each =</span> <span class="dv">2</span> *<span class="st"> </span>n.samples), <span class="dt">Val =</span> <span class="kw">unlist</span>(den.tmp), 
                   <span class="dt">Year =</span> years[j], <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
             }
+            dlist1[[l1]] &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(dlist2)
         }
+        dlist[[j]] &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(dlist1)
         <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Age and veg maps:&quot;</span>, years[j]))
     }
     
-    <span class="co"># makeTable &lt;- function(l, id, years, age, veg, loc, loc.grp){ nr &lt;-</span>
-    <span class="co"># length(id) nc &lt;- length(l) n.age &lt;- length(age) n.veg &lt;- length(veg) d &lt;-</span>
-    <span class="co"># matrix(0,nrow=nr,ncol=nc) x &lt;- lapply(l, names) for(k in 1:nc)</span>
-    <span class="co"># d[match(x[[k]], id), k] &lt;- l[[k]] d &lt;- data.frame(Veg=rep(veg,</span>
-    <span class="co"># each=n.age), Age=rep(age, n.veg), LocGroup=loc.grp, Location=loc,</span>
-    <span class="co"># Area=as.integer(d), Year=rep(years, each=n.age*n.veg),</span>
-    <span class="co"># stringsAsFactors=FALSE) rownames(d) &lt;- NULL d }</span>
-    
-    <span class="co"># for(l1 in 1:length(x)) for(l2 in 1:length(x[[l1]])) x[[l1]][[l2]] &lt;-</span>
-    <span class="co"># makeTable(l=x[[l1]][[l2]], id=id.vals, years=years, age=age.lab,</span>
-    <span class="co"># veg=veg.lab, loc=names(x[[l1]])[l2], loc.grp=names(x)[l1])</span>
-    for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(x)) for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(x[[l1]])) x[[l1]][[l2]] &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, 
-        x[[l1]][[l2]])
-    x &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, <span class="kw">lapply</span>(x, do.call, <span class="dt">what =</span> rbind))
+    x &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(dlist)
     x$Replicate &lt;-<span class="st"> </span>i
     veg.area &lt;-<span class="st"> </span>x[<span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(x), <span class="dt">by =</span> <span class="dv">2</span> *<span class="st"> </span>n.samples), -<span class="dv">5</span>]
     <span class="kw">names</span>(veg.area)[<span class="dv">4</span>] &lt;-<span class="st"> &quot;Val&quot;</span>
@@ -359,7 +434,7 @@ img {
     veg.area &lt;-<span class="st"> </span>veg.area[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">6</span>)]
     locs &lt;-<span class="st"> </span><span class="kw">unique</span>(x$Location)
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
-        obj.name.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;veg.age.loc&quot;</span>, j, <span class="st">&quot;.rep&quot;</span>, i)
+        obj.name.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;age__&quot;</span>, locs[j], <span class="st">&quot;__rep&quot;</span>, i)
         <span class="kw">assign</span>(obj.name.tmp, x[x$Location ==<span class="st"> </span>locs[j], -<span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">7</span>)])
         <span class="kw">save</span>(<span class="dt">list =</span> <span class="kw">c</span>(<span class="st">&quot;locs&quot;</span>, obj.name.tmp), <span class="dt">file =</span> <span class="kw">paste0</span>(denDir, <span class="st">&quot;/&quot;</span>, obj.name.tmp, 
             <span class="st">&quot;.RData&quot;</span>))
@@ -377,9 +452,7 @@ img {
 <h4>getAlfStats</h4>
 <p>This function is not currently in use.</p>
 <pre class="sourceCode r"><code class="sourceCode r">getAlfStats &lt;-<span class="st"> </span>function(i, mainDir, denDir, <span class="dt">years =</span> <span class="ot">NULL</span>, cells.list, shp.names.list, 
-    n, breaks, age.lab, veg.lab, n.samples, <span class="dt">replace.deciduous =</span> <span class="ot">FALSE</span>, ...) {
-    id.vals &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">paste0</span>(<span class="kw">rep</span>(<span class="dv">1</span>:(<span class="kw">length</span>(age.lab)), <span class="kw">length</span>(veg.lab)), 
-        <span class="kw">rep</span>(<span class="dv">1</span>:<span class="kw">length</span>(veg.lab), <span class="dt">each =</span> <span class="kw">length</span>(age.lab))))
+    n, n.samples, <span class="dt">replace.deciduous =</span> <span class="ot">FALSE</span>, ...) {
     rep.lab &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;_&quot;</span>, <span class="kw">c</span>(<span class="dv">0</span>:<span class="dv">199</span>), <span class="st">&quot;_&quot;</span>)[i]
     patF &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;expression&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(<span class="kw">bquote</span>(<span class="kw">expression</span>(<span class="st">&quot;^FireS.*.&quot;</span>, .(rep.lab), 
         <span class="st">&quot;.*.tif$&quot;</span>)), <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>))
@@ -418,7 +491,7 @@ img {
         <span class="kw">c</span>(AB, FC)
     }
     <span class="co"># Density estimation function</span>
-    denFun &lt;-<span class="st"> </span>function(x, n, <span class="dt">min.zero =</span> <span class="ot">TRUE</span>, <span class="dt">diversify =</span> <span class="ot">FALSE</span>) {
+    denFun &lt;-<span class="st"> </span>function(x, n, <span class="dt">adj =</span> <span class="fl">0.25</span>, <span class="dt">min.zero =</span> <span class="ot">TRUE</span>, <span class="dt">diversify =</span> <span class="ot">FALSE</span>) {
         x &lt;-<span class="st"> </span>x[!<span class="kw">is.na</span>(x)]
         lx &lt;-<span class="st"> </span><span class="kw">length</span>(x)
         if (diversify &amp;&amp;<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(x)) ==<span class="st"> </span><span class="dv">1</span>) 
@@ -426,14 +499,14 @@ img {
         if (lx ==<span class="st"> </span><span class="dv">1</span>) 
             x &lt;-<span class="st"> </span>x +<span class="st"> </span><span class="kw">c</span>(-<span class="dv">1</span>:<span class="dv">1</span>)  <span class="co">#single pixel of veg type, add and subtract one age year to make procedure possible</span>
         dif &lt;-<span class="st"> </span><span class="kw">diff</span>(<span class="kw">range</span>(x))
-        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, <span class="fl">0.05</span> *<span class="st"> </span>dif), 
+        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> adj, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, <span class="fl">0.05</span> *<span class="st"> </span>dif), 
             <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, <span class="fl">0.05</span> *<span class="st"> </span>dif))
         if (min.zero &amp;&amp;<span class="st"> </span><span class="kw">any</span>(z$x &lt;<span class="st"> </span><span class="dv">0</span>)) 
-            z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, 
+            z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> adj, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="kw">max</span>(<span class="dv">1</span>, 
                 <span class="fl">0.05</span> *<span class="st"> </span>dif))
         <span class="kw">as.numeric</span>(<span class="kw">c</span>(z$x, z$y))
     }
-    <span class="kw">print</span>(<span class="st">&quot;Support functions defined and setup completed. Beginning annual prcoessing...&quot;</span>)
+    <span class="kw">print</span>(<span class="st">&quot;Support functions defined and setup completed. Beginning annual processing...&quot;</span>)
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(years)) {
         ff &lt;-<span class="st"> </span><span class="kw">getValues</span>(<span class="kw">raster</span>(filesF[j], <span class="dt">band =</span> <span class="dv">2</span>))
         f.ind &lt;-<span class="st"> </span><span class="kw">which</span>(!<span class="kw">is.na</span>(ff))

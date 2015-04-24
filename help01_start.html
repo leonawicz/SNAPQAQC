@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+<div id="getting-started" class="section level3">
+<h3>Getting Started</h3>
+<div id="introduction" class="section level4">
+<h4>Introduction</h4>
+<p>This <strong>R</strong> Shiny web application compares downscaled outputs from CMIP3 and CMIP5 global climate models (GCMs) in a variety of ways. Downscaled observation-based historical data from the Climatological Research Unit (CRU 3.2) can be included in comparisons as well. Five general plot types are available: time series plots (not time series analysis), scatter plots, heat maps, various plots designed more specifically to highlight variability, and distributional plots. Below you can find more information regarding the data in this app, and how to manipulate and graph it.</p>
+</div>
+<div id="explore-simpler-apps-first-if-you-need-to" class="section level4">
+<h4>Explore Simpler Apps First (if you need to)</h4>
+<p>If you are not familiar with <a href="http://shiny.rstudio.com/" target="_blank">Shiny</a> by RStudio, it is <em>highly</em> advised that you first get acquainted with basic R Shiny web applications for data analysis and visualization! You don’t need to learn how to make them, but this app certainly shouldn’t be the first one you use. But I’m a statistician; I like to urge caution. So you may take that suggestion lightly. Another likely possibility is that you are a colleague working in climate science who is well-versed in climate modeling and the types of data contained in this app, in which case you may be more at home just poking around the app until you figure things out. This app is not for teaching purposes, so terms like <code>SRES A1B</code> or <code>RCP 6.0</code> which may seem alien to people not working with climate models are not expanded upon in any way.</p>
+<p>If you are an <strong>R</strong> user and have not explored Shiny, here is a <a href="http://shiny.rstudio.com/tutorial/" target="_blank">tutorial</a> if you wish to experiment with making your own apps. They are fun and as simple as you want them to be. If you already are comfortable with <strong>R</strong>, you will have no problem. Excellent collections of <strong>R</strong> Shiny web application examples to play around with can be found in RStudio’s <a href="http://shiny.rstudio.com/gallery/" target="_blank">Gallery</a> and at <a href="http://www.showmeshiny.com/" target="_blank">Show Me Shiny</a>. I suggest checking out many apps ranging from simple to complex so that you can get a sense for how they operate as well as a range of approaches people take that result in somewhat stylistically and functionally different apps. This will also give you a sense for how relatively complex this particular app is.</p>
+<p>This app is quite complex. There are two ways to learn how to use it properly and successfully. One is the brute force method. You can click on every button in every conceivable permutation until you figure out what is going on. This preferred method is to read the documentation. You are here. Good. Continue.</p>
+</div>
+</div>
+<div id="audience" class="section level3">
+<h3>Audience</h3>
+<p>The primary audience for this app is myself. I use apps like this one to enhance my data QA/QC tasks at SNAP as well as to support various projects. It is first and foremost a convenient workflow-enhancing tool made specific to my needs.</p>
+<p>The secondary audience consists of other <strong>R</strong> Shiny users who are interested in exploring and developing similar apps. I enjoy sharing my work, the code is freely available, and networking with other useRs is fun.</p>
+<p>Mandatory caveats: I do not have time to teach you how to make apps. Nor will you be able to swap your data sets for mine and have this app work for you. It is far too complex to use so directly as a template, but various bits of code you may find useful in your own contexts. I have been developing it off and on when time permits among other duties since somewhere around February of 2014 although the exact date has become a hazy mystery to me, obscured by the mind fog of <strong>R</strong> code I have written in general since then.</p>
+<p>This is to say, if you want an app “just like this,” a common sentiment I encounter, which is quite flattering and much appreciated, I must say it will not happen overnight no matter how much you borrow from this app. Even if I could write the code for this app without any planning, revision, or refactoring, just straight through as a stream-of-consciousness exercise in one sitting, it would still take quite some time to write it all out. And that doesn’t even begin to get into the code written to parse and prep large amounts of data, which the app (among other projects) makes use of. In fact, even the help documentation verbosity that follows, I wrote out just for me because otherwise it would be impossible to recall all of what I had done here.</p>
+<p>The tertiary audience would be other colleagues which do not use <strong>R</strong> but happen to be very interested in climate models and climate change in the Arctic.</p>
+<p>The quaternary audience would be the general public. I like to make apps that are simple, easy to use, and convey a straightforward message that does not require esoteric knowledge or the specialized interpretation skills of a statistician-priest. This app is not one of them. It was never meant to be. I’d prefer not to mention this fourth tier audience at all except that I don’t want to give the impression of complete neglect. But ultimately, this app was made to assist my own complex and data-heavy workflow. It can’t be all things.</p>
+</div>
+<div id="exploratory-data-analysis" class="section level3">
+<h3>Exploratory Data Analysis</h3>
+<p>The plots available in the app allow for an in-depth graphical analysis of the included downscaled climate model outputs and CRU data. Nevertheless, they provide an exploratory as opposed to confirmatory analysis of the data. This is not to take away from their value. Much can be gleaned from the wide range of customizable plots which can be produced. In fact, any confirmatory data analysis should be preceded by exploratory data analysis. This is just to say that no inferences are inherent in the graphs. There is no statistical modelling being performed. It is strictly a descriptive analysis; a visual (and tabular) representation of the data - ignoring for the moment that the GCMs include projected model outputs out to year 2100 (or that the earlier years of CRU data over Alaska also have increasing uncertainty), but that has nothing to do with what this app does with the data provided to it.</p>
+</div>
+<div id="app-layout" class="section level3">
+<h3>App Layout</h3>
+<p>This is not your grandma’s R Shiny app. So let’s start simple.</p>
+<div id="navigation-bar" class="section level4">
+<h4>Navigation Bar</h4>
+<p>The navigation bar at the top has the typical <code>Home</code> tab, followed by a tab for each type of plot available in the app, labeled <code>Time Series</code>, <code>Scatter Plot</code>, <code>Heat Map</code>, and <code>Variability</code>, <code>Spatial Distributions</code>, and finally an <code>About</code> tab. The tabs which have to do with the actual graphical EDA are split into left and right panels. Data selection and plot formatting occurs on the left. Graphs and tables appear on the right.</p>
+</div>
+<div id="data-selection-panel" class="section level4">
+<h4>Data Selection Panel</h4>
+<p>The data selection panel appears in the top left corner under the navigation bar. But there is no reason for it to appear on the <code>Home</code> tab, so make sure to navigate over to <code>Time Series</code> for example and then it will become available. By default the panel is open on app launch with the data selection checkbox checked. This reveals a number of options. Until data selection is completed, there is nothing else to display, no plot options panel, and of course, no plots or tables.</p>
+</div>
+<div id="plot-options-panel" class="section level4">
+<h4>Plot Options Panel</h4>
+<p>The plot options panel appears directly beneath the data selection panel. Similar to the data selection panel, it is visible only when relevant. You must be on a plot tab in the navigation bar. It also does not appear below the data selection panel if data selection has not been completed. When displayed, the plot options panel offers a number of powerful options for organizing the data in a plot various ways such as grouping and faceting, as well as basic formatting options like color, transparency, and font size.</p>
+</div>
+<div id="graphs-and-tables" class="section level4">
+<h4>Graphs and Tables</h4>
+<p>Graphs and tables appear on the right for any plot tab. Tables appear first. Tables are ready for display as soon as data selection occurs, even though plot options have not been set yet by the user. Once plot options are set and a plot is generated, the plot will appear at the top of the right panel, bumping any table further below.</p>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+<div id="working-with-data" class="section level3">
+<h3>Working with Data <img style="float: right; padding-left: 10px; padding-right: 10px" src="img/dataSelectionPanel.png" width="400"/></h3>
+<p>Returning to the data selection panel, how do we use it?</p>
+<div id="variables" class="section level4">
+<h4>Variables</h4>
+<p>Several of the variables are categorical (climate models, emissions scenarios, geographic locations, etc.). Some are discrete numerical (months, years, decades). All of these serve in subsetting the primary data variables (temperature, precipitation) by way of selecting factor levels and ranges, respectively.</p>
+<p>Going row by row, first is spatial scale, which is either cities/communities or different groups of broader geographic regions. To the right, specific geographic locations propagate. Next are the data variables, climate or ecological, currently climate only (temperature and precipitation) but to be expanded to include vegetation and fire data. To the right, a statistic is selected for the chosen variable. The statistic may summarize data for the variable across space when the variable is spatially explicit, e.g., temperature or precipitation; across simulations for already spatially aggregated data, e.g., fire frequency, burn area, vegetated area; or across both geographic space and simulation/modeling space, e.g., vegetation age. Just below is a checkbox for switching units of measurement. Metric is used by default.</p>
+<p>Next emissions scenarios from CMIP3 and CMIP5, and below those, corresponding GCMs which SNAP has downscaled over Alaska and Western Canada. Then there is a checkbox for making composite models. If checked, the models chosen are averaged together.</p>
+<p>Next is a slider allowing the user to restrict the years of the data subset. Months and decades follow. See Options Settings below for a description of the seasonal and multi-decade period options related to month and decade selection.</p>
+</div>
+<div id="data-requirements" class="section level4">
+<h4>Data Requirements</h4>
+<p>This brings us to a discussion of requirements. What can and can’t be done with the data selection? Geographic locations propagate based on the spatial scale chosen. I have generally excluded the ability to make comparison plots of multiple locations that span large differences in spatial scale. You can expect they would look different, for example in terms of variability, and this is not the purpose of the app. Ecological variables (those currently slated for inclusion at least) are available only for regional locations and not for single community locations.</p>
+<p>Months and decades are the only two menus which can be left blank. In all others, an empty menu means selections have not yet been made. Because months and decades are factors with a high number of levels, and often all levels are selected, it is tedious to have to check (or remove) them all. It also wastes space. For these two menus it is assumed the user wants all levels <em>unless</em> they specify a subset. The years of data returned are represented by the intersection of the years implied by the decades selection and the years implied by the years slider. This allows the user to use whichever is most convenient to restrict the data to the years they want. If you are looking for specific, discontinuous decades, use the decades menu. This is very common. Alternatively, albeit very unlikely, if you don’t want a full decade, cut into the ends of your decades selection with the years slider.</p>
+<p>Regarding scenarios and models, the user must select at least one scenario and model from the same CMIP phase. For each of the models, there are model outputs from each of three scenarios. The scenarios are unique to each CMIP phase. Selecting only CMIP3 scenario(s) and CMIP5 model(s) or vice versa would return a data table with zero rows. Although the app provides the ability to select scenarios and models from both CMIP5 phases simultaneously and compare, this is not required. The user may elect to select from and explore GCM outputs from only one CMIP phase.</p>
+<p>There are also sensible implicit restrictions when making a composite model, though these are more decisively imposed by me and not by the fact that it would generate an empty data table. When averaging GCMs together, averaging will only occur within a CMIP phase. The user cannot average CMIP3 models with CMIP5 models. If selecting only from one phase, the user may average any set of models, up to all five that are available.</p>
+<p>The compositing does not average across scenarios if multiple scenarios are selected. Selecting four models and two scenarios would result in two four-model composite GCMs. However, if selecting models from both CMIP3 and CMIP5, it is not enough that averaging between phases be prohibited. It is also the case that the same number of individual GCMs must constitute the composite models from each phase. The user cannot make a composite model from two CMIP3 GCMs and another from five CMIP5 GCMs and then compare them when graphing. If the composite model checkbox is checked and unequal numbers of models have been selected from each CMIP phase, the averaging is simply ignored, which is evident in the resulting data table.</p>
+</div>
+<div id="optional-settings" class="section level4">
+<h4>Optional Settings</h4>
+<p>Additional data selection options which are not required include defining seasons and multi-decade periods. Since these are optional they are hidden from view unless they become applicable based on user selections of months and decades. Although months and decades are each assumed to be the full set if none are individually selected from their respective menus, seasonal and multi-decade specifications each require that the user explicitly select months and decades, respectively. If only one month or one decade are explicitly selected, seasonal and multi-decade aggregation remain unavailable because there is nothing to aggregate yet.</p>
+<p>If the user explicitly selects two or more consecutive months, a checkbox appears for making equal-length seasons from the selected months. By default it is unchecked. Once checked, a selection menu appears offering the possible number of equal-length seasons which can be defined based on the selected months. One-month seasons are disallowed because they are trivial and change nothing. Any other whole number factor will appear in the menu. For example, if six consecutive months are selected, the options include aggregating to three 2-month seasons, two 3-month seasons, or one 6-month season. If a month is added to the list, bring the total months to seven, the number of seasons available will drop to only the one 7-month season. The rules are similar with respect to multi-decade periods.</p>
+<p>If the months or decades selected are not all consecutive (e.g., January, February, and July, or 1950s, 1960s, 1990s, and 2000s), each continuous subset is checked separately. If each continuous subset is not of equal length, aggregation is not allowed and the option to combine selections does not display. For equal-length subsets, the number of equal-length seasons available to choose from is based on the individual subsets, not the entire selection. This ensures no overlapping of data which are not included, e.g., in the example above, calling a multi-decade period “1950s-2000s”. In this example two 20-year periods can be defined, but a single 40-year period cannot.</p>
+</div>
+<div id="generating-a-data-subset" class="section level4">
+<h4>Generating a Data Subset</h4>
+<p>In order to generate a data subset the user must fill in all selection criteria at least minimally. This means at least one of the two climate variables, at least one corresponding scenario-model pair from a single CMIP phase, a valid date range, and at least one location. Although the user may continue to select multiple climate variables, phases, scenarios, models, months, years, and locations, as soon as the minimal criteria are met, a <code>Subset Data</code> button will appear at the bottom left corner of the data selection panel. It will not be made available if insufficient information has been provided to generate a valid subset of data.</p>
+<p>When this button is pressed, the app subsets the original data table and returns only what the user has requested. At this time a header of the first several rows of the data table will display to the right indicating successful completion. There is also a progress bar in the upper right corner of the browser. Also at this time, now that the data subset is available, the plot options panel appears below the data selection panel. The data selection panel not being needed any longer, automatically minimizes, and this makes more room for the plot options panel and helps to keep it alongside the plot. The user can expand the data selection panel and make changes to their data at any time.</p>
+</div>
+<div id="data-tables" class="section level4">
+<h4>Data Tables <img style="float: right" src="img/dataTable.png"/></h4>
+<p>The data tables do not offer much direct use. They are also not very exciting when juxtaposed with aesthetically pleasing graphics that can also be remade in novel, seemingly endless, ways. One could argue that they are simply in the way. However, if you do a lot of quality control on data, you will understand that there is much to be said for dumping a little of it on the page and providing the option to query it directly. I take some comfort in knowing that the plot I make is actually of the data that I think it is, and that things are working as they should. It would be bad to graph the wrong data subset due to a bug in the code. Nothing in the plot really tells you that you have the right data.</p>
+</div>
+<div id="downloading-data" class="section level4">
+<h4>Downloading Data</h4>
+<p>Once the <code>Subset Data</code> button is pressed, another element to appear is the adjacent <code>Download Data</code> button. This allows the user to download the data subset as a CSV file.</p>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

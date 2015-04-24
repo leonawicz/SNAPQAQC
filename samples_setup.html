@@ -19,43 +19,37 @@
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
 <style type="text/css">
-
 /* padding for bootstrap navbar */
 body {
-  padding-top: 50px;
-  padding-bottom: 40px;
+padding-top: 50px;
+padding-bottom: 40px;
 }
-@media (max-width: 979px) {
-  body {
-    padding-top: 0;
-  }
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-/* offset scroll position for anchor links (for fixed navbar)  */
-@media (min-width: 980px) {
-  .section h2 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
-  .section h3 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-
 /* don't use link color in navbar */
 .dropdown-menu>li>a {
-  color: black;
+color: black;
 }
-
 /* some padding for disqus */
 #disqus_thread {
-  margin-top: 45px;
+margin-top: 45px;
 }
-
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
-
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 
@@ -128,40 +122,31 @@ img {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
-          <li><a href="code_sankey.html">Code flow</a></li>
-
           <li class="dropdown">
-            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
               <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
+              <li class="dropdown-header">GCM organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li class="dropdown-header">Extraction</li>
-              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
-              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
-              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
-              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
-            </ul>
-
-          <li class="dropdown">
-            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
@@ -172,9 +157,48 @@ img {
             </ul>
 
           <li class="dropdown">
-            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
@@ -217,104 +241,50 @@ img {
 <div id="related-items" class="section level2">
 <h2>Related items</h2>
 <div id="files-and-data" class="section level3">
-<h3>Files and Data</h3>
+<h3>Files and data</h3>
 <p>The input files are produced by the <strong>R</strong> script, <code>AR4_AR5_extract.R</code>. <code>samples_setup.R</code> assumes a complete and successful run of this precursory code.</p>
 <p>The <code>AR4_AR5_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
 <p>For this reason, <code>samples_setup.R</code> has two companion <strong>R</strong> scripts which share the parent script, <code>AR4_AR5_extract.R</code>. These are <code>cities_setup.R</code> and <code>stats_setup.R</code>.</p>
-<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted CRU 3.1 data.</p>
+<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted CRU 3.x data.</p>
 </div>
 </div>
 <div id="r-code" class="section level2">
 <h2><strong>R</strong> Code</h2>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
-<p>Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.1 files. SNAP’s ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples&quot;</span>)
+<p>Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.x files. SNAP’s ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples&quot;</span>)
 
+<span class="kw">library</span>(parallel)
+<span class="kw">library</span>(reshape2)
 <span class="kw">library</span>(data.table)
 
 files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;regions_samples.RData$&quot;</span>)
 files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="dv">1</span>, <span class="dv">3</span>) !=<span class="st"> &quot;CRU&quot;</span>]
+lab &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, <span class="kw">strsplit</span>(files, <span class="st">&quot;_&quot;</span>))[, <span class="dv">1</span>:<span class="dv">4</span>]
+scen.levels &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SRES B1&quot;</span>, <span class="st">&quot;SRES A1B&quot;</span>, <span class="st">&quot;SRES A2&quot;</span>, <span class="st">&quot;RCP 4.5&quot;</span>, <span class="st">&quot;RCP 6.0&quot;</span>, <span class="st">&quot;RCP 8.5&quot;</span>)
 
-models &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;CCCMAcgcm31&quot;</span>, <span class="st">&quot;CCSM4&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;GFDLcm21&quot;</span>, <span class="st">&quot;GFDLcm3&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MIROC32m&quot;</span>, 
-    <span class="st">&quot;GISSe2-r&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MPIecham5&quot;</span>, <span class="st">&quot;IPSLcm5a-lr&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ukmoHADcm3&quot;</span>, <span class="st">&quot;MRIcgcm3&quot;</span>))</code></pre>
+swapVar &lt;-<span class="st"> </span>function(x) switch(x, <span class="dt">pr =</span> <span class="st">&quot;Precipitation&quot;</span>, <span class="dt">tas =</span> <span class="st">&quot;Temperature&quot;</span>)
+swapScen &lt;-<span class="st"> </span>function(x) switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;SRES B1&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;SRES A1B&quot;</span>, 
+    <span class="dt">sresa2 =</span> <span class="st">&quot;SRES A2&quot;</span>, <span class="dt">rcp45 =</span> <span class="st">&quot;RCP 4.5&quot;</span>, <span class="dt">rcp60 =</span> <span class="st">&quot;RCP 6.0&quot;</span>, <span class="dt">rcp85 =</span> <span class="st">&quot;RCP 8.5&quot;</span>)
+swapMod &lt;-<span class="st"> </span>function(x) {
+    switch(x, <span class="st">`</span><span class="dt">cccma-cgcm3-1-t47</span><span class="st">`</span> =<span class="st"> &quot;CCCMAcgcm31&quot;</span>, <span class="st">`</span><span class="dt">gfdl-cm2-1</span><span class="st">`</span> =<span class="st"> &quot;GFDLcm21&quot;</span>, 
+        <span class="st">`</span><span class="dt">miroc3-2-medres</span><span class="st">`</span> =<span class="st"> &quot;MIROC32m&quot;</span>, <span class="st">`</span><span class="dt">mpi-echam5</span><span class="st">`</span> =<span class="st"> &quot;MPIecham5&quot;</span>, <span class="st">`</span><span class="dt">ukmo-hadcm3</span><span class="st">`</span> =<span class="st"> &quot;ukmoHADcm3&quot;</span>, 
+        <span class="dt">CCSM4 =</span> <span class="st">&quot;CCSM4&quot;</span>, <span class="st">`</span><span class="dt">GFDL-CM3</span><span class="st">`</span> =<span class="st"> &quot;GFDLcm3&quot;</span>, <span class="st">`</span><span class="dt">GISS-E2-R</span><span class="st">`</span> =<span class="st"> &quot;GISSe2-r&quot;</span>, <span class="st">`</span><span class="dt">IPSL-CM5A-LR</span><span class="st">`</span> =<span class="st"> &quot;IPSLcm5a-lr&quot;</span>, 
+        <span class="st">`</span><span class="dt">MRI-CGCM3</span><span class="st">`</span> =<span class="st"> &quot;MRIcgcm3&quot;</span>)
+}
+
+lab[, <span class="dv">2</span>:<span class="dv">4</span>] &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">sapply</span>(lab[, <span class="dv">2</span>], swapScen), <span class="kw">sapply</span>(lab[, <span class="dv">3</span>], swapMod), <span class="kw">sapply</span>(lab[, 
+    <span class="dv">4</span>], swapVar))
+<span class="kw">rm</span>(swapVar, swapScen, swapMod)</code></pre>
 <div id="load-and-compile-data" class="section level4">
 <h4>Load and compile data</h4>
-<pre class="sourceCode r"><code class="sourceCode r">dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(files))
-for (i in <span class="dv">1</span>:<span class="kw">length</span>(files)) {
-    <span class="kw">load</span>(files[i])
-    m &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, samples.out)
-    n &lt;-<span class="st"> </span><span class="kw">nrow</span>(m)
-    dlist[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Phase =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;CMIP3&quot;</span>, <span class="st">&quot;CMIP5&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">4</span> *<span class="st"> </span>
-<span class="st">        </span><span class="kw">length</span>(samples.out))), <span class="dt">Scenario =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;SRES B1&quot;</span>, <span class="st">&quot;SRES A1B&quot;</span>, <span class="st">&quot;SRES A2&quot;</span>, 
-        <span class="st">&quot;RCP 4.5&quot;</span>, <span class="st">&quot;RCP 6.0&quot;</span>, <span class="st">&quot;RCP 8.5&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">12</span> *<span class="st"> </span><span class="kw">length</span>(samples.out))), 
-        <span class="dt">Model =</span> <span class="kw">rep</span>(models[[i]], <span class="dt">each =</span> n/(<span class="dv">4</span> *<span class="st"> </span><span class="kw">length</span>(samples.out))), <span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Temperature&quot;</span>, 
-            <span class="st">&quot;Precipitation&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">2</span> *<span class="st"> </span><span class="kw">length</span>(samples.out))), m, <span class="dt">stringsAsFactors =</span> F)
-    <span class="kw">print</span>(i)
-}
-d &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">rbindlist</span>(dlist))
-<span class="kw">rm</span>(samples.out, n, m, i, files, models, dlist)
-<span class="kw">names</span>(d)[<span class="dv">6</span>:<span class="kw">ncol</span>(d)] &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">names</span>(d)[<span class="dv">6</span>:<span class="kw">ncol</span>(d)])
-<span class="kw">gc</span>()
-<span class="co"># save.image(&#39;../../final/region_samples_data.RData&#39;)</span></code></pre>
 </div>
 <div id="organize-data-frame-and-support-objects" class="section level4">
 <h4>Organize data frame and support objects</h4>
-<pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span>function(i, n, index, multiplier) {
-    name.tmp &lt;-<span class="st"> </span>samples.names[i]
-    rsd1 &lt;-<span class="st"> </span><span class="kw">subset</span>(d, Location ==<span class="st"> </span>name.tmp)
-    scen.levels &lt;-<span class="st"> </span><span class="kw">unique</span>(rsd1$Scenario)
-    rsd1 &lt;-<span class="st"> </span><span class="kw">melt</span>(rsd1, <span class="dt">id.vars =</span> <span class="kw">names</span>(rsd1)[<span class="dv">1</span>:<span class="dv">5</span>], <span class="dt">measure.vars =</span> <span class="kw">names</span>(rsd1)[-<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">5</span>)], 
-        <span class="dt">variable.name =</span> <span class="st">&quot;Time&quot;</span>, <span class="dt">value.name =</span> <span class="st">&quot;Vals_Probs&quot;</span>)
-    rsd1$vals.ind &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">c</span>(T, F), <span class="dt">each =</span> n), <span class="dt">length =</span> <span class="kw">nrow</span>(rsd1))
-    rsd1$dcastIsDumb &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>:n, <span class="dt">length =</span> <span class="kw">nrow</span>(rsd1))
-    rsd1 &lt;-<span class="st"> </span><span class="kw">dcast</span>(rsd1, Phase +<span class="st"> </span>Scenario +<span class="st"> </span>Model +<span class="st"> </span>Var +<span class="st"> </span>Location +<span class="st"> </span>Time +<span class="st"> </span>dcastIsDumb ~<span class="st"> </span>
-<span class="st">        </span>vals.ind, <span class="dt">value.var =</span> <span class="st">&quot;Vals_Probs&quot;</span>)
-    <span class="kw">names</span>(rsd1)[<span class="dv">9</span>:<span class="dv">8</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Prob&quot;</span>)
-    rsd1$Year &lt;-<span class="st"> </span><span class="kw">substr</span>(<span class="kw">as.character</span>(rsd1$Time), <span class="dv">1</span>, <span class="dv">4</span>)
-    rsd1$Month &lt;-<span class="st"> </span><span class="kw">substr</span>(<span class="kw">as.character</span>(rsd1$Time), <span class="dv">6</span>, <span class="dv">8</span>)
-    rsd1$Month &lt;-<span class="st"> </span><span class="kw">factor</span>(rsd1$Month, <span class="dt">levels =</span> month.abb)
-    rsd1$Scenario &lt;-<span class="st"> </span><span class="kw">factor</span>(rsd1$Scenario, <span class="dt">levels =</span> scen.levels)
-    rsd1$Decade &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(rsd1$Year, <span class="dv">1</span>, <span class="dv">3</span>), <span class="dv">0</span>)
-    rsd1 &lt;-<span class="st"> </span>rsd1[<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">10</span>:<span class="dv">12</span>)]
-    <span class="kw">rownames</span>(rsd1) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    grp &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">names</span>(region.names.out), <span class="dt">times =</span> <span class="kw">sapply</span>(region.names.out, length))[i]
-    <span class="kw">dir.create</span>(outDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;../../final/region_files_GCM/samples&quot;</span>, grp, 
-        name.tmp), <span class="dt">recursive =</span> T, <span class="dt">showWarnings =</span> F)
-    rsd1$Val &lt;-<span class="st"> </span><span class="kw">round</span>(rsd1$Val, <span class="dv">1</span>) *<span class="st"> </span>multiplier[<span class="dv">1</span>]
-    rsd1$Prob &lt;-<span class="st"> </span><span class="kw">round</span>(rsd1$Prob, <span class="dv">8</span>) *<span class="st"> </span>multiplier[<span class="dv">2</span>]
-    if (i ==<span class="st"> </span><span class="dv">1</span>) 
-        x &lt;-<span class="st"> </span><span class="kw">subset</span>(rsd1, Var ==<span class="st"> &quot;Precipitation&quot;</span>) else x &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    <span class="kw">gc</span>()
-    rsd &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">subset</span>(rsd1, Var ==<span class="st"> &quot;Precipitation&quot;</span>)[, index])
-    <span class="kw">names</span>(rsd) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    <span class="kw">save</span>(rsd, <span class="dt">file =</span> <span class="kw">paste0</span>(outDir, <span class="st">&quot;/&quot;</span>, <span class="st">&quot;precipitation.RData&quot;</span>))
-    <span class="kw">gc</span>()
-    rsd &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">subset</span>(rsd1, Var ==<span class="st"> &quot;Temperature&quot;</span>)[, index])
-    <span class="kw">names</span>(rsd) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    <span class="kw">save</span>(rsd, <span class="dt">file =</span> <span class="kw">paste0</span>(outDir, <span class="st">&quot;/&quot;</span>, <span class="st">&quot;temperature.RData&quot;</span>))
-    <span class="kw">gc</span>()
-    <span class="kw">print</span>(i)
-    x
-}</code></pre>
 </div>
 <div id="save-output-files" class="section level4">
 <h4>Save output files</h4>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(reshape2)
-<span class="kw">library</span>(parallel)
-samples.columns &lt;-<span class="st"> </span><span class="dv">6</span>:<span class="dv">7</span>
-samples.multipliers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="fl">1e+08</span>)
-
-out &lt;-<span class="st"> </span><span class="kw">mclapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(samples.names), f, <span class="dt">n =</span> n.samples, <span class="dt">index =</span> samples.columns, 
-    <span class="dt">multiplier =</span> samples.multipliers, <span class="dt">mc.cores =</span> <span class="dv">27</span>)
-gcm.samples.df &lt;-<span class="st"> </span>out[[<span class="dv">1</span>]]
-gcm.samples.df[, samples.columns] &lt;-<span class="st"> </span><span class="ot">NA</span>
-gcm.samples.df$Var &lt;-<span class="st"> </span><span class="ot">NA</span>
-gcm.samples.df$Location &lt;-<span class="st"> </span><span class="ot">NA</span>
-
-<span class="kw">rm</span>(d, f, out)
-<span class="kw">load</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)
-<span class="kw">save.image</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)</code></pre>
 </div>
 </div>
 </div>

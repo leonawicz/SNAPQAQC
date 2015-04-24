@@ -10,7 +10,7 @@
 
 
 
-<title>CRU 3.1 Data Extraction Code</title>
+<title>CRU 3.x Data Extraction Code</title>
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,43 +19,37 @@
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
 <style type="text/css">
-
 /* padding for bootstrap navbar */
 body {
-  padding-top: 50px;
-  padding-bottom: 40px;
+padding-top: 50px;
+padding-bottom: 40px;
 }
-@media (max-width: 979px) {
-  body {
-    padding-top: 0;
-  }
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-/* offset scroll position for anchor links (for fixed navbar)  */
-@media (min-width: 980px) {
-  .section h2 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
-  .section h3 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-
 /* don't use link color in navbar */
 .dropdown-menu>li>a {
-  color: black;
+color: black;
 }
-
 /* some padding for disqus */
 #disqus_thread {
-  margin-top: 45px;
+margin-top: 45px;
 }
-
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
-
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 
@@ -128,40 +122,31 @@ img {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
-          <li><a href="code_sankey.html">Code flow</a></li>
-
           <li class="dropdown">
-            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
               <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
+              <li class="dropdown-header">GCM organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li class="dropdown-header">Extraction</li>
-              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
-              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
-              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
-              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
-            </ul>
-
-          <li class="dropdown">
-            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
@@ -172,9 +157,48 @@ img {
             </ul>
 
           <li class="dropdown">
-            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
@@ -190,13 +214,13 @@ img {
   </div>
 
 <div id="header">
-<h1 class="title">CRU 3.1 Data Extraction Code</h1>
+<h1 class="title">CRU 3.x Data Extraction Code</h1>
 </div>
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The <code>CRU_extract.R</code> script extracts CRU 3.1 temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent. Optionally it also extracts data for specific point locations via the raster grid cell in which given spatial coordinates fall. Data are saved to <strong>R</strong> workspaces (.RData files) for analysis and graphing by subsequent <strong>R</strong> code.</p>
+<p>The <code>CRU_extract.R</code> script extracts CRU 3.x temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent. Optionally it also extracts data for specific point locations via the raster grid cell in which given spatial coordinates fall. Data are saved to <strong>R</strong> workspaces (.RData files) for analysis and graphing by subsequent <strong>R</strong> code.</p>
 <div id="motivation" class="section level3">
 <h3>Motivation</h3>
 <p>The primary motivation for this code is not just to extract regional and point data from a large number of high-resolution geotiffs, but to limit the routine recurrence and redundancy of such extractions. It allows for storing commonly required data in a more compact format that can be quickly shared and digested by other projects.</p>
@@ -205,7 +229,7 @@ img {
 <h3>Details</h3>
 <div id="capabilities" class="section level4">
 <h4>Capabilities</h4>
-<p>This script is set up to use parallel processing via the base <code>parallel</code> package and the function <code>mclapply</code> similar to its companion script, <code>AR4_AR5_extract.R</code>. However, there are some subtle differences. First, it processes precipitation and temperature back to back, serially. Between this and the fact that CRU 3.1 is a single data set, compared to the multiple climate models and scenarios, there is nothing remaining to parallelize across. The <code>mclapply</code> call only runs the extraction function on a single CPU core. But in the future this code can easily be extended in parallel across more than just CRU 3.1, should other comparable data products become available.</p>
+<p>This script is set up to use parallel processing via the base <code>parallel</code> package and the function <code>mclapply</code> similar to its companion script, <code>AR4_AR5_extract.R</code>. However, there are some subtle differences. First, it processes precipitation and temperature back to back, serially. Between this and the fact that CRU 3.x is a single data set, compared to the multiple climate models and scenarios, there is nothing remaining to parallelize across. The <code>mclapply</code> call only runs the extraction function on a single CPU core. But in the future this code can easily be extended in parallel across more than just CRU 3.x, should other comparable data products become available.</p>
 <p>The code ran be run strictly to obtain community data, regional data, or both. This allows for redoing only one type of extraction, for instance if new shapefiles or additional city locations are desired. It can be passed an arbitrary list of cities and/or regions.</p>
 </div>
 <div id="limitations" class="section level4">
@@ -215,7 +239,7 @@ img {
 </div>
 </div>
 <div id="files-and-data" class="section level3">
-<h3>Files and Data</h3>
+<h3>Files and data</h3>
 <p>The input files include 2-km Alaska-Canada extent data from 10 combined CMIP3 and CMIP5 downscaled GCMs as well as community locations and raster layer cell indices pertaining to various regional shapefile polygons. <code>CRU_extract.R</code> is called via SLURM script, <code>CRU_extract.slurm</code>.</p>
 <p>The <code>CRU_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
 <p>Each of these groups of outputs is handled separately by additional <strong>R</strong> scripts.</p>
@@ -232,7 +256,8 @@ img {
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)
 <span class="kw">library</span>(maptools)
 <span class="kw">library</span>(parallel)
-<span class="kw">library</span>(plyr)</code></pre>
+<span class="kw">library</span>(plyr)
+<span class="kw">library</span>(data.table)</code></pre>
 </div>
 <div id="command-line-arguments" class="section level4">
 <h4>Command line arguments</h4>
@@ -242,35 +267,43 @@ if (<span class="kw">length</span>(comArgs)) for (i in <span class="dv">1</span>
 if (!<span class="kw">exists</span>(<span class="st">&quot;domain&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;domain argument not provided. Must be either &#39;akcan2km&#39; or &#39;world10min&#39;&quot;</span>)
 if (!<span class="kw">exists</span>(<span class="st">&quot;regions&quot;</span>)) regions &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 if (!<span class="kw">exists</span>(<span class="st">&quot;cities&quot;</span>)) cities &lt;-<span class="st"> </span><span class="ot">FALSE</span>
-if (!(regions |<span class="st"> </span>cities)) <span class="kw">stop</span>(<span class="st">&quot;regions and cities both FALSE. Nothing to process.&quot;</span>)</code></pre>
+if (!(regions |<span class="st"> </span>cities)) <span class="kw">stop</span>(<span class="st">&quot;regions and cities both FALSE. Nothing to process.&quot;</span>)
+if (!<span class="kw">exists</span>(<span class="st">&quot;cru&quot;</span>)) cru &lt;-<span class="st"> &quot;32&quot;</span></code></pre>
 </div>
 <div id="sourced-code" class="section level4">
 <h4>Sourced code</h4>
 <pre class="sourceCode r"><code class="sourceCode r">if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) {
     <span class="co"># For regions and/or cities</span>
-    topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/AK_CAN_2km&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;historical/singleBand/CRU/cru_TS31/historical&quot;</span>))
+    if (<span class="kw">as.numeric</span>(cru) ==<span class="st"> </span><span class="dv">31</span>) 
+        topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/AK_CAN_2km&quot;</span>, <span class="kw">paste0</span>(<span class="st">&quot;historical/singleBand/CRU/cru_TS&quot;</span>, 
+            cru, <span class="st">&quot;/historical&quot;</span>))
+    if (<span class="kw">as.numeric</span>(cru) ==<span class="st"> </span><span class="dv">32</span>) 
+        topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/AK_CAN_2km&quot;</span>, <span class="kw">paste0</span>(<span class="st">&quot;historical/CRU/CRU_TS&quot;</span>, 
+            cru))
     if (regions) {
         <span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData&quot;</span>)
     } else cells_shp_list_5pct &lt;-<span class="st"> </span>region.names.out &lt;-<span class="st"> </span>n.shp &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv&quot;</span>)
 } else if (domain ==<span class="st"> &quot;world10min&quot;</span>) {
     <span class="co"># Currently for cities only</span>
-    topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/World/World_10min&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;historical/CRU/CRU_TS31&quot;</span>))  <span class="co"># files are not read, but metadata parsed from filenames list</span>
-    #### Need to insert a load() command for a locs object analogous to that above
-}</code></pre>
+    topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/World/World_10min&quot;</span>, <span class="kw">paste0</span>(<span class="st">&quot;historical/CRU/CRU_TS&quot;</span>, 
+        cru))  <span class="co"># files are not read, but metadata parsed from filenames list</span>
+    cells_shp_list_5pct &lt;-<span class="st"> </span>region.names.out &lt;-<span class="st"> </span>n.shp &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    #### Need to insert a load() command analogous to that above for regions
+}
+
+locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv&quot;</span>)</code></pre>
 </div>
 <div id="define-r-objects" class="section level4">
 <h4>Define <strong>R</strong> objects</h4>
 <pre class="sourceCode r"><code class="sourceCode r">if (<span class="kw">exists</span>(<span class="st">&quot;years&quot;</span>)) yr1 &lt;-<span class="st"> </span>years[<span class="dv">1</span>] else yr1 &lt;-<span class="st"> </span><span class="dv">1901</span>
-if (<span class="kw">exists</span>(<span class="st">&quot;years&quot;</span>)) yr2 &lt;-<span class="st"> </span><span class="kw">tail</span>(years, <span class="dv">1</span>) else yr2 &lt;-<span class="st"> </span><span class="dv">2009</span>
+if (<span class="kw">exists</span>(<span class="st">&quot;years&quot;</span>)) yr2 &lt;-<span class="st"> </span><span class="kw">tail</span>(years, <span class="dv">1</span>) else if (<span class="kw">as.numeric</span>(cru) ==<span class="st"> </span><span class="dv">32</span>) yr2 &lt;-<span class="st"> </span><span class="dv">2013</span> else yr2 &lt;-<span class="st"> </span><span class="dv">2009</span>
 years &lt;-<span class="st"> </span>yr1:yr2
 varid &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;tas&quot;</span>, <span class="st">&quot;pr&quot;</span>)
 
-<span class="co"># if(!is.null(cities)){ cities &lt;- subset(locs, pop &gt;= 1000,</span>
-<span class="co"># c(&#39;lon_albers&#39;,&#39;lat_albers&#39;)) d.cities &lt;- subset(locs, pop &gt;=</span>
-<span class="co"># 1000)[-c(which(names(locs) %in% c(&#39;lon_albers&#39;,&#39;lat_albers&#39;)))] }</span>
 if (cities) {
-    locs &lt;-<span class="st"> </span>locs[locs$pop &gt;<span class="st"> </span><span class="dv">10</span>, ]
+    if (domain !=<span class="st"> &quot;world10min&quot;</span>) 
+        locs &lt;-<span class="st"> </span><span class="kw">subset</span>(locs, region !=<span class="st"> &quot;NWT&quot;</span>)
+    <span class="co"># locs &lt;- locs[is.na(locs$pop) | locs$pop &gt; 10,]</span>
     l &lt;-<span class="st"> </span><span class="kw">paste</span>(locs$region, locs$loc)
     lu &lt;-<span class="st"> </span><span class="kw">unique</span>(l)
     dup &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">duplicated</span>(l))
@@ -290,12 +323,11 @@ if (cities) {
     d.cities &lt;-<span class="st"> </span>cities[-<span class="kw">c</span>(<span class="kw">which</span>(<span class="kw">names</span>(locs) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lon_albers&quot;</span>, <span class="st">&quot;lat_albers&quot;</span>)))]
     cities &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) 
         <span class="kw">cbind</span>(cities$lon_albers, cities$lat_albers) else if (domain ==<span class="st"> &quot;world10min&quot;</span>) 
-        <span class="kw">cbind</span>(cities$lon, cities$lat)
-    
-}
+        <span class="kw">cbind</span>(cities$lon +<span class="st"> </span><span class="dv">360</span>, cities$lat)  <span class="co"># +360 for PC lat lon rasters</span>
+} else cities &lt;-<span class="st"> </span><span class="ot">NULL</span>
 
 seasons &lt;-<span class="st"> &quot;annual&quot;</span>
-n.samples &lt;-<span class="st"> </span><span class="dv">20</span>
+n.samples &lt;-<span class="st"> </span><span class="dv">100</span>
 n2 &lt;-<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>n.samples
 agg.stat.colnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;SD&quot;</span>, <span class="kw">paste0</span>(<span class="st">&quot;Pct_&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;05&quot;</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">75</span>, 
     <span class="dv">90</span>, <span class="dv">95</span>)))
@@ -306,13 +338,14 @@ agg.stat.names[agg.stat.names ==<span class="st"> &quot;50th percentile&quot;</s
 <div id="support-functions" class="section level4">
 <h4>Support functions</h4>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Density estimation</span>
-denFun &lt;-<span class="st"> </span>function(x, n, variable) {
+denFun &lt;-<span class="st"> </span>function(x, n, <span class="dt">adj =</span> <span class="fl">0.25</span>, variable) {
     x &lt;-<span class="st"> </span>x[!<span class="kw">is.na</span>(x)]
     dif &lt;-<span class="st"> </span><span class="kw">diff</span>(<span class="kw">range</span>(x))
-    z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>dif, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span>
+    z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> adj, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="kw">min</span>(x) -<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>dif, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span>
 <span class="st">        </span><span class="fl">0.05</span> *<span class="st"> </span>dif)
     if (variable ==<span class="st"> &quot;pr&quot;</span> &amp;&amp;<span class="st"> </span><span class="kw">any</span>(z$x &lt;<span class="st"> </span><span class="dv">0</span>)) 
-        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> <span class="dv">2</span>, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>dif)
+        z &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">adjust =</span> adj, <span class="dt">n =</span> n, <span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="kw">max</span>(x) +<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>
+<span class="st">            </span>dif)
     <span class="kw">as.numeric</span>(<span class="kw">c</span>(z$x, z$y))
 }</code></pre>
 <hr />
@@ -334,8 +367,6 @@ getData &lt;-<span class="st"> </span>function(i, varid, <span class="dt">cells.
         if (!<span class="kw">is.null</span>(cities)) {
             r &lt;-<span class="st"> </span><span class="kw">readAll</span>(<span class="kw">raster</span>(files[<span class="dv">1</span>]))  <span class="co"># template done</span>
             cells_cities &lt;-<span class="st"> </span><span class="kw">extract</span>(r, cities, <span class="dt">cellnumbers =</span> T)[, <span class="dv">1</span>]
-            rank_cells_cities &lt;-<span class="st"> </span><span class="kw">rank</span>(cells_cities)
-            cells_cities &lt;-<span class="st"> </span><span class="kw">sort</span>(cells_cities)
             <span class="kw">print</span>(<span class="st">&quot;Raster cell indices for point locations obtained.&quot;</span>)
         }
         
@@ -392,10 +423,8 @@ getData &lt;-<span class="st"> </span>function(i, varid, <span class="dt">cells.
                 }
                 <span class="kw">gc</span>()
             }
-            if (!<span class="kw">is.null</span>(cities)) {
-                m.cities[, (<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>))] &lt;-<span class="st"> </span>mat[cells_cities[rank_cells_cities], 
-                  ]
-            }
+            if (!<span class="kw">is.null</span>(cities)) 
+                m.cities[, (<span class="dv">1</span>:n) +<span class="st"> </span>(<span class="dv">12</span> *<span class="st"> </span>(b -<span class="st"> </span><span class="dv">1</span>))] &lt;-<span class="st"> </span>mat[cells_cities, ]
             <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">&quot;Process&quot;</span>, i, <span class="st">&quot;: &quot;</span>, <span class="kw">unique</span>(yr.tmp)[b]))
         }
         if (p ==<span class="st"> </span><span class="dv">1</span>) {
@@ -488,38 +517,34 @@ for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
             <span class="kw">print</span>(<span class="kw">length</span>(stats.out) -<span class="st"> </span>i)
         }
         <span class="kw">save</span>(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames, 
-            <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats/&quot;</span>, 
-                <span class="st">&quot;CRU31&quot;</span>, <span class="st">&quot;_&quot;</span>, seasons[<span class="dv">1</span>], <span class="st">&quot;_regions_stats.RData&quot;</span>))
+            <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/&quot;</span>, 
+                <span class="st">&quot;CRU&quot;</span>, cru, <span class="st">&quot;_annual_regions_stats.RData&quot;</span>))
         
         <span class="co"># regional samples</span>
         samples &lt;-<span class="st"> </span><span class="kw">lapply</span>(results, function(x) x[[<span class="dv">1</span>]][[<span class="st">&quot;samples&quot;</span>]])
-        list2df &lt;-<span class="st"> </span>function(x) {
+        samples &lt;-<span class="st"> </span>samples[[<span class="dv">1</span>]]
+        list2df &lt;-<span class="st"> </span>function(x, yr_mo) {
             x &lt;-<span class="st"> </span><span class="kw">ldply</span>(x, data.frame)
-            x[, <span class="st">&quot;.id&quot;</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(x[, <span class="st">&quot;.id&quot;</span>], <span class="kw">names</span>(x)[<span class="dv">2</span>], <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)
-            <span class="kw">names</span>(x) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Location&quot;</span>, <span class="kw">paste</span>(<span class="st">&quot;T&quot;</span>, <span class="dv">1</span>:(<span class="kw">ncol</span>(x) -<span class="st"> </span><span class="dv">1</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>))
+            <span class="kw">names</span>(x) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Location&quot;</span>, yr_mo)
             x
         }
-        for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(samples)) for (l2 in <span class="dv">1</span>:<span class="kw">length</span>(samples[[l1]])) samples[[l1]][[l2]] &lt;-<span class="st"> </span><span class="kw">list2df</span>(samples[[l1]][[l2]])
-        for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(samples)) samples[[l1]] &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, samples[[l1]])
-        samples.names &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="kw">unique</span>(samples[[<span class="dv">1</span>]]$Location), <span class="st">&quot;_&quot;</span>), 
-            <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>)
-        samples &lt;-<span class="st"> </span>samples[[<span class="dv">1</span>]]
+        for (l1 in <span class="dv">1</span>:<span class="kw">length</span>(samples)) samples[[l1]] &lt;-<span class="st"> </span><span class="kw">list2df</span>(samples[[l1]], 
+            <span class="dt">yr_mo =</span> <span class="kw">paste</span>(results.years, month.abb, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>))
+        samples &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(samples)
+        samples.names &lt;-<span class="st"> </span><span class="kw">unique</span>(samples$Location)
         mid &lt;-<span class="st"> </span>(<span class="kw">ncol</span>(samples) -<span class="st"> </span><span class="dv">1</span>)/<span class="dv">2</span> +<span class="st"> </span><span class="dv">1</span>
         names.hold &lt;-<span class="st"> </span><span class="kw">names</span>(samples)[<span class="dv">1</span>:mid]
         samples &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Location =</span> samples$Location, <span class="kw">rbind</span>(<span class="kw">as.matrix</span>(samples[, 
             <span class="dv">2</span>:mid]), <span class="kw">as.matrix</span>(samples[, (mid +<span class="st"> </span><span class="dv">1</span>):<span class="kw">ncol</span>(samples)])))
         samples$Location &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(samples.names, <span class="dt">each =</span> n2))
-        
-        <span class="kw">names</span>(samples)[-<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(results.years[<span class="dv">1</span>:(<span class="kw">length</span>(results.years)/<span class="dv">2</span>)], 
-            month.abb, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)
         samples.out &lt;-<span class="st"> </span><span class="kw">list</span>()
         for (i in <span class="dv">1</span>:<span class="kw">length</span>(samples.names)) {
             samples.out[[i]] &lt;-<span class="st"> </span><span class="kw">subset</span>(samples, Location ==<span class="st"> </span>samples.names[i])
             <span class="kw">rownames</span>(samples.out[[i]]) &lt;-<span class="st"> </span><span class="ot">NULL</span>
         }
         <span class="kw">names</span>(samples.out) &lt;-<span class="st"> </span>samples.names
-        <span class="kw">save</span>(samples.out, samples.names, region.names.out, n.samples, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples/&quot;</span>, 
-            <span class="st">&quot;CRU31&quot;</span>, <span class="st">&quot;_&quot;</span>, seasons[<span class="dv">1</span>], <span class="st">&quot;_regions_samples.RData&quot;</span>))
+        <span class="kw">save</span>(samples.out, samples.names, region.names.out, n.samples, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/&quot;</span>, 
+            <span class="st">&quot;CRU&quot;</span>, cru, <span class="st">&quot;_annual_regions_samples.RData&quot;</span>))
         
     }
     if (k ==<span class="st"> </span><span class="dv">2</span> &amp;<span class="st"> </span><span class="kw">is.matrix</span>(cities)) {
@@ -533,8 +558,8 @@ for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
         for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats.out)) <span class="kw">rownames</span>(stats.out[[i]]) &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">seq</span>(yr1, 
             yr2), <span class="dt">each =</span> <span class="dv">12</span>), <span class="kw">nrow</span>(cities)), <span class="kw">length</span>(varid))
         d &lt;-<span class="st"> </span>stats.out[[<span class="dv">1</span>]]
-        <span class="kw">save</span>(d, d.cities, results.years, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities/&quot;</span>, 
-            <span class="st">&quot;CRU31_annual_cities_batch&quot;</span>, cities.batch, <span class="st">&quot;_&quot;</span>, domain, <span class="st">&quot;.RData&quot;</span>))
+        <span class="kw">save</span>(d, d.cities, results.years, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/&quot;</span>, 
+            <span class="st">&quot;CRU&quot;</span>, cru, <span class="st">&quot;_annual_cities_batch&quot;</span>, cities.batch, <span class="st">&quot;_&quot;</span>, domain, <span class="st">&quot;.RData&quot;</span>))
     }
 }</code></pre>
 </div>

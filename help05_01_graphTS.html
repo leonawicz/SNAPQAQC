@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/flatly.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+<div id="graphing-time-series-plots" class="section level3">
+<h3>Graphing: Time Series Plots</h3>
+<p>There are five classes of plots available: <code>Time Series Plots</code>, <code>Scatter Plots</code>, <code>Heat Maps</code> assorted plots more specifically designed for looking at <code>Variability</code>, and <code>Distributions</code>. These classes are not mutually exclusive. For instance, it is easy enough on the <code>Variability</code> plot tab for the user to select plot options to generate a time series plot that specifically highlights variability through time, in ways not fully available on the general <code>Time Series</code> plot tab.</p>
+</div>
+</div>
+<div id="section-2" class="section level2">
+<h2></h2>
+<p><img class="centered" src="img/plotTS_example_1_black.png" width="900"/></p>
+</div>
+<div id="section-3" class="section level2">
+<h2></h2>
+<p>Many of the options are redundant to all plot types whereas others are unique. I will discuss them all below, but I won’t become repetitive. The time series description will be most in depth. Subsequent plot classes will benefit from redundant options and behaviour.</p>
+<div id="x-axis" class="section level4">
+<h4>X-axis</h4>
+<p>The y-axis will be the selected climate variable, temperature or precipitation. For this reason there is only an x-axis choice, <code>X-axis (time)</code>, at the top of the plot options panel when on the <code>Time Series</code> plot tab. Since these are time series plots, the x-axis is always time. The user may select month, year, or decade. This is a good place to point out the importance of thinking about what we want to graph. For example, if the user selects only January data across a number of years, it doesn’t make sense to use <code>Month</code> as the x-axis variable, unless they really want to see the vertical spread of all their years’ January values clustered at a single x-axis tick mark. But the app <em>will</em> allow the user to do this if so desired!</p>
+</div>
+<div id="grouping" class="section level4">
+<h4>Grouping</h4>
+<p>Now things get more interesting. The grouping variable. This is a factor (categorical variable) with multiple levels. The text above the selection menu, <code>Group/color by:</code> suggests the use can color code data in a plot by different levels of a factor. This list populates with any factors in the user’s defined data subset which include at least two distinct levels (otherwise there is nothing to color differently). By default no grouping variable is selected. If one is chosen, color options will immediately appear lower in the plot options panel. They remain hidden if they are not applicable. Note that it is possible to select such a minimal amount of data that there will be no factors with multiple levels. In such a case the <code>Group/color by:</code> menu will not appear.</p>
+</div>
+<div id="faceting" class="section level4">
+<h4>Faceting</h4>
+<p>To facet is to break out different classes of data into multiple panels in a plot. The <code>Facet/panel by:</code> title of this menu hints at this purpose. Like grouping, the faceting variable must be categorical with multiple levels present in the data. The default is no faceting and as with grouping, if no multi-level factors are present in the user’s data subset, this menu will not appear. All the same options available to group by are available to facet by, less any variable currently selected as a grouping variable (this last part is subject to change). As a result, an update to the <code>Group/color by:</code> by the user will force a reset/update to <code>Facet/panel by:</code> Also, if the data subset contains only one multi-level factor, both grouping and faceting options are available. However, in this special case, if that variable is selected for grouping, the faceting menu must vanish because no options remain.</p>
+</div>
+<div id="details" class="section level4">
+<h4>Details</h4>
+<p>Some variables available to group or facet by include those available under <code>X-axis (time)</code>. The user is prohibited from grouping or faceting by year as this often results in too many colors or panels, respectively. However, the user can certainly group or facet by month or decade. If one of these two is in use as the x-axis variable, it will not be available for grouping or faceting (this is subject to change).</p>
+<p>Dependent on the <code>X-axis (time),</code>Group/color by:<code>, and</code>Facet/panel by:` selections, and the user-defined data subset, there may remain additional variables which would be pooled together in a graph such that they would not be uniquely identifiable. Say the data subset contains multiple levels of several variables. For example, three months, five models, and two locations. The user may elect to use years for the x-axis, group by model, and panel by location. This leaves three different months of data in the plot undistinguished from one another. The colors are for the different models. The side by side panels are for contrasting the two locations. Now there will be three points in the graph at each x-axis tick mark, and or lines for each. Just below the x-axis, grouping, and faceting menus text will appear to help the user keep track of any pooled variables.</p>
+</div>
+<div id="checkbox-options" class="section level4">
+<h4>Checkbox Options</h4>
+<p>Each plot type offers a number of additional options. The first few options, <code>Title</code>, <code>Panel text</code>, and <code>Show CRU 3.2</code> are common available for all plots. When checked, the plot displays with a title, any in-panel text annotations (if applicable to the plot and/or data), and includes CRU data, respectively.</p>
+<p>Next are the <code>Show points</code>, <code>Jitter points</code>, and <code>Show lines</code> checkboxes. Showing points and lines is clear. Jittering the point data is useful for when several points lie directly on top of one another given a discrete x-axis variable.</p>
+<p>The <code>Trend lines</code> checkbox is distinct from the <code>Show lines</code> checkbox. The latter is for each observation and essentially connects points. The former shows a single line representing the mean of all the pooled data, or a set of differently colored lines in the case of grouping where each line is the average for a specific group.</p>
+<p>Log transformations are also available for non-negative valued variables. A value of one is added prior to taking the log so as to avoid taking the log of zero or obtaining negative values.</p>
+<p>The <code>Dark theme</code> checkbox is unchecked by default. When checked the plot will take on a black background and previously black colors such as text or lines will switch to white.</p>
+<p>There are also checkboxes showing the data range by group, <code>Group range</code>, and confidence bands around trend lines by group, <code>Confidence band</code>, but these are subject to change.</p>
+<p>After all of these checkboxes, the user has some additional drop down menus. First are <code>Transparency</code> and <code>Font size</code>. Depending on user data selections, this may be all that appears. If a grouping variable is present, there will also be a <code>Color palette</code> menu. Color palette selections are grouped by type of color leveling subheadings: nominal, increasing, centered, and cyclic. Depending on characteristics of the grouping variable such as type of factor and number of levels, not all may be shown. If the grouping variable is nominal (unordered, e.g., <code>Model</code>) only this option is available. If the grouping variable has too many levels, only certain options will appear as well. With enough levels the color becomes restricted to evenly spaced values of a given color spectrum to try to maintain as much visual distinction as possible. My suggestion is that if this is a problem, you should use any of the plethora of other options available to distinguish so many factor levels.</p>
+<p>When using a grouping variable, this is also the only time when the <code>Legend</code> positioning menu appears.</p>
+</div>
+<div id="special-case-precipitation" class="section level4">
+<h4>Special Case: Precipitation</h4>
+<p>Additional options are available when graphing precipitation time series because it has a real zero. We see precipitation as an amount. We cannot “add” temperatures together for instance. When precipitation is graphed, the user will see an additional <code>Barplot</code> checkbox. When making a time series of bars, the user may still overlay points, lines, and trend lines. A menu appears allowing the user to alternate between default horizontal and vertical bars. If grouping by a factor, the <code>Barplot style</code> menu appears to the right. The options are to <code>Dodge</code> (adjacent groupings), <code>Stack</code> (into a single bar), or <code>Fill</code> (show as relative proportions contributed by each group). When stacking or filling, it no longer makes sense to overlay points or lines because the scale has changes. Of course, the app will let the user do this is they really want to. But it will become apparent by the stretch of the graph axis that it is not very helpful to look at the data in this way. The app is very flexible. It will allow the user to plot many things which are clear and insightful, and many things which are not. Think before you plot.</p>
+</div>
+<div id="making-and-remaking-graphs" class="section level4">
+<h4>Making and Remaking Graphs</h4>
+<p>To plot, press the <code>Generate Plot</code> button. To download a currently displayed plot, press the <code>Download Plot</code> button. It’s that simple. To make changes to a plot, you can alter values in the plot options panel at any time. Due to natural dependencies, changing some options will force resets and updates of other options. Note that if you reopen the data selections menu and change anything you will be required to restart by completing a new data subset and making a new plot.</p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

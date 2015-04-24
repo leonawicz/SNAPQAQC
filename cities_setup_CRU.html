@@ -8,9 +8,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
+<meta name="author" content="Matthew Leonawicz" />
 
 
-<title>GCM Cities Setup Code</title>
+<title>CRU 3.x Cities Setup Code</title>
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -214,27 +215,28 @@ img {
   </div>
 
 <div id="header">
-<h1 class="title">GCM Cities Setup Code</h1>
+<h1 class="title">CRU 3.x Cities Setup Code</h1>
+<h4 class="author"><em>Matthew Leonawicz</em></h4>
 </div>
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The <code>cities_setup.R</code> script prepares extracted AR4/CMIP3 and AR5/CMIP5 community temperature and precipitation data for direct use.</p>
+<p>The <code>cities_setup_CRU.R</code> script prepares extracted CRU 3.x community temperature and precipitation data for direct use.</p>
 <div id="motivation" class="section level3">
 <h3>Motivation</h3>
 <p>This script transforms and organizes output data from a parent script into a format that is easier to work with in certain frameworks.</p>
 </div>
 <div id="details" class="section level3">
 <h3>Details</h3>
-<p>The data are extracted based on coordinates of communities. Using the 2-km Alaska_Canada extent, single 2-km raster grid cells in which coordinate pairs for each community fall are used as point location estimates. This is done for each of SNAP’s five models, from both CMIP3 and CMIP5, and three emissions scenarios and RCPs, respectively. Data manipulation is performed to organize the inputs into more usefully formatted outputs.</p>
+<p>The data are extracted based on coordinates of communities. Using the 2-km Alaska_Canada extent, single 2-km raster grid cells in which coordinate pairs for each community fall are used as point location estimates. This is done for SNAP’s CRU 3.x data set. Data manipulation is performed to organize the inputs into more usefully formatted outputs.</p>
 <div id="capabilities" class="section level4">
 <h4>Capabilities</h4>
 <p>This script uses parallel processing via the base <code>parallel</code> package and the function <code>mclapply</code>. It uses as many CPU cores as are available since it is parallelized across cities, which exceed the number of cores. It becomes serial beyond the number of cores simultaneously in use.</p>
 </div>
 <div id="limitations" class="section level4">
 <h4>Limitations</h4>
-<p>This code expects all ten models from CMIP3 and CMIP5 combined have been processed by the parent script. The code does not make use of <code>Rmpi</code> or similar options so it cannot take advantage of multi-node cluster parallel processing. This script is called by <code>cities_setup.slurm</code>. It is suggested that for large numbers of cities, batch processing be used, passing one batch of input files to this script via <code>cities_setup.slurm</code> at a time at the command line. In such a case, there will be sets of input .RData files covering all the models and scenarios, for each batch, where a batch includes a subset of the cities. It may be too much to include several thousand cities in a single batch, depending on other parameters of the upstream extractions such as the time period.</p>
+<p>This code expects CRU 3.x data have been processed by the parent script. The code does not make use of <code>Rmpi</code> or similar options so it cannot take advantage of multi-node cluster parallel processing.</p>
 </div>
 </div>
 </div>
@@ -242,31 +244,31 @@ img {
 <h2>Related items</h2>
 <div id="files-and-data" class="section level3">
 <h3>Files and data</h3>
-<p>The input files are produced by the <strong>R</strong> script, <code>AR4_AR5_extract.R</code>. <code>cities_setup.R</code> assumes a complete and successful run of this precursory code.</p>
-<p>The <code>AR4_AR5_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
-<p>For this reason, <code>cities_setup.R</code> has two companion <strong>R</strong> scripts which share the parent script, <code>AR4_AR5_extract.R</code>. These are <code>stats_setup.R</code> and <code>samples_setup.R</code>.</p>
-<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted CRU 3.x data.</p>
+<p>The input files are produced by the <strong>R</strong> script, <code>CRU_extract.R</code>. <code>cities_setup_CRU.R</code> assumes a complete and successful run of this precursory code.</p>
+<p>The <code>CRU_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
+<p>For this reason, <code>cities_setup_CRU.R</code> has two companion <strong>R</strong> scripts which share the parent script, <code>CRU_extract.R</code>. These are <code>stats_setup_CRU.R</code> and <code>samples_setup_CRU.R</code>.</p>
+<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted GCM data.</p>
 </div>
 </div>
 <div id="r-code" class="section level2">
 <h2><strong>R</strong> Code</h2>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
-<p>Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.x files. SNAP’s ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script. Cities may be processed in batches via command line argument.</p>
+<p>Setup is minimal. Set working directory. List CRU 3.x files.</p>
 <pre class="sourceCode r"><code class="sourceCode r">comArgs &lt;-<span class="st"> </span><span class="kw">commandArgs</span>(<span class="ot">TRUE</span>)
 if (<span class="kw">length</span>(comArgs)) for (i in <span class="dv">1</span>:<span class="kw">length</span>(comArgs)) <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> comArgs[[i]]))
 if (!<span class="kw">exists</span>(<span class="st">&quot;domain&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;domain argument not provided. Must be either &#39;akcan2km&#39; or &#39;world10min&#39;&quot;</span>)
 if (!<span class="kw">exists</span>(<span class="st">&quot;cities.batch&quot;</span>)) cities.batch &lt;-<span class="st"> </span><span class="dv">1</span>
+if (!<span class="kw">exists</span>(<span class="st">&quot;cru&quot;</span>)) cru &lt;-<span class="st"> &quot;32&quot;</span>
 
 <span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities&quot;</span>)
 
 <span class="kw">library</span>(data.table)
 
-files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="kw">paste0</span>(<span class="st">&quot;batch&quot;</span>, cities.batch, <span class="st">&quot;_&quot;</span>, domain, <span class="st">&quot;.RData$&quot;</span>))
-files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="dv">1</span>, <span class="dv">3</span>) !=<span class="st"> &quot;CRU&quot;</span>]
+files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="kw">paste0</span>(<span class="st">&quot;^CRU&quot;</span>, cru, <span class="st">&quot;.*.batch&quot;</span>, cities.batch, 
+    <span class="st">&quot;_&quot;</span>, domain, <span class="st">&quot;.RData$&quot;</span>))
 
-models &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;CCCMAcgcm31&quot;</span>, <span class="st">&quot;CCSM4&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;GFDLcm21&quot;</span>, <span class="st">&quot;GFDLcm3&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MIROC32m&quot;</span>, 
-    <span class="st">&quot;GISSe2-r&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MPIecham5&quot;</span>, <span class="st">&quot;IPSLcm5a-lr&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ukmoHADcm3&quot;</span>, <span class="st">&quot;MRIcgcm3&quot;</span>))</code></pre>
+models &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;CRU&quot;</span>, cru)</code></pre>
 <div id="load-and-compile-data" class="section level4">
 <h4>Load and compile data</h4>
 <pre class="sourceCode r"><code class="sourceCode r">dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(files))
@@ -275,55 +277,52 @@ for (i in <span class="dv">1</span>:<span class="kw">length</span>(files)) {
     cities.meta &lt;-<span class="st"> </span>d.cities
     m &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(d)
     n &lt;-<span class="st"> </span><span class="kw">length</span>(m)
-    dlist[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Phase =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;AR4&quot;</span>, <span class="st">&quot;AR5&quot;</span>), <span class="dt">each =</span> n/<span class="dv">4</span>), <span class="dt">Scenario =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;SRES B1&quot;</span>, 
-        <span class="st">&quot;SRES A1B&quot;</span>, <span class="st">&quot;SRES A2&quot;</span>, <span class="st">&quot;RCP 4.5&quot;</span>, <span class="st">&quot;RCP 6.0&quot;</span>, <span class="st">&quot;RCP 8.5&quot;</span>), <span class="dt">each =</span> n/<span class="dv">12</span>), 
-        <span class="dt">Model =</span> <span class="kw">rep</span>(models[[i]], <span class="dt">each =</span> n/<span class="dv">4</span>), <span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Temperature&quot;</span>, <span class="st">&quot;Precipitation&quot;</span>), 
-            <span class="dt">each =</span> n/<span class="dv">2</span>), <span class="dt">Location =</span> <span class="kw">rep</span>(<span class="kw">paste0</span>(cities.meta$loc, <span class="st">&quot;, &quot;</span>, cities.meta$region), 
-            <span class="dt">each =</span> n/(<span class="dv">12</span> *<span class="st"> </span><span class="kw">nrow</span>(cities.meta))), <span class="dt">Val =</span> m, <span class="dt">stringsAsFactors =</span> F)
+    dlist[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Temperature&quot;</span>, <span class="st">&quot;Precipitation&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">2</span> *<span class="st"> </span>
+<span class="st">        </span><span class="kw">nrow</span>(cities.meta))), <span class="dt">Location =</span> <span class="kw">rep</span>(<span class="kw">paste0</span>(cities.meta$loc, <span class="st">&quot;, &quot;</span>, cities.meta$region), 
+        <span class="dt">each =</span> n/<span class="kw">nrow</span>(cities.meta)), <span class="dt">Val =</span> m, <span class="dt">stringsAsFactors =</span> F)
     <span class="kw">gc</span>()
     <span class="kw">print</span>(i)
 }
 d &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">rbindlist</span>(dlist))
-<span class="kw">rm</span>(n, m, i, files, models, dlist)
-<span class="kw">gc</span>()</code></pre>
+<span class="kw">rm</span>(n, m, i, files, models, dlist, cities.batch)</code></pre>
 </div>
 <div id="organize-data-frame-and-support-objects" class="section level4">
 <h4>Organize data frame and support objects</h4>
 <pre class="sourceCode r"><code class="sourceCode r">d$Val[d$Var ==<span class="st"> &quot;Temperature&quot;</span>] &lt;-<span class="st"> </span><span class="kw">round</span>(d$Val[d$Var ==<span class="st"> &quot;Temperature&quot;</span>], <span class="dv">1</span>)
 d$Val[d$Var ==<span class="st"> &quot;Precipitation&quot;</span>] &lt;-<span class="st"> </span><span class="kw">round</span>(d$Val[d$Var ==<span class="st"> &quot;Precipitation&quot;</span>])
 d$Month &lt;-<span class="st"> </span>month.abb
-d$Year &lt;-<span class="st"> </span>results.years  <span class="co">#rep(1870:2099,each=12)</span>
+d$Year &lt;-<span class="st"> </span>results.years  <span class="co">#rep(1901:2009,each=12)</span>
 d$Month &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Month, <span class="dt">levels =</span> d$Month[<span class="dv">1</span>:<span class="dv">12</span>])
-d$Scenario &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Scenario, <span class="dt">levels =</span> <span class="kw">unique</span>(d$Scenario))
 cities.meta$loc &lt;-<span class="st"> </span><span class="kw">paste0</span>(cities.meta$loc, <span class="st">&quot;, &quot;</span>, cities.meta$region)
 cities.meta &lt;-<span class="st"> </span>cities.meta[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>:<span class="dv">6</span>)]
 <span class="kw">names</span>(cities.meta) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Country&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Population&quot;</span>, <span class="st">&quot;Lat&quot;</span>, <span class="st">&quot;Lon&quot;</span>)
-d$Decade &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="dv">10</span> *<span class="st"> </span>(d$Year%/%<span class="dv">10</span>))
+d$Decade &lt;-<span class="st"> </span><span class="kw">as.character</span>(d$Year -<span class="st"> </span>d$Year%%<span class="dv">10</span>)
 <span class="kw">gc</span>()
-d.cities &lt;-<span class="st"> </span>d
+d.cities.cru &lt;-<span class="st"> </span>d
 <span class="kw">rm</span>(d, results.years)
 <span class="kw">gc</span>()
-<span class="co"># save.image(&#39;../final/data_cities.RData&#39;)</span></code></pre>
+<span class="co"># save.image(&#39;../final/data_cities_CRU31.RData&#39;)</span></code></pre>
 </div>
 <div id="save-output-files" class="section level4">
 <h4>Save output files</h4>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save individual R workspace files for each city for use in master QAQC</span>
-<span class="co"># Shiny app</span>
-<span class="kw">library</span>(parallel)
-
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(parallel)
 f &lt;-<span class="st"> </span>function(i, <span class="dt">overwrite =</span> <span class="ot">FALSE</span>) {
     name.tmp &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>, <span class="st">&quot;PER&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;/&quot;</span>, <span class="st">&quot;FSLASH&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;`&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;~&quot;</span>, 
         <span class="st">&quot;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;?&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">&#39;&quot;</span>, <span class="st">&quot;APOS&quot;</span>, cities.meta$Location[i]))))))
-    filename &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;../final/city_files_GCM/&quot;</span>, domain, <span class="st">&quot;/&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;, &quot;</span>, <span class="st">&quot;--&quot;</span>, 
-        name.tmp), <span class="st">&quot;__&quot;</span>, domain, <span class="st">&quot;.RData&quot;</span>)
+    filename &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;../final/city_files_CRU&quot;</span>, cru, <span class="st">&quot;/&quot;</span>, domain, <span class="st">&quot;/&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;, &quot;</span>, 
+        <span class="st">&quot;--&quot;</span>, name.tmp), <span class="st">&quot;__&quot;</span>, domain, <span class="st">&quot;.RData&quot;</span>)
     if (overwrite |<span class="st"> </span>!<span class="kw">file.exists</span>(filename)) {
-        city.dat &lt;-<span class="st"> </span><span class="kw">subset</span>(d.cities, Location ==<span class="st"> </span>cities.meta$Location[i])
-        <span class="kw">save</span>(city.dat, <span class="dt">file =</span> filename)
+        city.cru.dat &lt;-<span class="st"> </span><span class="kw">subset</span>(d.cities.cru, Location ==<span class="st"> </span>cities.meta$Location[i])
+        <span class="kw">save</span>(city.cru.dat, <span class="dt">file =</span> filename)
     }
     <span class="kw">print</span>(i)
 }
 
-<span class="kw">mclapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(cities.meta$Location), f, <span class="dt">mc.cores =</span> <span class="dv">32</span>)</code></pre>
+<span class="kw">mclapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(cities.meta$Location), f, <span class="dt">mc.cores =</span> <span class="dv">32</span>)
+
+<span class="kw">rm</span>(cru, d.cities.cru, f, domain)
+<span class="kw">save</span>(cities.meta, <span class="dt">file =</span> <span class="st">&quot;../final/cities_meta.RData&quot;</span>)  <span class="co"># only necessary one time out of all versions of CRU and GCMs, 10-minute resolution inputs provide larger city set (NWT)</span>
+<span class="co"># load(&#39;../final/meta.RData&#39;) save.image(&#39;../final/meta.RData&#39;)</span></code></pre>
 </div>
 </div>
 </div>
