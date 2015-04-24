@@ -19,43 +19,37 @@
 <script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
 <style type="text/css">
-
 /* padding for bootstrap navbar */
 body {
-  padding-top: 50px;
-  padding-bottom: 40px;
+padding-top: 50px;
+padding-bottom: 40px;
 }
-@media (max-width: 979px) {
-  body {
-    padding-top: 0;
-  }
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-/* offset scroll position for anchor links (for fixed navbar)  */
-@media (min-width: 980px) {
-  .section h2 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
-  .section h3 {
-    padding-top: 52px;
-    margin-top: -52px;
-  }
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
 }
-
-
 /* don't use link color in navbar */
 .dropdown-menu>li>a {
-  color: black;
+color: black;
 }
-
 /* some padding for disqus */
 #disqus_thread {
-  margin-top: 45px;
+margin-top: 45px;
 }
-
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
-
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 
@@ -128,40 +122,31 @@ img {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
-          <li><a href="code_sankey.html">Code flow</a></li>
-
           <li class="dropdown">
-            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
               <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
+              <li class="dropdown-header">GCM organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li class="dropdown-header">Extraction</li>
-              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
-              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
-              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
-              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
-            </ul>
-
-          <li class="dropdown">
-            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
@@ -172,9 +157,48 @@ img {
             </ul>
 
           <li class="dropdown">
-            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
@@ -195,55 +219,56 @@ img {
 
 
 <p>The <code>qaqc_app_metadata.R</code> script loads the <code>meta.RData</code> metadata workspace file used by the <code>cmip3_cmip5</code> QAQC app. Final preparations of region and city data file path locations are completed. This new workspace is saved over the original.</p>
-<p>This script current handles subsetting of city files as best it can, but ultimately time is needed to investigate why GCM and CRU extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.</p>
+<p>This script current handles subsetting of city files as best it can, but ultimately time is needed to investigate why GCM and CRU 3.x extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.</p>
 <div id="r-code" class="section level2">
 <h2>R code</h2>
-<p>File path information for GCM and CRU files are finalized.</p>
+<p>File path information for GCM and CRU 3.x files are finalized.</p>
 <pre class="sourceCode r"><code class="sourceCode r">#### This is the final script run after all app data and metadata files are
 #### compiled.  This is for final formatting related to regions and cities.
 
-topDir &lt;-<span class="st"> &quot;/workspace/Shared/Users/mfleonawicz/AR4_AR5_Comparisons&quot;</span>
+<span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>)
+
+topDir &lt;-<span class="st"> &quot;/workspace/Shared/Users/mfleonawicz/qaqcAppData&quot;</span>
 
 region.gcm.stats.path &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(topDir, <span class="st">&quot;region_files_GCM/stats&quot;</span>), 
     <span class="dt">full =</span> T)
 region.gcm.stats.files &lt;-<span class="st"> </span><span class="kw">lapply</span>(region.gcm.stats.path, list.files, <span class="dt">full =</span> T)
-region.cru.stats.path &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(topDir, <span class="st">&quot;region_files_CRU/stats&quot;</span>), 
+region.cru.stats.path &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(topDir, <span class="st">&quot;region_files_CRU32/stats&quot;</span>), 
     <span class="dt">full =</span> T)
 region.cru.stats.files &lt;-<span class="st"> </span><span class="kw">lapply</span>(region.cru.stats.path, list.files, <span class="dt">full =</span> T)
 
 region.gcm.samples.path &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(topDir, <span class="st">&quot;region_files_GCM/samples&quot;</span>), 
     <span class="dt">full =</span> T)
 region.gcm.samples.files &lt;-<span class="st"> </span><span class="kw">lapply</span>(region.gcm.samples.path, list.files, <span class="dt">full =</span> T)
-region.cru.samples.path &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(topDir, <span class="st">&quot;region_files_CRU/samples&quot;</span>), 
+region.cru.samples.path &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(topDir, <span class="st">&quot;region_files_CRU32/samples&quot;</span>), 
     <span class="dt">full =</span> T)
 region.cru.samples.files &lt;-<span class="st"> </span><span class="kw">lapply</span>(region.cru.samples.path, list.files, <span class="dt">full =</span> T)
 <span class="kw">names</span>(region.cru.stats.files) &lt;-<span class="st"> </span><span class="kw">names</span>(region.gcm.stats.files) &lt;-<span class="st"> </span><span class="kw">names</span>(region.cru.samples.files) &lt;-<span class="st"> </span><span class="kw">names</span>(region.gcm.samples.files) &lt;-<span class="st"> </span><span class="kw">basename</span>(region.gcm.stats.path)</code></pre>
-<p>File path information for GCM and CRU cities, and associated metadata, are fortified as best as currently possible. See code comments for details regarding pending investigation of discrepancies between data sets.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># City inclusion is not perfect, some cities are dropped out CRU has fewer</span>
-<span class="co"># city files, no time to investigate yet</span>
-city.cru.files.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(topDir, <span class="st">&quot;city_files_CRU&quot;</span>)
-city.cru.files &lt;-<span class="st"> </span><span class="kw">list.files</span>(city.cru.files.path, <span class="dt">full =</span> T)
+<p>File path information for GCM and CRU 3.x cities, and associated metadata, are fortified as best as currently possible. See code comments for details regarding pending investigation of discrepancies between data sets.</p>
+<pre class="sourceCode r"><code class="sourceCode r">city.gcm.files.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(topDir, <span class="st">&quot;city_files_GCM&quot;</span>)
+city.gcm.files.2km &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.gcm.files.path, <span class="st">&quot;akcan2km&quot;</span>), 
+    <span class="dt">full =</span> T)
+city.gcm.files.10min &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.gcm.files.path, <span class="st">&quot;world10min&quot;</span>), 
+    <span class="dt">full =</span> T)
+city.cru.files.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(topDir, <span class="st">&quot;city_files_CRU32&quot;</span>)
+city.cru.files.2km &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.cru.files.path, <span class="st">&quot;akcan2km&quot;</span>), 
+    <span class="dt">full =</span> T)
+city.cru.files.10min &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.cru.files.path, <span class="st">&quot;world10min&quot;</span>), 
+    <span class="dt">full =</span> T)
 
-city.gcm.files.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(topDir, <span class="st">&quot;city_files_GCM&quot;</span>)
-<span class="co"># restrict GCM files to subset with corresponding CRU files</span>
-city.gcm.files &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;city_files_CRU&quot;</span>, <span class="st">&quot;city_files_GCM&quot;</span>, city.cru.files)  <span class="co"># list.files(city.gcm.files.path, full=T)</span>
+<span class="co"># city names to appear in app menu use one group of cities from above, all</span>
+<span class="co"># four sets are identical</span>
+city.names &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;FSLASH&quot;</span>, <span class="st">&quot;/&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;PER&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;APOS&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">&#39;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;--&quot;</span>, 
+    <span class="st">&quot;, &quot;</span>, <span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="kw">basename</span>(city.gcm.files.10min), <span class="st">&quot;__&quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>)))))
 
-<span class="co"># city names to appear in app menu</span>
-city.names &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;APOS&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">&#39;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;--&quot;</span>, <span class="st">&quot;, &quot;</span>, <span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="kw">basename</span>(city.gcm.files), 
-    <span class="st">&quot;__&quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>)))
-
-<span class="co"># subset cities metadata data frame to match CRU files</span>
-cities.meta.file &lt;-<span class="st"> &quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/cities_meta_akcan2km.RData&quot;</span>
+<span class="co"># subset cities metadata data frame to match final files, same for all sets</span>
+cities.meta.file &lt;-<span class="st"> &quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta.RData&quot;</span>
 <span class="kw">load</span>(cities.meta.file)
-cities.meta.akcan2km &lt;-<span class="st"> </span><span class="kw">subset</span>(cities.meta.akcan2km, Location %in%<span class="st"> </span>city.names)
-<span class="kw">save</span>(cities.meta.akcan2km, <span class="dt">file =</span> cities.meta.file)  <span class="co"># okay to save over original file</span>
-<span class="kw">rm</span>(cities.meta.file, topDir)
-
-<span class="co"># reverse for consistency, extra precaution</span>
-city.names &lt;-<span class="st"> </span>city.names[city.names %in%<span class="st"> </span>cities.meta.akcan2km$Location]</code></pre>
+cities.meta &lt;-<span class="st"> </span><span class="kw">subset</span>(cities.meta, Location %in%<span class="st"> </span>city.names)
+<span class="kw">save</span>(cities.meta, <span class="dt">file =</span> cities.meta.file)  <span class="co"># okay to save over original file</span>
+<span class="kw">rm</span>(cities.meta.file, topDir)</code></pre>
 <p>The <code>meta.RData</code> workspace used by the master QAQC Shiny app is loaded and re-saved.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta.RData&quot;</span>)
-<span class="kw">save.image</span>(<span class="kw">file.path</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta.RData&quot;</span>))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">save.image</span>(<span class="kw">file.path</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>))</code></pre>
 </div>
 
 

@@ -1,10 +1,10 @@
-# CRU 3.1 Data Extraction Code
+# CRU 3.x Data Extraction Code
 
 
 
 ## Introduction
 
-The `CRU_extract.R` script extracts CRU 3.1 temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent.
+The `CRU_extract.R` script extracts CRU 3.x temperature and precipitation data from regional shapefiles and the full Alaska-Canada 2-km extent.
 Optionally it also extracts data for specific point locations via the raster grid cell in which given spatial coordinates fall.
 Data are saved to **R** workspaces (.RData files) for analysis and graphing by subsequent **R** code.
 
@@ -18,9 +18,9 @@ It allows for storing commonly required data in a more compact format that can b
 #### Capabilities
 This script is set up to use parallel processing via the base `parallel` package and the function `mclapply` similar to its companion script, `AR4_AR5_extract.R`.
 However, there are some subtle differences. First, it processes precipitation and temperature back to back, serially.
-Between this and the fact that CRU 3.1 is a single data set, compared to the multiple climate models and scenarios, there is nothing remaining to parallelize across.
+Between this and the fact that CRU 3.x is a single data set, compared to the multiple climate models and scenarios, there is nothing remaining to parallelize across.
 The `mclapply` call only runs the extraction function on a single CPU core.
-But in the future this code can easily be extended in parallel across more than just CRU 3.1, should other comparable data products become available.
+But in the future this code can easily be extended in parallel across more than just CRU 3.x, should other comparable data products become available.
 
 The code ran be run strictly to obtain community data, regional data, or both. This allows for redoing only one type of extraction, for instance if new shapefiles or additional city locations are desired.
 It can be passed an arbitrary list of cities and/or regions.
@@ -37,7 +37,7 @@ These objects are created in advance. There are multiple versions, as indexing b
 as well as subsampling and/or NA-removal, if desired.
 The specific **R** workspace intended for use in data extraction by this script is hard coded and matches that used in `AR4_AR5_extract.R`.
 
-### Files and Data
+### Files and data
 The input files include 2-km Alaska-Canada extent data from 10 combined CMIP3 and CMIP5 downscaled GCMs
 as well as community locations and raster layer cell indices pertaining to various regional shapefile polygons.
 `CRU_extract.R` is called via SLURM script, `CRU_extract.slurm`.
@@ -65,6 +65,7 @@ library(raster)
 library(maptools)
 library(parallel)
 library(plyr)
+library(data.table)
 ```
 
 #### Command line arguments
@@ -78,6 +79,7 @@ if (!exists("domain")) stop("domain argument not provided. Must be either 'akcan
 if (!exists("regions")) regions <- FALSE
 if (!exists("cities")) cities <- FALSE
 if (!(regions | cities)) stop("regions and cities both FALSE. Nothing to process.")
+if (!exists("cru")) cru <- "32"
 ```
 
 #### Sourced code
@@ -86,16 +88,24 @@ if (!(regions | cities)) stop("regions and cities both FALSE. Nothing to process
 ```r
 if (domain == "akcan2km") {
     # For regions and/or cities
-    topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km", c("historical/singleBand/CRU/cru_TS31/historical"))
+    if (as.numeric(cru) == 31) 
+        topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km", paste0("historical/singleBand/CRU/cru_TS", 
+            cru, "/historical"))
+    if (as.numeric(cru) == 32) 
+        topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km", paste0("historical/CRU/CRU_TS", 
+            cru))
     if (regions) {
         load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
     } else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
-    locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
 } else if (domain == "world10min") {
     # Currently for cities only
-    topDir <- file.path("/Data/Base_Data/Climate/World/World_10min", c("historical/CRU/CRU_TS31"))  # files are not read, but metadata parsed from filenames list
-    #### Need to insert a load() command for a locs object analogous to that above
+    topDir <- file.path("/Data/Base_Data/Climate/World/World_10min", paste0("historical/CRU/CRU_TS", 
+        cru))  # files are not read, but metadata parsed from filenames list
+    cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
+    #### Need to insert a load() command analogous to that above for regions
 }
+
+locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
 ```
 
 #### Define **R** objects
@@ -103,15 +113,14 @@ if (domain == "akcan2km") {
 
 ```r
 if (exists("years")) yr1 <- years[1] else yr1 <- 1901
-if (exists("years")) yr2 <- tail(years, 1) else yr2 <- 2009
+if (exists("years")) yr2 <- tail(years, 1) else if (as.numeric(cru) == 32) yr2 <- 2013 else yr2 <- 2009
 years <- yr1:yr2
 varid <- c("tas", "pr")
 
-# if(!is.null(cities)){ cities <- subset(locs, pop >= 1000,
-# c('lon_albers','lat_albers')) d.cities <- subset(locs, pop >=
-# 1000)[-c(which(names(locs) %in% c('lon_albers','lat_albers')))] }
 if (cities) {
-    locs <- locs[locs$pop > 10, ]
+    if (domain != "world10min") 
+        locs <- subset(locs, region != "NWT")
+    # locs <- locs[is.na(locs$pop) | locs$pop > 10,]
     l <- paste(locs$region, locs$loc)
     lu <- unique(l)
     dup <- which(duplicated(l))
@@ -131,12 +140,11 @@ if (cities) {
     d.cities <- cities[-c(which(names(locs) %in% c("lon_albers", "lat_albers")))]
     cities <- if (domain == "akcan2km") 
         cbind(cities$lon_albers, cities$lat_albers) else if (domain == "world10min") 
-        cbind(cities$lon, cities$lat)
-    
-}
+        cbind(cities$lon + 360, cities$lat)  # +360 for PC lat lon rasters
+} else cities <- NULL
 
 seasons <- "annual"
-n.samples <- 20
+n.samples <- 100
 n2 <- 2 * n.samples
 agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 
     90, 95)))
@@ -150,13 +158,14 @@ agg.stat.names[agg.stat.names == "50th percentile"] <- "Median"
 
 ```r
 # Density estimation
-denFun <- function(x, n, variable) {
+denFun <- function(x, n, adj = 0.25, variable) {
     x <- x[!is.na(x)]
     dif <- diff(range(x))
-    z <- density(x, adjust = 2, n = n, from = min(x) - 0.05 * dif, to = max(x) + 
+    z <- density(x, adjust = adj, n = n, from = min(x) - 0.05 * dif, to = max(x) + 
         0.05 * dif)
     if (variable == "pr" && any(z$x < 0)) 
-        z <- density(x, adjust = 2, n = n, from = 0, to = max(x) + 0.05 * dif)
+        z <- density(x, adjust = adj, n = n, from = 0, to = max(x) + 0.05 * 
+            dif)
     as.numeric(c(z$x, z$y))
 }
 ```
@@ -183,8 +192,6 @@ getData <- function(i, varid, cells.list = NULL, shp.names = NULL, n.shp = NULL,
         if (!is.null(cities)) {
             r <- readAll(raster(files[1]))  # template done
             cells_cities <- extract(r, cities, cellnumbers = T)[, 1]
-            rank_cells_cities <- rank(cells_cities)
-            cells_cities <- sort(cells_cities)
             print("Raster cell indices for point locations obtained.")
         }
         
@@ -241,10 +248,8 @@ getData <- function(i, varid, cells.list = NULL, shp.names = NULL, n.shp = NULL,
                 }
                 gc()
             }
-            if (!is.null(cities)) {
-                m.cities[, (1:n) + (12 * (b - 1))] <- mat[cells_cities[rank_cells_cities], 
-                  ]
-            }
+            if (!is.null(cities)) 
+                m.cities[, (1:n) + (12 * (b - 1))] <- mat[cells_cities, ]
             print(paste0("Process", i, ": ", unique(yr.tmp)[b]))
         }
         if (p == 1) {
@@ -344,38 +349,34 @@ for (k in 1:2) {
             print(length(stats.out) - i)
         }
         save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames, 
-            file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats/", 
-                "CRU31", "_", seasons[1], "_regions_stats.RData"))
+            file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/", 
+                "CRU", cru, "_annual_regions_stats.RData"))
         
         # regional samples
         samples <- lapply(results, function(x) x[[1]][["samples"]])
-        list2df <- function(x) {
+        samples <- samples[[1]]
+        list2df <- function(x, yr_mo) {
             x <- ldply(x, data.frame)
-            x[, ".id"] <- paste(x[, ".id"], names(x)[2], sep = "_")
-            names(x) <- c("Location", paste("T", 1:(ncol(x) - 1), sep = "_"))
+            names(x) <- c("Location", yr_mo)
             x
         }
-        for (l1 in 1:length(samples)) for (l2 in 1:length(samples[[l1]])) samples[[l1]][[l2]] <- list2df(samples[[l1]][[l2]])
-        for (l1 in 1:length(samples)) samples[[l1]] <- do.call(rbind, samples[[l1]])
-        samples.names <- sapply(strsplit(unique(samples[[1]]$Location), "_"), 
-            "[[", 1)
-        samples <- samples[[1]]
+        for (l1 in 1:length(samples)) samples[[l1]] <- list2df(samples[[l1]], 
+            yr_mo = paste(results.years, month.abb, sep = "_"))
+        samples <- rbindlist(samples)
+        samples.names <- unique(samples$Location)
         mid <- (ncol(samples) - 1)/2 + 1
         names.hold <- names(samples)[1:mid]
         samples <- data.frame(Location = samples$Location, rbind(as.matrix(samples[, 
             2:mid]), as.matrix(samples[, (mid + 1):ncol(samples)])))
         samples$Location <- rep(rep(samples.names, each = n2))
-        
-        names(samples)[-1] <- paste(results.years[1:(length(results.years)/2)], 
-            month.abb, sep = "_")
         samples.out <- list()
         for (i in 1:length(samples.names)) {
             samples.out[[i]] <- subset(samples, Location == samples.names[i])
             rownames(samples.out[[i]]) <- NULL
         }
         names(samples.out) <- samples.names
-        save(samples.out, samples.names, region.names.out, n.samples, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples/", 
-            "CRU31", "_", seasons[1], "_regions_samples.RData"))
+        save(samples.out, samples.names, region.names.out, n.samples, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/", 
+            "CRU", cru, "_annual_regions_samples.RData"))
         
     }
     if (k == 2 & is.matrix(cities)) {
@@ -389,8 +390,8 @@ for (k in 1:2) {
         for (i in 1:length(stats.out)) rownames(stats.out[[i]]) <- rep(rep(rep(seq(yr1, 
             yr2), each = 12), nrow(cities)), length(varid))
         d <- stats.out[[1]]
-        save(d, d.cities, results.years, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities/", 
-            "CRU31_annual_cities_batch", cities.batch, "_", domain, ".RData"))
+        save(d, d.cities, results.years, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/", 
+            "CRU", cru, "_annual_cities_batch", cities.batch, "_", domain, ".RData"))
     }
 }
 ```

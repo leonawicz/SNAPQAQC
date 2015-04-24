@@ -25,7 +25,7 @@ This is plenty to process at one time.
 Scripts further downstream are written with some expectation of this upstream process compiling output statistics based on all replicates,
 regardless of how many models or scenarios are processed at once.
 
-### Files and Data
+### Files and data
 The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations
 as well as raster layer cell indices pertaining to various regional shapefile polygons.
 `alfStatsByRep_Rpmi.R` is called via slurm script, `alfStatsByRep_Rmpi.slurm` and is itself a wrapper around `alfStatsByRep.R` which performs data extractions on multiple CPU cores across multiple compute nodes.
@@ -52,33 +52,54 @@ Setup consists of loading required **R** packages and additional files, preparin
 args = (commandArgs(TRUE))
 if (!length(args)) q("no") else for (i in 1:length(args)) eval(parse(text = args[[i]]))
 
+if (!exists("model.index")) stop("Must provide model(s) as integer(s) 1:15, e.g., model.index=1:2")
+if (!exists("reps")) stop("Must provide replicates as integer(s) 1:200, e.g., reps=1:25")
+if (!exists("years")) years <- NULL  # Assume all years if none specified
+if (!exists("Rmpi")) Rmpi <- TRUE
+if (!exists("doFire")) doFire <- TRUE
+if (!exists("doAgeVeg")) doAgeVeg <- TRUE
+if (exists("repSample") && is.numeric(repSample)) {
+    set.seed(47)
+    reps <- sort(sample(reps, min(repSample, length(reps))))
+}
+
+library(data.table)
+
 # Rmpi setup
-library(Rmpi)
-mpi.spawn.Rslaves(needlog = TRUE)
-mpi.bcast.cmd(id <- mpi.comm.rank())
-mpi.bcast.cmd(np <- mpi.comm.size())
-mpi.bcast.cmd(host <- mpi.get.processor.name())
+if (Rmpi) {
+    library(Rmpi)
+    mpi.spawn.Rslaves(needlog = TRUE)
+    mpi.bcast.cmd(id <- mpi.comm.rank())
+    mpi.bcast.cmd(np <- mpi.comm.size())
+    mpi.bcast.cmd(host <- mpi.get.processor.name())
+} else {
+    library(parallel)
+    n.cores <- 32
+}
 
 # Load nested list of cell indices defining groups of shapefile polygons
 load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km.RData")
 load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km_rmNA.RData")
+if (exists("locgroup")) {
+    cells_shp_list <- cells_shp_list[locgroup]
+    cells_shp_list_rmNA <- cells_shp_list_rmNA[locgroup]
+    region.names.out <- region.names.out[locgroup]
+    n.shp <- sum(sapply(region.names.out, length))
+}
 
 dirs <- list.files("/big_scratch/apbennett/Calibration/FinalCalib", pattern = ".*.sres.*.", 
     full = T)
-if (!exists("model.index")) stop("Must provide model(s) as integer(s) 1:15, e.g., model.index=1:2")
-if (!exists("reps")) stop("Must provide replicates as integer(s) 1:200, e.g., reps=1:25")
-if (!exists("years")) years <- NULL  # Assume all years if none specified
 mainDirs <- rep(paste0(dirs, "/Maps")[model.index], each = length(reps))
 modnames <- basename(dirname(mainDirs))  # Should only be one name at a time due to $ScenMod column naming below
-dir.create(repOutDir <- file.path("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", 
+dir.create(ageDenDir <- file.path("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", 
     modnames[1]), recursive = T, showWarnings = F)  # also assumes one model at a time
 repid <- rep(reps, length(model.index))
-breaks <- c(-1, 5, 25, 50, 100, 200, 10000)  # Age class breaks # -1 inclusive of zero, not using cut(), using .bincode()
-n.brks <- length(breaks)
-age.labels <- c(paste(breaks[-c(n.brks - 1, n.brks)] + 1, breaks[-c(1, n.brks)], 
-    sep = "-"), paste0(breaks[n.brks - 1], "+"))
-veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", 
-    "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
+# breaks <- c(-1,5,25,50,100,200,10000) # Age class breaks # -1 inclusive of
+# zero, not using cut(), using .bincode() n.brks <- length(breaks)
+# age.labels <- c(paste(breaks[-c(n.brks-1, n.brks)] + 1, breaks[-c(1,
+# n.brks)], sep='-'), paste0(breaks[n.brks-1], '+')) veg.labels <- c('Black
+# Spruce', 'White Spruce', 'Deciduous', 'Shrub Tundra', 'Graminoid Tundra',
+# 'Wetland Tundra', 'Barren lichen-moss', 'Temperate Rainforest')
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 mod.scen <- unlist(strsplit(modnames[1], "\\."))  # assume one model at a time
 ```
@@ -113,19 +134,19 @@ Send **R** objects from master to slaves.
 
 ```r
 # Export objects to slaves
-mpi.bcast.Robj2slave(breaks)
-mpi.bcast.Robj2slave(age.labels)
-mpi.bcast.Robj2slave(veg.labels)
-mpi.bcast.Robj2slave(cells_shp_list)
-mpi.bcast.Robj2slave(cells_shp_list_rmNA)
-mpi.bcast.Robj2slave(region.names.out)
-mpi.bcast.Robj2slave(n.shp)
-mpi.bcast.Robj2slave(years)
-mpi.bcast.Robj2slave(mainDirs)
-mpi.bcast.Robj2slave(modnames)
-mpi.bcast.Robj2slave(repOutDir)
-mpi.bcast.Robj2slave(repid)
-print("mpi.bcast.Robj2slave calls completed.")
+if (Rmpi) {
+    mpi.bcast.Robj2slave(veg.labels)
+    mpi.bcast.Robj2slave(cells_shp_list)
+    mpi.bcast.Robj2slave(cells_shp_list_rmNA)
+    mpi.bcast.Robj2slave(region.names.out)
+    mpi.bcast.Robj2slave(n.shp)
+    mpi.bcast.Robj2slave(years)
+    mpi.bcast.Robj2slave(mainDirs)
+    mpi.bcast.Robj2slave(modnames)
+    mpi.bcast.Robj2slave(ageDenDir)
+    mpi.bcast.Robj2slave(repid)
+    print("mpi.bcast.Robj2slave calls completed.")
+}
 ```
 
 Send **R** commands from master to slaves.
@@ -133,14 +154,19 @@ Send **R** commands from master to slaves.
 
 ```r
 # Issue commands to slaves
-mpi.bcast.cmd(mainDir <- mainDirs[id])
-mpi.bcast.cmd(dir.create(outDir <- paste0("/big_scratch/mfleonawicz/Rmpi/outputs/tmp/", 
-    modnames[id], "/rep_", repid[id] - 1), showWarnings = F, recur = T))
-mpi.bcast.cmd(source("/big_scratch/mfleonawicz/Rmpi/alfStatsByRep.R"))
-mpi.bcast.cmd(dir.create(tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/proc", 
-    id), showWarnings = F))
-mpi.bcast.cmd(rasterOptions(tmpdir = tmpDir))
-print("mpi.bcast.cmd calls completed. Now running mpi.remote.exec...")
+if (Rmpi) {
+    mpi.bcast.cmd(mainDir <- mainDirs[id])
+    mpi.bcast.cmd(source("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/alfStatsByRep.R"))
+    mpi.bcast.cmd(dir.create(tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/proc", 
+        id), showWarnings = F))
+    mpi.bcast.cmd(rasterOptions(chunksize = 1e+11, maxmemory = 1e+12, tmpdir = tmpDir))
+    print("mpi.bcast.cmd calls completed. Now running mpi.remote.exec...")
+} else {
+    mainDir <- mainDirs[1]
+    source("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/alfStatsByRep.R")
+    tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/procX")
+    rasterOptions(chunksize = 1e+11, maxmemory = 1e+12, tmpdir = tmpDir)
+}
 ```
 
 ### Gather data
@@ -149,30 +175,63 @@ Extract and compile fire statistics.
 
 ```r
 # Compile fire statistics
-abfc.dat <- mpi.remote.exec(getFireStats(i = repid[id], mainDir = mainDir, years = years, 
-    cells.list = cells_shp_list, shp.names.list = region.names.out, n = n.shp))
-print("Area burned and fire frequency data frame list returned from slaves.")
-
-abfc.dat <- do.call(rbind, abfc.dat)
-rownames(abfc.dat) <- NULL
-abfc.dat$Model <- swapModelName(mod.scen[1])
-abfc.dat$Scenario <- swapScenarioName(mod.scen[2])
-abfc.dat$Phase <- getPhase(mod.scen[2])
-abfc.dat <- abfc.dat[, c(9:7, 1:6)]
-print("Converted list to single area burned and fire frequency data frame.")
-print("Saving area burned and fire frequency data frames by location to .RData file.")
-
-locs <- unique(abfc.dat$Location)
-dir.create(fireDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire", showWarnings = F)
-
-for (j in 1:length(locs)) {
-    filename.tmp <- paste0("abfc.loc", j, ".", modnames[1])  # assume one model
-    f.dat <- abfc.dat[abfc.dat$Location == locs[j], ]
-    save(f.dat, locs, file = paste0(fireDir, "/", filename.tmp, ".RData"))
-    print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
+if (doFire) {
+    if (Rmpi) 
+        abfc.fsv.dat <- mpi.remote.exec(getFireStats(i = repid[id], mainDir = mainDir, 
+            years = years, cells.list = cells_shp_list, shp.names.list = region.names.out, 
+            n = n.shp))
+    if (!Rmpi) 
+        abfc.fsv.dat <- mclapply(repid, getFireStats, mainDir = mainDir, years = years, 
+            cells.list = cells_shp_list, shp.names.list = region.names.out, 
+            n = n.shp, mc.cores = n.cores)
+    print("Fire size by vegetation class completed.")
+    
+    abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
+    fsv.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 2))
+    
+    rownames(abfc.dat) <- NULL
+    abfc.dat$Model <- swapModelName(mod.scen[1])
+    abfc.dat$Scenario <- swapScenarioName(mod.scen[2])
+    abfc.dat$Phase <- getPhase(mod.scen[2])
+    abfc.dat <- data.frame(abfc.dat)[, c(9:7, 1:6)]
+    
+    rownames(fsv.dat) <- NULL
+    fsv.dat$Model <- swapModelName(mod.scen[1])
+    fsv.dat$Scenario <- swapScenarioName(mod.scen[2])
+    fsv.dat$Phase <- getPhase(mod.scen[2])
+    fsv.dat <- data.frame(fsv.dat)[, c(9:7, 1:6)]
+    
+    print("Converted list to area burned and fire frequency data frame and fire size by vegetation class data frame.")
+    print("Saving area burned and fire frequency data frames by location to .RData file.")
+    
+    locs <- unique(abfc.dat$Location)
+    dir.create(abfcDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/abfc", 
+        recursive = TRUE, showWarnings = FALSE)
+    
+    for (j in 1:length(locs)) {
+        filename.tmp <- paste0("abfc__", locs[j], "__", modnames[1])  # assume one model
+        d.abfc <- abfc.dat[abfc.dat$Location == locs[j], ]
+        save(d.abfc, locs, file = paste0(abfcDir, "/", filename.tmp, ".RData"))
+        print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
+    }
+    rm(abfc.dat, d.abfc)
+    gc()
+    
+    print("Saving fire size by vegetation class data frames by location to .RData file.")
+    
+    locs <- unique(fsv.dat$Location)
+    dir.create(fsvDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/fsv", recursive = TRUE, 
+        showWarnings = FALSE)
+    
+    for (j in 1:length(locs)) {
+        filename.tmp <- paste0("fsv__", locs[j], "__", modnames[1])  # assume one model
+        d.fsv <- fsv.dat[fsv.dat$Location == locs[j], ]
+        save(d.fsv, locs, file = paste0(fsvDir, "/", filename.tmp, ".RData"))
+        print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
+    }
+    rm(fsv.dat, d.fsv)
+    gc()
 }
-rm(abfc.dat, f.dat)
-gc()
 ```
 
 Extract and compile vegetation class and age statistics.
@@ -180,34 +239,43 @@ Extract and compile vegetation class and age statistics.
 
 ```r
 # Compile vegetation class and age statistics
-va.dat <- mpi.remote.exec(getAgeVegStats(i = repid[id], mainDir = mainDir, denDir = repOutDir, 
-    years = years, cells.list = cells_shp_list_rmNA, shp.names.list = region.names.out, 
-    n = n.shp, breaks = breaks, age.lab = age.labels, veg.lab = veg.labels, 
-    n.samples = 20))
-print("Veg area data frame list returned from slaves.")
-
-va.dat <- do.call(rbind, va.dat)
-rownames(va.dat) <- NULL
-va.dat$Model <- swapModelName(mod.scen[1])
-va.dat$Scenario <- swapScenarioName(mod.scen[2])
-va.dat$Phase <- getPhase(mod.scen[2])
-va.dat <- va.dat[, c(10:8, 1:7)]
-print("Converted list to single veg area data frame.")
-print("Saving veg area data frames by location to .RData files.")
-
-locs <- unique(va.dat$Location)
-dir.create(vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg", showWarnings = F)
-
-for (j in 1:length(locs)) {
-    filename.tmp <- paste0("v.loc", j, ".", modnames[1])  # assume one model
-    v.dat <- va.dat[va.dat$Location == locs[j], ]
-    save(v.dat, locs, file = paste0(vegDir, "/", filename.tmp, ".RData"))
-    print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
+if (doAgeVeg) {
+    if (Rmpi) 
+        va.dat <- mpi.remote.exec(getAgeVegStats(i = repid[id], mainDir = mainDir, 
+            denDir = ageDenDir, years = years, cells.list = cells_shp_list_rmNA, 
+            shp.names.list = region.names.out, n = n.shp, veg.lab = veg.labels, 
+            n.samples = 1000))
+    if (!Rmpi) 
+        va.dat <- mclapply(repid, getAgeVegStats, mainDir = mainDir, denDir = ageDenDir, 
+            years = years, cells.list = cells_shp_list_rmNA, shp.names.list = region.names.out, 
+            n = n.shp, n.samples = 1000, mc.cores = n.cores)
+    print("Veg area data frame list returned from slaves.")
+    
+    va.dat <- rbindlist(va.dat)
+    rownames(va.dat) <- NULL
+    va.dat$Model <- swapModelName(mod.scen[1])
+    va.dat$Scenario <- swapScenarioName(mod.scen[2])
+    va.dat$Phase <- getPhase(mod.scen[2])
+    va.dat <- data.frame(va.dat)[, c(10:8, 1:7)]
+    print("Converted list to single veg area data frame.")
+    print("Saving veg area data frames by location to .RData files.")
+    
+    locs <- unique(va.dat$Location)
+    dir.create(vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg", showWarnings = F)
+    
+    for (j in 1:length(locs)) {
+        filename.tmp <- paste0("veg__", locs[j], "__", modnames[1])  # assume one model
+        d.veg <- va.dat[va.dat$Location == locs[j], ]
+        save(d.veg, locs, file = paste0(vegDir, "/", filename.tmp, ".RData"))
+        print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
+    }
+    rm(va.dat, d.veg)
+    gc()
 }
-rm(va.dat, v.dat)
-gc()
 
 # All done
-mpi.close.Rslaves(dellog = FALSE)
-mpi.exit()
+if (Rmpi) {
+    mpi.close.Rslaves(dellog = FALSE)
+    mpi.exit()
+}
 ```

@@ -29,7 +29,7 @@ It may be too much to include several thousand cities in a single batch, dependi
 
 ## Related items
 
-### Files and Data
+### Files and data
 The input files are produced by the **R** script, `AR4_AR5_extract.R`. `cities_setup.R` assumes a complete and successful run of this precursory code.
 
 The `AR4_AR5_extract.R` script produces three main sets of output data:
@@ -40,13 +40,13 @@ The `AR4_AR5_extract.R` script produces three main sets of output data:
 For this reason, `cities_setup.R` has two companion **R** scripts which share the parent script, `AR4_AR5_extract.R`. These are `stats_setup.R` and `samples_setup.R`.
 
 In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R`.
-As a result, this script and its two companion scripts mentioned above are related to a similar set of three **R** scripts which perform similar intermediary data manipulation on extracted CRU 3.1 data.
+As a result, this script and its two companion scripts mentioned above are related to a similar set of three **R** scripts which perform similar intermediary data manipulation on extracted CRU 3.x data.
 
 ## **R** Code
 
 ### Setup
 
-Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.1 files.
+Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.x files.
 SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.
 Cities may be processed in batches via command line argument.
 
@@ -55,13 +55,13 @@ Cities may be processed in batches via command line argument.
 comArgs <- commandArgs(TRUE)
 if (length(comArgs)) for (i in 1:length(comArgs)) eval(parse(text = comArgs[[i]]))
 if (!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
-if (!exists("cities.batch")) cities.batch <- ""
+if (!exists("cities.batch")) cities.batch <- 1
 
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities")
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities")
 
 library(data.table)
 
-files <- list.files(pattern = paste0("batch", cities.batch, ".*.", domain, ".RData$"))
+files <- list.files(pattern = paste0("batch", cities.batch, "_", domain, ".RData$"))
 files <- files[substr(files, 1, 3) != "CRU"]
 
 models <- list(c("CCCMAcgcm31", "CCSM4"), c("GFDLcm21", "GFDLcm3"), c("MIROC32m", 
@@ -78,7 +78,7 @@ for (i in 1:length(files)) {
     cities.meta <- d.cities
     m <- as.numeric(d)
     n <- length(m)
-    dlist[[i]] <- data.frame(Phase = rep(c("CMIP3", "CMIP5"), each = n/4), Scenario = rep(c("SRES B1", 
+    dlist[[i]] <- data.frame(Phase = rep(c("AR4", "AR5"), each = n/4), Scenario = rep(c("SRES B1", 
         "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5"), each = n/12), 
         Model = rep(models[[i]], each = n/4), Var = rep(c("Temperature", "Precipitation"), 
             each = n/2), Location = rep(paste0(cities.meta$loc, ", ", cities.meta$region), 
@@ -120,11 +120,15 @@ gc()
 # Shiny app
 library(parallel)
 
-f <- function(i) {
-    name.tmp <- gsub("`", "", gsub("~", "", gsub("?", "", gsub("\\'", "", cities.meta$Location[i]))))
-    city.dat <- subset(d.cities, Location == cities.meta$Location[i])
-    save(city.dat, file = paste0("../final/city_files_GCM/", gsub(", ", "--", 
-        name.tmp), "__", domain, ".RData"))
+f <- function(i, overwrite = FALSE) {
+    name.tmp <- gsub("\\.", "PER", gsub("/", "FSLASH", gsub("`", "", gsub("~", 
+        "", gsub("?", "", gsub("\\'", "APOS", cities.meta$Location[i]))))))
+    filename <- paste0("../final/city_files_GCM/", domain, "/", gsub(", ", "--", 
+        name.tmp), "__", domain, ".RData")
+    if (overwrite | !file.exists(filename)) {
+        city.dat <- subset(d.cities, Location == cities.meta$Location[i])
+        save(city.dat, file = filename)
+    }
     print(i)
 }
 

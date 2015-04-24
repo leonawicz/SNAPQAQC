@@ -10,7 +10,7 @@
 
 
 
-<title>GCM Statistics Setup Code</title>
+<title>CRU 3.x Statistics Setup Code</title>
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -214,27 +214,27 @@ img {
   </div>
 
 <div id="header">
-<h1 class="title">GCM Statistics Setup Code</h1>
+<h1 class="title">CRU 3.x Statistics Setup Code</h1>
 </div>
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The <code>stats_setup.R</code> script prepares extracted AR4/CMIP3 and AR5/CMIP5 regional temperature and precipitation data for direct use.</p>
+<p>The <code>stats_setup_CRU.R</code> script prepares extracted CRU 3.x regional temperature and precipitation data for direct use.</p>
 <div id="motivation" class="section level3">
 <h3>Motivation</h3>
 <p>This script transforms and organizes output data from a parent script into a format that is easier to work with in certain frameworks.</p>
 </div>
 <div id="details" class="section level3">
 <h3>Details</h3>
-<p>The data are extracted based on regional shapefiles and the full Alaska-Canada 2-km extent for each of SNAP’s five models, from both CMIP3 and CMIP5, and three emissions scenarios and RCPs, respectively. Data manipulation is performed to organize the inputs into more usefully formatted outputs.</p>
+<p>The data are extracted based on regional shapefiles and the full Alaska-Canada 2-km extent for SNAP’s CRU 3.x data set. Data manipulation is performed to organize the inputs into more usefully formatted outputs.</p>
 <div id="capabilities" class="section level4">
 <h4>Capabilities</h4>
 <p>This script uses parallel processing via the base <code>parallel</code> package and the function <code>mclapply</code>. It uses as many CPU cores as are available since it is parallelized across regions, which exceed the number of cores. It becomes serial beyond the number of cores simultaneously in use.</p>
 </div>
 <div id="limitations" class="section level4">
 <h4>Limitations</h4>
-<p>This code expects all ten models from CMIP3 and CMIP5 combined have been processed by the parent script. The code does not make use of <code>Rmpi</code> or similar options so it cannot take advantage of multi-node cluster parallel processing.</p>
+<p>This code expects CRU 3.x data have been processed by the parent script. The code does not make use of <code>Rmpi</code> or similar options so it cannot take advantage of multi-node cluster parallel processing.</p>
 </div>
 </div>
 </div>
@@ -242,26 +242,25 @@ img {
 <h2>Related items</h2>
 <div id="files-and-data" class="section level3">
 <h3>Files and data</h3>
-<p>The input files are produced by the <strong>R</strong> script, <code>AR4_AR5_extract.R</code>. <code>stats_setup.R</code> assumes a complete and successful run of this precursory code.</p>
-<p>The <code>AR4_AR5_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
-<p>For this reason, <code>stats_setup.R</code> has two companion <strong>R</strong> scripts which share the parent script, <code>AR4_AR5_extract.R</code>. These are <code>cities_setup.R</code> and <code>samples_setup.R</code>.</p>
-<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted CRU 3.x data.</p>
+<p>The input files are produced by the <strong>R</strong> script, <code>CRU_extract.R</code>. <code>stats_setup_CRU.R</code> assumes a complete and successful run of this precursory code.</p>
+<p>The <code>CRU_extract.R</code> script produces three main sets of output data: * Data for variables at the scale and location of individual communities * Spatially aggregated summary statistics of this data over larger regions * Regional probability distribution estimates for these same regions.</p>
+<p>For this reason, <code>stats_setup_CRU.R</code> has two companion <strong>R</strong> scripts which share the parent script, <code>CRU_extract.R</code>. These are <code>cities_setup_CRU.R</code> and <code>samples_setup_CRU.R</code>.</p>
+<p>In the hierarchy of these extraction and data preparation scripts, <code>AR4_AR5_extract.R</code> exists alongside <code>CRU_extract.R</code>. As a result, this script and its two companion scripts mentioned above are related to a similar set of three <strong>R</strong> scripts which perform similar intermediary data manipulation on extracted GCM data.</p>
 </div>
 </div>
 <div id="r-code" class="section level2">
 <h2><strong>R</strong> Code</h2>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
-<p>Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.x files. SNAP’s ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.</p>
+<p>Setup is minimal. Set working directory. List CRU 3.x files.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats&quot;</span>)
 
 <span class="kw">library</span>(data.table)
 
-files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;regions_stats.RData$&quot;</span>)
-files &lt;-<span class="st"> </span>files[<span class="kw">substr</span>(files, <span class="dv">1</span>, <span class="dv">3</span>) !=<span class="st"> &quot;CRU&quot;</span>]
+cru &lt;-<span class="st"> &quot;32&quot;</span>
+files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="kw">paste0</span>(<span class="st">&quot;^CRU&quot;</span>, cru, <span class="st">&quot;.*.regions_stats.RData$&quot;</span>))
 
-models &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;CCCMAcgcm31&quot;</span>, <span class="st">&quot;CCSM4&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;GFDLcm21&quot;</span>, <span class="st">&quot;GFDLcm3&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MIROC32m&quot;</span>, 
-    <span class="st">&quot;GISSe2-r&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;MPIecham5&quot;</span>, <span class="st">&quot;IPSLcm5a-lr&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ukmoHADcm3&quot;</span>, <span class="st">&quot;MRIcgcm3&quot;</span>))</code></pre>
+models &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;CRU&quot;</span>, cru)</code></pre>
 <div id="load-and-compile-data" class="section level4">
 <h4>Load and compile data</h4>
 <pre class="sourceCode r"><code class="sourceCode r">dlist &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(files))
@@ -270,11 +269,8 @@ for (i in <span class="dv">1</span>:<span class="kw">length</span>(files)) {
     m &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, stats.out)
     n &lt;-<span class="st"> </span><span class="kw">nrow</span>(m)
     p &lt;-<span class="st"> </span><span class="kw">length</span>(stats.out)
-    dlist[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Phase =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;AR4&quot;</span>, <span class="st">&quot;AR5&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">4</span> *<span class="st"> </span>p)), 
-        <span class="dt">Scenario =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;SRES B1&quot;</span>, <span class="st">&quot;SRES A1B&quot;</span>, <span class="st">&quot;SRES A2&quot;</span>, <span class="st">&quot;RCP 4.5&quot;</span>, <span class="st">&quot;RCP 6.0&quot;</span>, 
-            <span class="st">&quot;RCP 8.5&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">12</span> *<span class="st"> </span>p)), <span class="dt">Model =</span> <span class="kw">rep</span>(models[[i]], <span class="dt">each =</span> n/(<span class="dv">4</span> *<span class="st"> </span>
-<span class="st">            </span>p)), <span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Temperature&quot;</span>, <span class="st">&quot;Precipitation&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">2</span> *<span class="st"> </span>
-<span class="st">            </span>p)), <span class="dt">Location =</span> <span class="kw">rep</span>(<span class="kw">names</span>(stats.out), <span class="dt">each =</span> n/p), m, <span class="dt">stringsAsFactors =</span> F)
+    dlist[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Var =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;Temperature&quot;</span>, <span class="st">&quot;Precipitation&quot;</span>), <span class="dt">each =</span> n/(<span class="dv">2</span> *<span class="st"> </span>
+<span class="st">        </span>p)), <span class="dt">Location =</span> <span class="kw">rep</span>(<span class="kw">names</span>(stats.out), <span class="dt">each =</span> n/p), m, <span class="dt">stringsAsFactors =</span> F)
     <span class="kw">print</span>(i)
 }
 d &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">rbindlist</span>(dlist))
@@ -282,52 +278,37 @@ d &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span clas
 </div>
 <div id="organize-data-frame-and-support-objects" class="section level4">
 <h4>Organize data frame and support objects</h4>
-<pre class="sourceCode r"><code class="sourceCode r">d[d$Var ==<span class="st"> &quot;Temperature&quot;</span>, <span class="dv">6</span>:(<span class="kw">ncol</span>(d) -<span class="st"> </span><span class="dv">1</span>)] &lt;-<span class="st"> </span><span class="kw">round</span>(d[d$Var ==<span class="st"> &quot;Temperature&quot;</span>, 
-    <span class="dv">6</span>:(<span class="kw">ncol</span>(d) -<span class="st"> </span><span class="dv">1</span>)], <span class="dv">1</span>)
-d[d$Var ==<span class="st"> &quot;Precipitation&quot;</span>, <span class="dv">6</span>:(<span class="kw">ncol</span>(d) -<span class="st"> </span><span class="dv">1</span>)] &lt;-<span class="st"> </span><span class="kw">round</span>(d[d$Var ==<span class="st"> &quot;Precipitation&quot;</span>, 
-    <span class="dv">6</span>:(<span class="kw">ncol</span>(d) -<span class="st"> </span><span class="dv">1</span>)])
+<pre class="sourceCode r"><code class="sourceCode r">d[d$Var ==<span class="st"> &quot;Temperature&quot;</span>, <span class="dv">3</span>:<span class="kw">ncol</span>(d)] &lt;-<span class="st"> </span><span class="kw">round</span>(d[d$Var ==<span class="st"> &quot;Temperature&quot;</span>, <span class="dv">3</span>:<span class="kw">ncol</span>(d)], 
+    <span class="dv">1</span>)
+d[d$Var ==<span class="st"> &quot;Precipitation&quot;</span>, <span class="dv">3</span>:<span class="kw">ncol</span>(d)] &lt;-<span class="st"> </span><span class="kw">round</span>(d[d$Var ==<span class="st"> &quot;Precipitation&quot;</span>, 
+    <span class="dv">3</span>:<span class="kw">ncol</span>(d)])
 d$Year &lt;-<span class="st"> </span>results.years
 <span class="kw">rm</span>(results.years)
 d$Month &lt;-<span class="st"> </span>month.abb
 d$Month &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Month, <span class="dt">levels =</span> month.abb)
-d$Scenario &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Scenario, <span class="dt">levels =</span> <span class="kw">unique</span>(d$Scenario))
-
-phases &lt;-<span class="st"> </span><span class="kw">unique</span>(d$Phase)
-years &lt;-<span class="st"> </span><span class="kw">unique</span>(d$Year)
-decades &lt;-<span class="st"> </span>years[years%%<span class="dv">10</span> ==<span class="st"> </span><span class="dv">0</span>]
 d$Decade &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(d$Year, <span class="dv">1</span>, <span class="dv">3</span>), <span class="dv">0</span>)
-varnames &lt;-<span class="st"> </span><span class="kw">unique</span>(d$Var)
-modnames &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(phases), function(i, x, p) <span class="kw">unique</span>(x$Model[x$Phase ==<span class="st"> </span>
-<span class="st">    </span>p[i]]), <span class="dt">x =</span> d, <span class="dt">p =</span> phases)
-scennames &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(phases), function(i, x, p) <span class="kw">unique</span>(<span class="kw">as.character</span>(x$Scenario)[x$Phase ==<span class="st"> </span>
-<span class="st">    </span>p[i]]), <span class="dt">x =</span> d, <span class="dt">p =</span> phases)
-stats.columns &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="kw">which</span>(<span class="kw">names</span>(d) ==<span class="st"> &quot;Mean&quot;</span>), <span class="dt">length.out =</span> <span class="kw">length</span>(agg.stat.names))
-stats.multiplier &lt;-<span class="st"> </span><span class="dv">1</span>  <span class="co"># Multiply by 10 to shrink file size (doesn&#39;t seem to help with files this small)</span></code></pre>
+
+<span class="co"># agg.stat.names &lt;- c(&#39;Mean&#39;, &#39;Std. Dev.&#39;, &#39;5th percentile&#39;,&#39;10th</span>
+<span class="co"># percentile&#39;, &#39;25th percentile&#39;, &#39;50th (Median)&#39;, &#39;75th percentile&#39;, &#39;90th</span>
+<span class="co"># percentile&#39;, &#39;95th percentile&#39;)</span>
+stats.columns.cru &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="kw">which</span>(<span class="kw">names</span>(d) ==<span class="st"> &quot;Mean&quot;</span>), <span class="dt">length.out =</span> <span class="kw">length</span>(agg.stat.names))</code></pre>
 </div>
 <div id="save-output-files" class="section level4">
 <h4>Save output files</h4>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(parallel)
-f &lt;-<span class="st"> </span>function(i, index, multiplier) {
+
+f &lt;-<span class="st"> </span>function(i, cru) {
     name.tmp &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">unlist</span>(region.names.out))[i]
-    region.dat &lt;-<span class="st"> </span><span class="kw">subset</span>(d, Location ==<span class="st"> </span>name.tmp)
-    region.dat &lt;-<span class="st"> </span>multiplier *<span class="st"> </span><span class="kw">unlist</span>(region.dat[, index])
-    <span class="kw">names</span>(region.dat) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    region.cru.dat &lt;-<span class="st"> </span><span class="kw">subset</span>(d, Location ==<span class="st"> </span>name.tmp)
+    <span class="kw">names</span>(region.cru.dat)[stats.columns.cru] &lt;-<span class="st"> </span>agg.stat.colnames
     grp &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">names</span>(region.names.out), <span class="dt">times =</span> <span class="kw">sapply</span>(region.names.out, length))[i]
-    <span class="kw">dir.create</span>(outDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;../../final/region_files_GCM/stats&quot;</span>, grp, 
-        name.tmp), <span class="dt">recursive =</span> T, <span class="dt">showWarnings =</span> F)
-    <span class="kw">save</span>(region.dat, <span class="dt">file =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;stats_climate.RData&quot;</span>))
+    <span class="kw">dir.create</span>(outDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;../../final/region_files_CRU&quot;</span>, cru, <span class="st">&quot;/stats/&quot;</span>, 
+        grp, <span class="st">&quot;/&quot;</span>, name.tmp), <span class="dt">recursive =</span> T, <span class="dt">showWarnings =</span> F)
+    <span class="kw">save</span>(region.cru.dat, <span class="dt">file =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;stats_climate.RData&quot;</span>))
     <span class="kw">print</span>(i)
 }
 
-<span class="kw">mclapply</span>(<span class="dv">1</span>:<span class="kw">sum</span>(<span class="kw">sapply</span>(region.names.out, length)), f, <span class="dt">index =</span> stats.columns, 
-    <span class="dt">multiplier =</span> stats.multiplier, <span class="dt">mc.cores =</span> <span class="dv">32</span>)
-
-gcm.stats.df &lt;-<span class="st"> </span><span class="kw">subset</span>(d, Location ==<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">unlist</span>(region.names.out))[<span class="dv">1</span>])
-gcm.stats.df[, stats.columns] &lt;-<span class="st"> </span><span class="ot">NA</span>
-gcm.stats.df$Location &lt;-<span class="st"> </span><span class="ot">NA</span>
-stats.colnames &lt;-<span class="st"> </span><span class="kw">names</span>(gcm.stats.df)[stats.columns] &lt;-<span class="st"> </span>agg.stat.colnames
-<span class="kw">rm</span>(d, f)
-<span class="kw">save.image</span>(<span class="st">&quot;../../final/meta.RData&quot;</span>)</code></pre>
+<span class="kw">mclapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(<span class="kw">unique</span>(d$Location)), f, <span class="dt">cru =</span> cru, <span class="dt">mc.cores =</span> <span class="dv">32</span>)</code></pre>
 </div>
 </div>
 </div>

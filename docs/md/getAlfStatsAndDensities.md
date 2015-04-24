@@ -25,7 +25,7 @@ despite that additional distributional estimation leads to a smaller uptick in t
 The code does not make use of `Rmpi` or similar options so it cannot take advantage of multi-node cluster parallel processing.
 `getAlfStatsAndDensities.R` is not currently called via slurm script, but should be.
 
-### Files and Data
+### Files and data
 Input files include .RData workspace files storing fire, vegetation, and age data unique to each model, scenario, simulation replicate and spatial region.
 
 The `getAlfStatsAndDensities.R` script produces the following curated outputs:
@@ -49,13 +49,14 @@ library(parallel)
 library(reshape2)
 n.regions <- 53  # known, fixed
 n.cores <- 27  # of 32 available
-n.samples <- 20  # known, based on upstream settings for vegetation age
+n.samples <- 1000  # known, based on upstream settings for vegetation age
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", 
     "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 ageDirs <- list.files("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", 
     full = T)
-fireDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire"
+abfcDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/abfc"
+fsvDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/fsv"
 vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg"
 ```
 
@@ -87,8 +88,8 @@ Define support functions for density estimation, boostrap resampling from estima
 
 ```r
 # Density estimation
-denFun <- function(x, n = 20, min.zero = TRUE, diversify = FALSE, missing.veg.NA = TRUE, 
-    fire = FALSE) {
+denFun <- function(x, n = 1000, adj = 0.25, min.zero = TRUE, diversify = FALSE, 
+    missing.veg.NA = TRUE, fire = FALSE) {
     if (all(is.na(x))) 
         return(rep(NA, 2 * n))
     x <- x[!is.na(x)]
@@ -100,11 +101,11 @@ denFun <- function(x, n = 20, min.zero = TRUE, diversify = FALSE, missing.veg.NA
     if (lx == 1) 
         x <- x + c(-1:1)  #single pixel of veg type, add and subtract one age year to make procedure possible
     dif <- diff(range(x))
-    z <- density(x, adjust = 2, n = n, from = min(x) - max(1, 0.05 * dif), to = max(x) + 
-        max(1, 0.05 * dif))
+    z <- density(x, adjust = adj, n = n, from = min(x) - max(1, 0.05 * dif), 
+        to = max(x) + max(1, 0.05 * dif))
     if (min.zero && any(z$x < 0)) 
-        z <- density(x, adjust = 2, n = n, from = 0, to = max(x) + max(1, 0.05 * 
-            dif))
+        z <- density(x, adjust = adj, n = n, from = 0, to = max(x) + max(1, 
+            0.05 * dif))
     as.numeric(c(z$x, z$y))
 }
 
@@ -129,12 +130,18 @@ btfun <- function(p, n.samples = length(p)/2, n.boot = 10000, interp = FALSE,
 
 ```r
 # Primary processing functions
-get_AgeDensities <- function(j, dirs, n.samples = 20, n.samples.in, samples.index, 
+get_AgeDensities <- function(j, dirs, n.samples = 1000, n.samples.in, samples.index, 
     multiplier, veg.labels, scen.levels) {
-    pat <- paste0("^veg.age.loc", j, ".rep.*.RData$")
+    pat <- paste0("^age__.*.rep.*.RData$")
     pat2 <- substr(pat, 1, nchar(pat) - 9)
     files.list <- lapply(1:length(dirs), function(i, dirs, ...) list.files(dirs[i], 
         ...), dirs = dirs, full = T, pattern = pat)
+    for (i in 1:length(files.list)) {
+        files.locs <- sapply(strsplit(files.list[[i]], "__"), "[", 2)
+        locs <- unique(files.locs)
+        loc <- locs[j]
+        files.list[[i]] <- files.list[[i]][which(files.locs %in% loc)]
+    }
     for (i in 1:length(dirs)) {
         modname <- basename(dirs[i])
         # Load all reps for one location, all model and scenarios, into local
@@ -175,7 +182,7 @@ get_AgeDensities <- function(j, dirs, n.samples = 20, n.samples.in, samples.inde
                 dl))
         }
         d.list <- rapply(d.list, btfun, classes = "numeric", how = "replace", 
-            n.samples = n.samples.in, n.boot = 100, interp = TRUE, n.interp = 1000)
+            n.samples = n.samples.in, n.boot = 10000, interp = TRUE, n.interp = 1000)
         d.list <- unlist(d.list, recursive = FALSE)
         p <- length(d.list)
         m <- p/length(d.names)
@@ -219,9 +226,9 @@ get_AgeDensities <- function(j, dirs, n.samples = 20, n.samples.in, samples.inde
     for (p in 1:length(veg.labels)) d.alf.age$VegID[d.alf.age$VegID == p] <- veg.labels[p]
     names(d.alf.age)[which(names(d.alf.age) == "VegID")] <- "Vegetation"
     # dir.create(statsDir <-
-    # file.path('/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats',
+    # file.path('/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats',
     # loc.grp, loc), recursive=T, showWarnings=F)
-    dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", 
+    dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", 
         loc.grp, loc), recursive = T, showWarnings = F)
     d.alf.age$Val <- round(d.alf.age$Val)
     d.alf.age$Prob <- round(d.alf.age$Prob, 8) * multiplier[2]  # round to eight seems decent for now
@@ -242,10 +249,15 @@ get_AgeDensities <- function(j, dirs, n.samples = 20, n.samples.in, samples.inde
 
 
 ```r
-get_FireStats_FireDensities <- function(j, inDir, n.samples = 20, stats.index, 
+get_FireStats_FireDensities <- function(j, inDir, n.samples = 1000, stats.index, 
     samples.index, multiplier, scen.levels) {
-    pat <- paste0("^abfc.loc", j, "\\..*.RData$")
-    files <- list.files(inDir, full = T, pattern = pat)
+    files <- list.files(inDir, full = T, pattern = "^abfc__.*.RData$")
+    files.locs <- sapply(strsplit(files, "__"), "[", 2)
+    locs <- unique(files.locs)
+    if (j > length(locs)) 
+        return(NULL)
+    loc <- locs[j]
+    files <- files[which(files.locs %in% loc)]
     for (i in 1:length(files)) {
         load(files[i], envir = environment())
         d.tmp <- f.dat
@@ -262,7 +274,7 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples = 20, stats.index,
         d.tmp$Prob <- v[rep(c(F, T), each = n.samples)]
         d.tmp <- d.tmp[c(1:6, 8, 7)]
         v <- tapply(v, rep(1:(length(v)/(2 * n.samples)), each = 2 * n.samples), 
-            btfun, n.samples = n.samples, n.boot = 1000, interp = TRUE)
+            btfun, n.samples = n.samples, n.boot = 10000, interp = TRUE)
         qtiles <- c(0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95)
         n.stats <- 2 + length(qtiles)
         v <- do.call(rbind, lapply(v, getStats, seq.q = qtiles))
@@ -279,9 +291,9 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples = 20, stats.index,
     d.alf.fire$Decade <- paste0(substr(d.alf.fire$Year, 1, 3), 0)
     region.dat$Scenario <- factor(region.dat$Scenario, levels = scen.levels)
     region.dat$Decade <- paste0(substr(region.dat$Year, 1, 3), 0)
-    dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", 
+    dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", 
         loc.grp, loc), recursive = T, showWarnings = F)
-    dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", 
+    dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", 
         loc.grp, loc), recursive = T, showWarnings = F)
     d.alf.fire$Prob <- round(d.alf.fire$Prob, 8) * multiplier[2]  # round to eight seems decent for now
     r.alf.fire <- unlist(subset(d.alf.fire, Var == "Burn Area")[, samples.index])
@@ -309,10 +321,15 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples = 20, stats.index,
 
 
 ```r
-get_VegStats_VegDensities <- function(j, inDir, n.samples = 20, stats.index, 
+get_VegStats_VegDensities <- function(j, inDir, n.samples = 1000, stats.index, 
     samples.index, multiplier, veg.labels, scen.levels) {
-    pat <- paste0("^v.loc", j, "\\..*.RData$")
-    files <- list.files(inDir, full = T, pattern = pat)
+    files <- list.files(inDir, full = T, pattern = "^veg__.*.RData$")
+    files.locs <- sapply(strsplit(files, "__"), "[", 2)
+    locs <- unique(files.locs)
+    if (j > length(locs)) 
+        return(NULL)
+    loc <- locs[j]
+    files <- files[which(files.locs %in% loc)]
     for (i in 1:length(files)) {
         load(files[i], envir = environment())
         # locs <- unique(v.dat$Location) d.tmp <- v.dat[v.dat$Location==locs[j],]
@@ -338,7 +355,7 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples = 20, stats.index,
         d.tmp$Prob <- v[rep(c(F, T), each = n.samples)]
         d.tmp <- d.tmp[c(1:6, 9, 7, 8)]
         v <- tapply(v, rep(1:(length(v)/(2 * n.samples)), each = 2 * n.samples), 
-            btfun, n.samples = n.samples, n.boot = 1000, interp = TRUE)
+            btfun, n.samples = n.samples, n.boot = 10000, interp = TRUE)
         qtiles <- c(0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95)
         n.stats <- 2 + length(qtiles)
         v <- do.call(rbind, lapply(v, getStats, seq.q = qtiles))
@@ -355,9 +372,9 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples = 20, stats.index,
     d.alf.veg$Decade <- paste0(substr(d.alf.veg$Year, 1, 3), 0)
     region.dat$Scenario <- factor(region.dat$Scenario, levels = scen.levels)
     region.dat$Decade <- paste0(substr(region.dat$Year, 1, 3), 0)
-    dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/stats", 
+    dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", 
         loc.grp, loc), recursive = T, showWarnings = F)
-    dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/region_files_GCM/samples", 
+    dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", 
         loc.grp, loc), recursive = T, showWarnings = F)
     d.alf.veg$Prob <- round(d.alf.veg$Prob, 8) * multiplier[2]  # round to eight seems decent for now
     r.alf.veg <- unlist(d.alf.veg[, samples.index])
@@ -392,7 +409,7 @@ Process fire statistics and distributions.
 
 
 ```r
-system.time(out.fire <- mclapply(1:n.regions, get_FireStats_FireDensities, inDir = fireDir, 
+system.time(out.fire <- mclapply(1:n.regions, get_FireStats_FireDensities, inDir = abfcDir, 
     n.samples = n.samples, stats.index = stats.columns, samples.index = samples.columns, 
     multiplier = samples.multipliers.alf, mc.cores = n.cores))
 alf.fireStats.df <- out.fire[[1]]$alf.fireStats.df
@@ -435,7 +452,7 @@ Process vegetation age distributions.
 
 ```r
 system.time(out.age <- mclapply(1:n.regions, get_AgeDensities, dirs = ageDirs, 
-    n.samples = n.samples, n.samples.in = 20, samples.index = samples.columns, 
+    n.samples = n.samples, n.samples.in = 1000, samples.index = samples.columns, 
     multiplier = samples.multipliers.alf, veg.labels = veg.labels, mc.cores = n.cores))
 # alf.ageStats.df <- out.age[[1]]$alf.ageStats.df
 alf.ageSamples.df <- out.age[[1]]$alf.ageSamples.df
@@ -457,14 +474,15 @@ Currently, this is saved in a backup file as a specific version of metadata sinc
 ```r
 # Remove unwanted objects, load metadata workspace, save along with age
 # metadata
-rm(ageDirs, agg.stat.colnames, btfun, denFun, fireDir, get_AgeDensities, get_FireStats_FireDensities, 
-    get_VegStats_VegDensities, getPhase, getSamples, getStats, lapply_C, n.cores, 
-    n.regions, n.samples, samples.columns, scen.levels, stats.columns, swapModelName, 
-    swapScenarioName, vegDir)
+rm(ageDirs, agg.stat.colnames, btfun, denFun, abfcDir, fsvDir, get_AgeDensities, 
+    get_FireStats_FireDensities, get_fsvStats_fsvDensities, get_VegStats_VegDensities, 
+    getPhase, getSamples, getStats, lapply_C, n.cores, n.regions, n.samples, 
+    samples.columns, scen.levels, stats.columns, swapModelName, swapScenarioName, 
+    vegDir)
 # Create a backup of the meta.RData file, load and save over that.
 # Inclusion of ALFRESCO output in QAQC R Shiny app is under early
 # development.  All but one shiny-apps development repo branch should not
 # include this version of meta.RData in the cmip3_cmip5 app
-load("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta_backup.RData")
-save.image("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/final/meta_backup.RData")
+load("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta_backup.RData")
+save.image("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta_backup.RData")
 ```

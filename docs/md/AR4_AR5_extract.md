@@ -39,7 +39,7 @@ These objects are created in advance. There are multiple versions, as indexing b
 as well as subsampling and/or NA-removal, if desired.
 The specific **R** workspace intended for use in data extraction by this script is hard coded and matches that used in `AR4_AR5_extract.R`.
 
-### Files and Data
+### Files and data
 The input files include 2-km Alaska-Canada extent data from 10 combined CMIP3 and CMIP5 downscaled GCMs
 as well as community locations and raster layer cell indices pertaining to various regional shapefile polygons.
 `AR4_AR5_extract.R` is called via SLURM script, `AR4_AR5_extract.slurm`.
@@ -51,7 +51,7 @@ The `AR4_AR5_extract.R` script produces three main sets of output data:
 
 Each of these groups of outputs is handled separately by additional **R** scripts.
 
-In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R` which performs similar operations on downscaled CRU 3.1 data.
+In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R` which performs similar operations on downscaled CRU 3.x data.
 
 ## **R** Code
 
@@ -67,6 +67,7 @@ library(raster)
 library(maptools)
 library(parallel)
 library(plyr)
+library(data.table)
 ```
 
 #### Command line arguments
@@ -94,13 +95,15 @@ if (domain == "akcan2km") {
     if (regions) {
         load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
     } else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
-    locs <- read.csv("/workspace/Shared/Users/mfleonawicz/github/statistics/AR5_scripts/AR5_QAQC/locs.csv")
 } else if (domain == "world10min") {
     # Currently for cities only
     topDir <- file.path("/Data/Base_Data/Climate/World/World_10min", c("historical", 
         "projected"))  # files are not read, but metadata parsed from filenames list
-    #### Need to insert a load() command for a locs object analogous to that above
+    cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
+    #### Need to insert a load() command analogous to that above for regions
 }
+
+locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
 ```
 
 #### Define **R** objects
@@ -118,7 +121,7 @@ scenid <- if (length(topDir) == 2) {
 }
 arid <- rep(rep(c("AR4_CMIP3_models", "AR5_CMIP5_models"), each = 3), 2)
 
-model.pairs <- list(c("cccma-cgcm3-1t47", "CCSM4"), c("gfdl-cm2-1", "GFDL-CM3"), 
+model.pairs <- list(c("cccma-cgcm3-1-t47", "CCSM4"), c("gfdl-cm2-1", "GFDL-CM3"), 
     c("miroc3-2-medres", "GISS-E2-R"), c("mpi-echam5", "IPSL-CM5A-LR"), c("ukmo-hadcm3", 
         "MRI-CGCM3"))
 
@@ -126,11 +129,10 @@ if (exists("years")) yr1 <- years[1] else yr1 <- 1870
 if (exists("years")) yr2 <- tail(years, 1) else yr2 <- 2099
 years <- yr1:yr2
 
-# if(!is.null(cities)){ cities <- subset(locs, pop >= 1000,
-# c('lon_albers','lat_albers')) d.cities <- subset(locs, pop >=
-# 1000)[-c(which(names(locs) %in% c('lon_albers','lat_albers')))] }
 if (cities) {
-    locs <- locs[locs$pop > 10, ]
+    if (domain != "world10min") 
+        locs <- subset(locs, region != "NWT")
+    # locs <- locs[is.na(locs$pop) | locs$pop > 10,]
     l <- paste(locs$region, locs$loc)
     lu <- unique(l)
     dup <- which(duplicated(l))
@@ -150,10 +152,10 @@ if (cities) {
     d.cities <- cities[-c(which(names(locs) %in% c("lon_albers", "lat_albers")))]
     cities <- if (domain == "akcan2km") 
         cbind(cities$lon_albers, cities$lat_albers) else if (domain == "world10min") 
-        cbind(cities$lon, cities$lat)
-}
+        cbind(cities$lon + 360, cities$lat)  # +360 for PC lat lon rasters
+} else cities <- NULL
 
-n.samples <- 20
+n.samples <- 100
 n2 <- 2 * n.samples
 agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 
     90, 95)))
@@ -167,13 +169,14 @@ agg.stat.names[agg.stat.names == "50th percentile"] <- "Median"
 
 ```r
 # Density estimation
-denFun <- function(x, n, variable) {
+denFun <- function(x, n, adj = 0.25, variable) {
     x <- x[!is.na(x)]
     dif <- diff(range(x))
-    z <- density(x, adjust = 2, n = n, from = min(x) - 0.05 * dif, to = max(x) + 
+    z <- density(x, adjust = adj, n = n, from = min(x) - 0.05 * dif, to = max(x) + 
         0.05 * dif)
     if (variable == "pr" && any(z$x < 0)) 
-        z <- density(x, adjust = 2, n = n, from = 0, to = max(x) + 0.05 * dif)
+        z <- density(x, adjust = adj, n = n, from = 0, to = max(x) + 0.05 * 
+            dif)
     as.numeric(c(z$x, z$y))
 }
 ```
@@ -208,8 +211,6 @@ getData <- function(i, model, cells.list = NULL, shp.names = NULL, n.shp = NULL,
         if (!is.null(cities)) {
             r <- readAll(raster(files[1]))  # template done
             cells_cities <- extract(r, cities, cellnumbers = T)[, 1]
-            rank_cells_cities <- rank(cells_cities)
-            cells_cities <- sort(cells_cities)
             print("Raster cell indices for point locations obtained.")
         }
         
@@ -269,10 +270,8 @@ getData <- function(i, model, cells.list = NULL, shp.names = NULL, n.shp = NULL,
                   }
                   gc()
                 }
-                if (!is.null(cities)) {
-                  m.cities[, (1:n) + (12 * (b - 1))] <- mat[cells_cities[rank_cells_cities], 
-                    ]
-                }
+                if (!is.null(cities)) 
+                  m.cities[, (1:n) + (12 * (b - 1))] <- mat[cells_cities, ]
                 print(paste0("Process", i, ": ", unique(yr.tmp)[b]))
             }
         } else print(paste("Process", i, "skipping historical files to avoid redundancy."))
@@ -382,54 +381,34 @@ for (k in 1:2) {
             print(length(stats.out) - i)
         }
         save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames, 
-            file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats/", 
+            file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/", 
                 models[1], "_", models[4], "_annual_regions_stats.RData"))
         
         # regional samples
         samples <- lapply(results, function(x) x[[1]][["samples"]])
-        list2df <- function(x) {
+        list2df <- function(x, yr_mo) {
             x <- ldply(x, data.frame)
-            x[, ".id"] <- paste(x[, ".id"], names(x)[2], sep = "_")
-            names(x) <- c("Location", paste("T", 1:(ncol(x) - 1), sep = "_"))
+            names(x) <- c("Location", yr_mo)
             x
         }
-        for (l1 in 1:length(samples)) for (l2 in 1:length(samples[[l1]])) samples[[l1]][[l2]] <- list2df(samples[[l1]][[l2]])
-        for (l1 in 1:length(samples)) samples[[l1]] <- do.call(rbind, samples[[l1]])
-        samples.names <- sapply(strsplit(unique(samples[[1]]$Location), "_"), 
-            "[[", 1)
-        samples <- do.call(rbind, samples)
-        samples$Location <- rep(rep(samples.names, each = n2), 12)
-        names(samples)[-1] <- paste(results.years, month.abb, sep = "_")
-        rownames(samples) <- NULL
-        samples.out <- list()
-        for (i in 1:length(samples.names)) {
-            samples.out[[i]] <- subset(samples, Location == samples.names[i])
-            rownames(samples.out[[i]]) <- NULL
-        }
-        names(samples.out) <- samples.names
-        nc <- ncol(samples.out[[1]])
-        for (i in 1:length(samples.out)) {
-            for (cols in 2:nc) {
-                if (all(is.na(samples.out[[i]][(n2 + 1):(2 * n2), cols]))) 
-                  samples.out[[i]][(n2 + 1):(2 * n2), cols] <- samples.out[[i]][(2 * 
-                    n2 + 1):(3 * n2), cols] <- samples.out[[i]][1:n2, cols]
-                if (all(is.na(samples.out[[i]][(4 * n2 + 1):(5 * n2), cols]))) 
-                  samples.out[[i]][(4 * n2 + 1):(5 * n2), cols] <- samples.out[[i]][(5 * 
-                    n2 + 1):(6 * n2), cols] <- samples.out[[i]][(3 * n2 + 1):(4 * 
-                    n2), cols]
-                if (all(is.na(samples.out[[i]][(7 * n2 + 1):(8 * n2), cols]))) 
-                  samples.out[[i]][(7 * n2 + 1):(8 * n2), cols] <- samples.out[[i]][(8 * 
-                    n2 + 1):(9 * n2), cols] <- samples.out[[i]][(6 * n2 + 1):(7 * 
-                    n2), cols]
-                if (all(is.na(samples.out[[i]][(10 * n2 + 1):(11 * n2), cols]))) 
-                  samples.out[[i]][(10 * n2 + 1):(11 * n2), cols] <- samples.out[[i]][(11 * 
-                    n2 + 1):(12 * n2), cols] <- samples.out[[i]][(9 * n2 + 1):(10 * 
-                    n2), cols]
+        for (z in 1:length(arid)) {
+            # 12 combinations
+            lab <- paste(substr(arid[z], 1, 3), scenid[scenid != ""][z], models[z], 
+                varid[z], sep = "_")
+            samples.sub <- samples[[z]]
+            for (l1 in 1:length(samples.sub)) samples.sub[[l1]] <- list2df(samples.sub[[l1]], 
+                yr_mo = paste(results.years, month.abb, sep = "_"))
+            samples.sub <- rbindlist(samples.sub)
+            samples.names <- unique(samples.sub$Location)
+            samples.out <- list()
+            for (i in 1:length(samples.names)) {
+                samples.out[[i]] <- subset(samples.sub, Location == samples.names[i])
+                rownames(samples.out[[i]]) <- NULL
             }
-            print(length(samples.out) - i)
+            names(samples.out) <- samples.names
+            save(samples.out, samples.names, region.names.out, n.samples, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/", 
+                lab, "_annual_regions_samples.RData"))
         }
-        save(samples.out, samples.names, region.names.out, n.samples, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/samples/", 
-            models[1], "_", models[4], "_annual_regions_samples.RData"))
     }
     if (k == 2 & !is.null(cities)) {
         for (i in 1:length(stats)) {
@@ -453,7 +432,7 @@ for (k in 1:2) {
                 10]
         }
         d <- stats.out[[1]]
-        save(d, d.cities, results.years, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/cities/", 
+        save(d, d.cities, results.years, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/", 
             models[1], "_", models[4], "_annual_cities_batch", cities.batch, 
             "_", domain, ".RData"))
     }

@@ -25,7 +25,7 @@ The code does not make use of `Rmpi` or similar options so it cannot take advant
 
 ## Related items
 
-### Files and Data
+### Files and data
 The input files are produced by the **R** script, `AR4_AR5_extract.R`. `stats_setup.R` assumes a complete and successful run of this precursory code.
 
 The `AR4_AR5_extract.R` script produces three main sets of output data:
@@ -36,18 +36,18 @@ The `AR4_AR5_extract.R` script produces three main sets of output data:
 For this reason, `stats_setup.R` has two companion **R** scripts which share the parent script, `AR4_AR5_extract.R`. These are `cities_setup.R` and `samples_setup.R`.
 
 In the hierarchy of these extraction and data preparation scripts, `AR4_AR5_extract.R` exists alongside `CRU_extract.R`.
-As a result, this script and its two companion scripts mentioned above are related to a similar set of three **R** scripts which perform similar intermediary data manipulation on extracted CRU 3.1 data.
+As a result, this script and its two companion scripts mentioned above are related to a similar set of three **R** scripts which perform similar intermediary data manipulation on extracted CRU 3.x data.
 
 ## **R** Code
 
 ### Setup
 
-Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.1 files.
+Setup is minimal. Set working directory. List GCM files while making sure to avoid CRU 3.x files.
 SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the parent script.
 
 
 ```r
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/AR4_AR5_comparisons/data/regional/stats")
+setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats")
 
 library(data.table)
 
@@ -68,11 +68,11 @@ for (i in 1:length(files)) {
     m <- do.call(rbind, stats.out)
     n <- nrow(m)
     p <- length(stats.out)
-    dlist[[i]] <- data.frame(Phase = rep(c("CMIP3", "CMIP5"), each = n/(4 * 
-        p)), Scenario = rep(c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", 
-        "RCP 8.5"), each = n/(12 * p)), Model = rep(models[[i]], each = n/(4 * 
-        p)), Var = rep(c("Temperature", "Precipitation"), each = n/(2 * p)), 
-        Location = rep(names(stats.out), each = n/p), m, stringsAsFactors = F)
+    dlist[[i]] <- data.frame(Phase = rep(c("AR4", "AR5"), each = n/(4 * p)), 
+        Scenario = rep(c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", 
+            "RCP 8.5"), each = n/(12 * p)), Model = rep(models[[i]], each = n/(4 * 
+            p)), Var = rep(c("Temperature", "Precipitation"), each = n/(2 * 
+            p)), Location = rep(names(stats.out), each = n/p), m, stringsAsFactors = F)
     print(i)
 }
 d <- as.data.frame(rbindlist(dlist))
@@ -104,7 +104,6 @@ scennames <- lapply(1:length(phases), function(i, x, p) unique(as.character(x$Sc
     p[i]]), x = d, p = phases)
 stats.columns <- seq(which(names(d) == "Mean"), length.out = length(agg.stat.names))
 stats.multiplier <- 1  # Multiply by 10 to shrink file size (doesn't seem to help with files this small)
-# save.image('../../final/region_stats_data.RData')
 ```
 
 #### Save output files
