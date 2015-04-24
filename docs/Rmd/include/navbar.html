@@ -6,40 +6,31 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SNAP Data QAQC</a>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
           <li><a href="index.html">Overview</a></li>
 
-          <li><a href="code_sankey.html">Code flow</a></li>
-
           <li class="dropdown">
-            <a href="gcm-climate" class="dropdown-toggle" data-toggle="dropdown">GCM climate <b class="caret"></b></a>
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
               <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
+              <li class="dropdown-header">GCM organization</li>
               <li><a href="stats_setup.html">Regions: stats</a></li>
               <li><a href="samples_setup.html">Regions: densities</a></li>
               <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
             </ul>
 
           <li class="dropdown">
-            <a href="cru-3.1-climate" class="dropdown-toggle" data-toggle="dropdown">CRU 3.1 climate <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li class="dropdown-header">Extraction</li>
-              <li><a href="CRU_extract.html">Downscaled CRU 3.1</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Organization</li>
-              <li><a href="stats_setup_CRU31.html">Regions: stats</a></li>
-              <li><a href="samples_setup_CRU31.html">Regions: densities</a></li>
-              <li><a href="cities_setup_CRU31.html">Cities: stats</a></li>
-            </ul>
-
-          <li class="dropdown">
-            <a href="fire-&-vegetation" class="dropdown-toggle" data-toggle="dropdown">Fire & Vegetation <b class="caret"></b></a>
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Extraction</li>
               <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
@@ -50,9 +41,48 @@
             </ul>
 
           <li class="dropdown">
-            <a href="other-r-code" class="dropdown-toggle" data-toggle="dropdown">Other R Code <b class="caret"></b></a>
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="qaqc_app_metadata.html">QAQC App Metadata</a></li>
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li class="dropdown-header">global.R</li>
+              <li class="dropdown-header">ui.R</li>
+              <li class="dropdown-header">server.R</li>
+              <li class="dropdown-header">about.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">sidebar.R</li>
+              <li class="dropdown-header">main.R</li>
+              <li class="dropdown-header">serverHead.R</li>
+              <li class="dropdown-header">app.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">io_sidebar.R</li>
+              <li class="dropdown-header">io_main.R</li>
+              <li class="dropdown-header">reactives.R</li>
+              <li class="divider"></li>
+              <li class="dropdown-header">plot_ts.R</li>
+              <li class="dropdown-header">plot_scatter.R</li>
+              <li class="dropdown-header">plot_heatmap.R</li>
+              <li class="dropdown-header">plot_variability.R</li>
+              <li class="dropdown-header">plot_spatial.R</li>
             </ul>
 
           <li><a href="http://leonawicz.github.io">All Projects</a></li>
