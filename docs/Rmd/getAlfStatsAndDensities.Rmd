@@ -36,7 +36,7 @@ despite that additional distributional estimation leads to a smaller uptick in t
 The code does not make use of `Rmpi` or similar options so it cannot take advantage of multi-node cluster parallel processing.
 `getAlfStatsAndDensities.R` is not currently called via slurm script, but should be.
 
-### Files and Data
+### Files and data
 Input files include .RData workspace files storing fire, vegetation, and age data unique to each model, scenario, simulation replicate and spatial region.
 
 The `getAlfStatsAndDensities.R` script produces the following curated outputs:

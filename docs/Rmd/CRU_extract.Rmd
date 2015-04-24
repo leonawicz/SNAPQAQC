@@ -48,7 +48,7 @@ These objects are created in advance. There are multiple versions, as indexing b
 as well as subsampling and/or NA-removal, if desired.
 The specific **R** workspace intended for use in data extraction by this script is hard coded and matches that used in `AR4_AR5_extract.R`.
 
-### Files and Data
+### Files and data
 The input files include 2-km Alaska-Canada extent data from 10 combined CMIP3 and CMIP5 downscaled GCMs
 as well as community locations and raster layer cell indices pertaining to various regional shapefile polygons.
 `CRU_extract.R` is called via SLURM script, `CRU_extract.slurm`.

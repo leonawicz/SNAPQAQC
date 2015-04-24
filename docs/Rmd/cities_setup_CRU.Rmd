@@ -37,7 +37,7 @@ The code does not make use of `Rmpi` or similar options so it cannot take advant
 
 ## Related items
 
-### Files and Data
+### Files and data
 The input files are produced by the **R** script, `CRU_extract.R`. `cities_setup_CRU.R` assumes a complete and successful run of this precursory code.
 
 The `CRU_extract.R` script produces three main sets of output data:

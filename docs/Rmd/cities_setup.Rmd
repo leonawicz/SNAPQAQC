@@ -40,7 +40,7 @@ It may be too much to include several thousand cities in a single batch, dependi
 
 ## Related items
 
-### Files and Data
+### Files and data
 The input files are produced by the **R** script, `AR4_AR5_extract.R`. `cities_setup.R` assumes a complete and successful run of this precursory code.
 
 The `AR4_AR5_extract.R` script produces three main sets of output data:

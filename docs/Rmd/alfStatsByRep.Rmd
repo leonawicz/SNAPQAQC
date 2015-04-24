@@ -24,7 +24,7 @@ This script is called by the wrapper script, `alfStatsByRep_Rpmi.R` as part of a
 The script consists of functions, which are loaded onto each CPU core.
 The execution calls still originate from the parent `Rpmi` script on the head node.
 
-### Files and Data
+### Files and data
 The input files include 1-km Alaska-Canada extent data from ALFRESCO simulations
 as well as raster layer cell indices pertaining to various regional shapefile polygons.
 All input data are passed directly from the `alfStatsByRep_Rpmi.R` master **R** session running on the head node.
