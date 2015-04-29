@@ -1,0 +1,27 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_global.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+`global.R` loads **R** packages and a workspace of supporting **R** objects needed by the app.
+If the app is launched from the **R** console on my own machine for testing purposes,
+`global.R` will rename various file paths from the loaded **R** workspace to point to locally stored data.
+It also defines some other objects, including a conditional panel used across several tab panels.
+
+### global.R
+
+```{r global}
+```

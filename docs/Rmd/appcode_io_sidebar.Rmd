@@ -1,0 +1,114 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_io_sidebar.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+`io_main.R` is a server-side **R** script sourced by `app.R`, which is in turn sourced by `server.R`.
+It contains a number of reactive outputs rendered in the browser,
+specifically outputs which are sent to the sidebar panel area of the app to inform user input controls based on the values of other inputs and outputs.
+
+### io_main.R
+
+#### Panel display, options, and observation
+
+```{r sb_out_01_03}
+```
+
+#### Geographic locations
+
+```{r sb_out_04}
+```
+
+#### Months to seasons aggregation
+
+```{r sb_out_05_06}
+```
+
+#### Decades to longer-term periods aggregation
+
+```{r sb_out_07_08}
+```
+
+#### The data subsetting button
+
+```{r sb_out_09}
+```
+
+The plot-specific input controls below deal with choice of axis variables, grouping (coloring) variables, faceting variables, and choice of plot subtype or statistic.
+
+#### Time series input controls
+
+```{r sb_out_10_11}
+```
+
+#### Scatter plot input controls
+
+```{r sb_out_12_14}
+```
+
+#### Heat map input controls
+
+```{r sb_out_15_18}
+```
+
+#### Variability plots input controls
+
+```{r sb_out_19_21}
+```
+
+#### Distribution plots input controls
+
+```{r sb_out_22_25}
+```
+
+#### Vertical faceting and pooled variable text for each plot type
+
+```{r sb_out_26_33}
+```
+
+The plot-specific input controls below deal with mainly with aesthetic options such as color palettes, alpha levels, font size, and other aspects of graph display.
+
+#### Time series input controls
+
+```{r sb_out_34_38}
+```
+
+#### Scatter plot input controls
+
+```{r sb_out_39_42}
+```
+
+#### Heat map input controls
+
+```{r sb_out_43_44}
+```
+
+#### Variability plots input controls
+
+```{r sb_out_45_50}
+```
+
+#### Distribution plots input controls
+
+```{r sb_out_51_55}
+```
+
+#### Conditional plot buttons
+
+These buttons display depending on the current status of data selection and other similarly required non-`NULL`-valued reactive inputs and outputs referenced by the `permitPlot` reactive expression.
+
+```{r sb_out_56_60}
+```

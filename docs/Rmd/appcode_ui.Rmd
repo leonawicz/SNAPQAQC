@@ -1,0 +1,29 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_ui.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+`ui.R` first sources `about.R` and then calls `fluidPage`, inside of which is a call to `navbarPage`.
+This is a bit unorthodox, and does create some very minor issues, but overall provides the flexibility I require to achieve the desired browser-side app display reactivity.
+After the navbar page is set up with unique tab panel values and the `About` page and any markdown documents are included, `ui.R` then sources the sidebar and main panel **R** code,
+`sidebar.R` and `main.R`.
+
+Note that nested navbar menus are not available the current version of Shiny.
+
+### ui.R
+
+```{r ui}
+```

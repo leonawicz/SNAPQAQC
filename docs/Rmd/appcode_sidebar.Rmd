@@ -1,0 +1,62 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_sidebar.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+`sidebar.R` contains conditional panels for data selection and plot options and is sourced by `ui.R`.
+The browser-side **R** code contains many conditional panels.
+In the top panel, data selection, most options are static, while some appear or disappear depending on the selection of others.
+Some options are also specific to the selected plot type (tab panel).
+In the below panel, plot options, there is much dependency upon data selection as well as plot type.
+Therefore, most of these options are conditional and few are fixed.
+
+The general reactivity hierarchy associated with these sidebar input control panels is as follows.
+Until data selection options are filled in by the user enough to non-ambiguously generate a data subset, the data subsetting button does not appear.
+Once data are sufficiently selected, the button appears.
+Only once the button is pressed is the subsetting operation performed.
+
+Once this data subset reactive expression exists and is not `NULL`, the data download button appears.
+At this time the data selection menu updates by minimizing, leaving only the subset and download buttons visible.
+This clears up vertical space in the sidebar for the plot options panel, which will also update by expanding open if currently minimized.
+
+Similar to the subset button in the data selection panel,
+the plot button will only appear once sufficient plot settings are chosen by the user,
+though it may appear right away if the combination of selected data and default input control values are sufficient to plot.
+Similar to the download data button, the download plot button will appear after a plot has been created in the main panel area.
+
+Because the plot options depend not only on the plot type, but also on the selected daat subset,
+if the user elects to re-expand the data selection menu and change any data selection input,
+any plot options and associated plot will clear.
+The plot options panel will minimize again.
+This forces the user to use the subset button again to explicitly request a data subset.
+This is best practice because otherwise it would be possible to unwittingly draw or download a plot that is of the "old" data or of the "new" data.
+Any changes to data require re-plotting.
+
+When switching among plot types via the navbar menu, data selection remains based on the previous subsetting operation unless the user makes a change.
+Some plot types use more data than others.
+For example, the scatter plot may use both temperature and precipation whereas the time series plot is univariate.
+This additional data would appear when switching to the scatter plot tab, but it would not invalidate the time series plot.
+A noticeable lag may occur momentarily when switching to the spatial distributions tab, which uses entirely different (and much more) data.
+Again, despite this reactivity update, other plots and the data selection in general is not invalidated.
+
+This is more obvious with the plot options panels, which clearly differ among the different plot types.
+Each plot type, selected via the navbar menu, will conditionally display its own plot options panel.
+Even options which repeat from panel to panel such as the option to display a plot title, may be labeled the same but underneath they are plot type-specific reactive inputs.
+
+### plot_heatmap.R
+
+```{r sidebar}
+```

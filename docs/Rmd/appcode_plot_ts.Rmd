@@ -1,0 +1,24 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_plot_ts.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+`plot_ts.R` contains the time series plotting function and is sourced by `app.R`.
+
+### plot_ts.R
+
+```{r plot_ts}
+```

@@ -1,0 +1,87 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_app.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+The `app.R` script can be viewed as the central hub of the server-side **R** code.
+It is sourced by `server.R`.
+I keep it externalized because `server.R` also sources `serverHead.R`,
+the initial server-side code external to and preceding the `shinyServer` call, which is also a sizeable script on its own.
+In turn, `app.R` sources several other **R** scripts as shown below, covering the remainder of the server-side code that flows into `server.R`.
+This includes all strict server-side reactive expressions, reactive outputs (assigned specifically to `output` via the `$` operator), and custom `ggplot2`-based plotting functions.
+
+### app.R
+
+#### Source R scripts
+
+```{r app_source}
+```
+
+#### Define plot wrapper functions
+
+Each plot function sourced by `app.R` is wrapped in a parent function, which is similarly non-reactive but references known reactive expressions and reactive inputs.
+
+##### Time series wrapper function
+
+```{r app_plotts}
+```
+
+##### Scatter plot wrapper function
+
+```{r app_plotsc}
+```
+
+##### Heat map wrapper function
+
+```{r app_plothm}
+```
+
+##### Variability plots wrapper function
+
+```{r app_plotvr}
+```
+
+##### Distribution plots wrapper function
+
+```{r app_plotsp}
+```
+
+Outputs below include browser-rendered plots, plot downloads, and data downloads.
+
+#### Time series outputs
+
+```{r app_outts}
+```
+
+#### Scatter plot outputs
+
+```{r app_outsc}
+```
+
+#### Heat map outputs
+
+```{r app_outvr}
+```
+
+#### Variability plots outputs
+
+```{r app_outhm}
+```
+
+#### Distribution plots outputs
+
+```{r app_outsp}
+```

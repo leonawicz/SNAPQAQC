@@ -1,0 +1,25 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_main.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+The `main.R` script contains browser-side **R** code and is sourced by `ui.R`.
+It employs conditional panels to break up the outputs associated with the different plot types available in the app.
+
+### main.R
+
+```{r main}
+```

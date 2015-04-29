@@ -1,0 +1,125 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_reactives.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+The `reactives.R` script is sourced by `app.R` which is in turn sourced by `server.R`.
+This script contains strict server-side reactive expressions.
+
+### reactives.R
+
+#### Button status
+
+```{r re_01_06}
+```
+
+#### Time: months, seasons, years, decades, and long-term periods
+
+```{r re_07_14}
+```
+
+#### Models, scenarios, pair logicals, and composites
+
+```{r re_15_22}
+```
+
+#### Units, statistics, and bootstrap sample sizes
+
+```{r re_23_26}
+```
+
+#### Geographic locations
+
+```{r re_27_30}
+```
+
+#### Plot annotations and plot permission check
+
+```{r re_31_41}
+```
+
+#### Master GCM data set
+
+```{r re_42}
+```
+
+#### Master CRU data set
+
+```{r re_43}
+```
+
+#### GCM data subsets
+
+```{r re_44_46}
+```
+
+#### CRU data subsets
+
+```{r re_47_48}
+```
+
+#### GCM distributions data files
+
+```{r re_49}
+```
+
+#### Master GCM distributions data set
+
+```{r re_50}
+```
+
+#### Master CRU distributions data set
+
+```{r re_51}
+```
+
+The below plot-specific reactive expresssions pertain grouping, faceting, and pooling, and additinal plot settings where applicable.
+
+#### Time series
+
+```{r re_52_56}
+```
+
+#### Scatter plot
+
+```{r re_57_61}
+```
+
+#### Heat map
+
+```{r re_62_66}
+```
+
+#### Variability plots
+
+```{r re_67_73}
+```
+
+#### Distribution plots
+
+```{r re_74_80}
+```
+
+#### Data aggregation
+These reactive expressions perform further data manipulation on input data sets so that summary statistics and aggregated information can be added to a plot.
+
+```{r re_81_85}
+```
+
+#### Plot-specific color sequences based on input data
+
+```{r re_86_90}
+```

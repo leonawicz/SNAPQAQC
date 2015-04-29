@@ -1,0 +1,194 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/appcode_serverHead.R")
+```
+
+##
+##
+## SNAP data QA/QC Shiny app R code
+
+The `serverHead.R` script is sourced by `server.R` prior to the `shinyServer` call.
+It loads required server-side **R** packages and contains numerous support functions used by the app.
+A key purpose of including many standard **R** functions here is that many of them are used repeatedly
+in order to perform the same operations for different plot types.
+While this externalization adds another layer of abstraction to the code,
+and while some of these functions clearly serve highly specific purposes and would make no sense without the fuller code context,
+it prevents a significant amount of code duplication.
+
+### serverHead.R
+
+#### R packages, themes, colors, and logo
+
+```{r sh_setup}
+```
+
+#### nullOrZero
+Check if an input is `NULL` or zero.
+
+```{r sh_func01}
+```
+
+#### mod2ar
+Obtain the AR ID (CMIP phase) based on the climate model.
+
+```{r sh_func02}
+```
+
+#### density2bootstrap
+Sample from an empirical, estimated probability density function. This is used for distribution plots.
+
+```{r sh_func03}
+```
+
+#### splitAt
+This function assists `periodLength`.
+
+```{r sh_func04}
+```
+
+#### periodLength
+This function obtains the length of a defined period (combination of decades) when the user exercises the option to concatenate multiple selected decades into one or more equal-length longer-term periods.
+
+```{r sh_func05}
+```
+
+#### collapseMonths
+This function aggregates consecutive months into one or more equal-length seasons.
+
+```{r sh_func06}
+```
+
+#### periodsFromDecades
+This function concatenates decades into one or more equal-length longer-term periods.
+
+```{r sh_func07}
+```
+
+#### dodgePoints
+This function is used to properly dodge points when points are overlaid on top of other dodged elements such as bars or box plots.
+This is necessary when grouping and faceting by categorical values.
+`ggplot` is not good at handling this nuance on its own.
+
+```{r sh_func08}
+```
+
+#### getHeatmapAxisChoices
+This function lists the categorical variables available for use along the axes of a heat map.
+
+```{r sh_func09}
+```
+
+#### nGroups
+This function returns the number of levels in a cetegorical variable used as the grouping variable.
+
+```{r sh_func10}
+```
+
+#### getFacetChoicesHeatmap
+This function help control which variables are available for faceting by specifically in a heat map.
+
+```{r sh_func11}
+```
+
+#### getFacetPanels
+This function returns the number of panels in a plot based on the current faceting variable.
+
+```{r sh_func12}
+```
+
+#### getPooledVars
+This function obtains a list of currently pooled variables, if any.
+It is hierarchically dependent on variables present in the data subset as well as plot settings for which variables are assigned for the x and y axes, grouping, and faceting.
+If any variables remain in the data subset, they are known to be pooled.
+Additional code attempts to reduce redundancy.
+For example, it is pointless to output text which states that data are pooled across both years and decades.
+
+```{r sh_func13}
+```
+
+#### getPlotSubTitle
+This function provides a "semi-smart" in-panel text annotation based on current plot settings, emphasis on the "semi".
+
+```{r sh_func14}
+```
+
+#### getPlotTitle
+This function provides a "semi-smart" title to some plots based on current plot settings, emphasis on the "semi".
+
+```{r sh_func15}
+```
+
+#### getSubjectChoices
+This function handles "subjects" and its result is passed as an input to `withinGroupLines`.
+
+```{r sh_func16}
+```
+
+#### adjustGroup
+This function handles idiosyncratic combinations of values of grouping variables and its number of factor levels.
+
+```{r sh_func17}
+```
+
+#### withinGroupLines
+This function controls how lines are drawn in the context of pooled observations.
+For example, if there are multiple observations per time point, due to pooling of multiple variables and/or multiple levels of categorical variables,
+this function helps ensure that lines are drawn separately for each "subject".
+
+```{r sh_func18}
+```
+
+#### scaleColFillMan_prep
+`scaleColFillMan_prep` is a support function for `scaleColFillMan`.
+
+```{r sh_func19}
+```
+
+#### scaleColFillMan
+This function controls and adds `scale_color_manual`, `scale_fill_manual`, `scale_color_brewer`, and/or `scale_fill_brewer` layers to `ggplot` objects.
+
+```{r sh_func20}
+```
+
+#### pooledVarsCaption
+This function is used to help inform the text output which displays below a plot detailing which, if any, selected variables are pooled together in the plot.
+
+```{r sh_func21}
+```
+
+#### getColorSeq
+This function returns color sequence options, e.g., qualitative, divergent, etc., based on the number of levels in a selected grouping variable.
+
+```{r sh_func22}
+```
+
+#### getColorPalettes
+This function returns color palette options based on the available color sequence types.
+
+```{r sh_func23}
+```
+
+#### annotatePlot
+This function assists with plot annotation.
+`annotatePlot` checks whether the x-axiss variable is a factor variable or numeric and attempts to smartly place annotatd text in the graphic panel.
+This is not always so easy with `ggplot`.
+Furthermore, the text itself, output from `getPlotSubTitle` which attempts to list how certain variables are pooled together in a plot, is only so "smart".
+It is worth flagging on to check, but in general I turn this option off just as I tend to turn of the plot title.
+
+```{r sh_func24}
+```
+
+#### addLogo
+This function assists with adding a `SNAP` logo to a downloaded plot.
+
+```{r sh_func25}
+```
