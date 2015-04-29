@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="snap-data-qaqc-shiny-app-r-code" class="section level2">
+<h2>SNAP data QA/QC Shiny app R code</h2>
+<p>The <code>app.R</code> script can be viewed as the central hub of the server-side <strong>R</strong> code. It is sourced by <code>server.R</code>. I keep it externalized because <code>server.R</code> also sources <code>serverHead.R</code>, the initial server-side code external to and preceding the <code>shinyServer</code> call, which is also a sizeable script on its own. In turn, <code>app.R</code> sources several other <strong>R</strong> scripts as shown below, covering the remainder of the server-side code that flows into <code>server.R</code>. This includes all strict server-side reactive expressions, reactive outputs (assigned specifically to <code>output</code> via the <code>$</code> operator), and custom <code>ggplot2</code>-based plotting functions.</p>
+<div id="app.r" class="section level3">
+<h3>app.R</h3>
+<div id="source-r-scripts" class="section level4">
+<h4>Source R scripts</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Source reactive expressions and other code</span>
+<span class="kw">source</span>(<span class="st">&quot;external/reactives.R&quot;</span>, <span class="dt">local =</span> T)  <span class="co"># source reactive expressions</span>
+<span class="kw">source</span>(<span class="st">&quot;external/io_sidebar.R&quot;</span>, <span class="dt">local =</span> T)  <span class="co"># source input/output objects associated with sidebar</span>
+<span class="kw">source</span>(<span class="st">&quot;external/io_main.R&quot;</span>, <span class="dt">local =</span> T)  <span class="co"># source input/output objects associated with mainPanel</span>
+
+tsPlot &lt;-<span class="st"> </span><span class="kw">source</span>(<span class="st">&quot;external/plot_ts.R&quot;</span>, <span class="dt">local =</span> T)$value
+scatterPlot &lt;-<span class="st"> </span><span class="kw">source</span>(<span class="st">&quot;external/plot_scatter.R&quot;</span>, <span class="dt">local =</span> T)$value
+varPlot &lt;-<span class="st"> </span><span class="kw">source</span>(<span class="st">&quot;external/plot_variability.R&quot;</span>, <span class="dt">local =</span> T)$value
+heatPlot &lt;-<span class="st"> </span><span class="kw">source</span>(<span class="st">&quot;external/plot_heatmap.R&quot;</span>, <span class="dt">local =</span> T)$value
+spatialPlot &lt;-<span class="st"> </span><span class="kw">source</span>(<span class="st">&quot;external/plot_spatial.R&quot;</span>, <span class="dt">local =</span> T)$value</code></pre>
+</div>
+<div id="define-plot-wrapper-functions" class="section level4">
+<h4>Define plot wrapper functions</h4>
+<p>Each plot function sourced by <code>app.R</code> is wrapped in a parent function, which is similarly non-reactive but references known reactive expressions and reactive inputs.</p>
+<div id="time-series-wrapper-function" class="section level5">
+<h5>Time series wrapper function</h5>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specific plot function setup</span>
+doPlot_ts &lt;-<span class="st"> </span>function(...) {
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$group)) {
+        if (!(input$group !=<span class="st"> &quot;None&quot;</span> &amp;<span class="st"> </span>!<span class="kw">length</span>(input$colorpalettes_ts))) {
+            <span class="kw">tsPlot</span>(<span class="dt">d =</span> <span class="kw">dat</span>(), <span class="dt">x =</span> input$xtime, <span class="dt">y =</span> <span class="kw">aggStatsID</span>(), <span class="dt">y.name =</span> input$aggStats, 
+                <span class="dt">Log =</span> input$log_ts, <span class="dt">d.grp =</span> <span class="kw">datCollapseGroups</span>(), <span class="dt">d.pool =</span> <span class="kw">datCollapsePooled</span>(), 
+                <span class="dt">grp =</span> input$group, <span class="dt">n.grp =</span> <span class="kw">n.groups</span>(), <span class="dt">ingroup.subjects =</span> <span class="kw">subjectChoices</span>(), 
+                <span class="dt">panels =</span> <span class="kw">facet.panels</span>(), <span class="dt">facet.by =</span> input$facet, <span class="dt">vert.facet =</span> input$vert.facet, 
+                <span class="dt">fontsize =</span> input$plotFontSize, <span class="dt">colpal =</span> input$colorpalettes_ts, 
+                <span class="dt">linePlot =</span> input$linePlot, <span class="dt">barPlot =</span> input$barPlot, <span class="dt">pts.alpha =</span> input$alpha1, 
+                <span class="dt">bartype =</span> input$bartype, <span class="dt">bardirection =</span> input$bardirection, 
+                <span class="dt">show.points =</span> input$ts_showpts, <span class="dt">show.lines =</span> input$ts_showlines, 
+                <span class="dt">show.overlay =</span> input$ts_showCRU, <span class="dt">overlay =</span> <span class="kw">CRU</span>(), <span class="dt">jit =</span> input$ts_jitterXY, 
+                <span class="dt">plot.title =</span> <span class="kw">plot_ts_title</span>(), <span class="dt">plot.subtitle =</span> <span class="kw">plot_ts_subtitle</span>(), 
+                <span class="dt">show.panel.text =</span> input$ts_showPanelText, <span class="dt">show.title =</span> input$ts_showTitle, 
+                <span class="dt">lgd.pos =</span> input$legendPos1, <span class="dt">units =</span> <span class="kw">currentUnits</span>(), <span class="dt">yrange =</span> input$yrange, 
+                <span class="dt">clbootbar =</span> input$clbootbar, <span class="dt">clbootsmooth =</span> input$clbootsmooth, 
+                <span class="dt">pooled.var =</span> <span class="kw">pooled.var</span>(), <span class="dt">plot.theme.dark =</span> input$ts_plotThemeDark, 
+                <span class="dt">logo.mat =</span> logo.mat, ...)
+        } else <span class="ot">NULL</span>
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="scatter-plot-wrapper-function" class="section level5">
+<h5>Scatter plot wrapper function</h5>
+<pre class="sourceCode r"><code class="sourceCode r">doPlot_scatter &lt;-<span class="st"> </span>function(...) {
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$group2)) {
+        if (!(input$group2 !=<span class="st"> &quot;None&quot;</span> &amp;<span class="st"> </span>!<span class="kw">length</span>(input$colorpalettes_sc))) {
+            <span class="kw">scatterPlot</span>(<span class="dt">d =</span> <span class="kw">dat2</span>(), <span class="dt">x =</span> input$vars, <span class="dt">y =</span> input$vars2, <span class="dt">x.name =</span> input$aggStats, 
+                <span class="dt">y.name =</span> input$aggStats2, <span class="dt">Logx =</span> input$log_sc_x, <span class="dt">Logy =</span> input$log_sc_y, 
+                <span class="dt">flip.axes =</span> <span class="kw">sc_flip_xy</span>(), <span class="dt">grp =</span> input$group2, <span class="dt">n.grp =</span> <span class="kw">n.groups2</span>(), 
+                <span class="dt">panels =</span> <span class="kw">facet.panels2</span>(), <span class="dt">facet.by =</span> input$facet2, <span class="dt">vert.facet =</span> input$vert.facet2, 
+                <span class="dt">fontsize =</span> input$plotFontSize2, <span class="dt">colpal =</span> input$colorpalettes_sc, 
+                <span class="dt">show.points =</span> input$sc_showpts, <span class="dt">contourlines =</span> input$sc_showlines, 
+                <span class="dt">hexbin =</span> input$hexbin, <span class="dt">pts.alpha =</span> input$alpha2, <span class="dt">show.overlay =</span> input$sc_showCRU, 
+                <span class="dt">overlay =</span> <span class="kw">CRU2</span>(), <span class="dt">jit =</span> input$sc_jitterXY, <span class="dt">plot.title =</span> <span class="kw">plot_sp_title</span>(), 
+                <span class="dt">plot.subtitle =</span> <span class="kw">plot_sp_subtitle</span>(), <span class="dt">show.panel.text =</span> input$sc_showPanelText, 
+                <span class="dt">show.title =</span> input$sc_showTitle, <span class="dt">lgd.pos =</span> input$legendPos2, 
+                <span class="dt">units =</span> <span class="kw">currentUnits</span>(), <span class="dt">pooled.var =</span> <span class="kw">pooled.var2</span>(), <span class="dt">plot.theme.dark =</span> input$sc_plotThemeDark, 
+                <span class="dt">logo.mat =</span> logo.mat, ...)
+        } else <span class="ot">NULL</span>
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="heat-map-wrapper-function" class="section level5">
+<h5>Heat map wrapper function</h5>
+<pre class="sourceCode r"><code class="sourceCode r">doPlot_heatmap &lt;-<span class="st"> </span>function(...) {
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$heatmap_x) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$heatmap_y) &amp;<span class="st"> </span>
+<span class="st">        </span><span class="kw">length</span>(input$colorpalettes_hm)) {
+        <span class="kw">heatPlot</span>(<span class="dt">d =</span> <span class="kw">dat</span>(), <span class="dt">d.stat =</span> <span class="kw">aggStatsID</span>(), <span class="dt">d2 =</span> <span class="kw">dat_heatmap</span>(), <span class="dt">x =</span> input$heatmap_x, 
+            <span class="dt">y =</span> input$heatmap_y, <span class="dt">z =</span> input$statHeatmap, <span class="dt">Log =</span> input$log_hm, 
+            <span class="dt">panels =</span> <span class="kw">facetPanelsHeatmap</span>(), <span class="dt">facet.by =</span> input$facetHeatmap, <span class="dt">fontsize =</span> input$plotFontSizeHeatmap, 
+            <span class="dt">colpal =</span> input$colorpalettes_hm, <span class="dt">reverse.colors =</span> input$revHeatmapColors, 
+            <span class="dt">aspect_1to1 =</span> input$aspect1to1, <span class="dt">show.values =</span> input$showHeatmapVals, 
+            <span class="dt">show.overlay =</span> input$hm_showCRU, <span class="dt">overlay =</span> <span class="kw">CRU</span>(), <span class="dt">plot.title =</span> <span class="kw">plot_hm_title</span>(), 
+            <span class="dt">plot.subtitle =</span> <span class="kw">plot_hm_subtitle</span>(), <span class="dt">show.panel.text =</span> input$hm_showPanelText, 
+            <span class="dt">show.title =</span> input$hm_showTitle, <span class="dt">lgd.pos =</span> input$legendPosHeatmap, 
+            <span class="dt">units =</span> <span class="kw">currentUnits</span>(), <span class="dt">pooled.var =</span> <span class="kw">pooledVarHeatmap</span>(), <span class="dt">plot.theme.dark =</span> input$hm_plotThemeDark, 
+            <span class="dt">logo.mat =</span> logo.mat, ...)
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="variability-plots-wrapper-function" class="section level5">
+<h5>Variability plots wrapper function</h5>
+<pre class="sourceCode r"><code class="sourceCode r">doPlot_var &lt;-<span class="st"> </span>function(...) {
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">pooled.var3</span>()) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$group3)) {
+        if (!(input$group3 !=<span class="st"> &quot;None&quot;</span> &amp;<span class="st"> </span>!<span class="kw">length</span>(input$colorpalettes_vr))) {
+            <span class="kw">varPlot</span>(<span class="dt">d =</span> <span class="kw">dat</span>(), <span class="dt">x =</span> input$xvar, <span class="dt">y =</span> <span class="kw">aggStatsID</span>(), <span class="dt">y.name =</span> input$aggStats, 
+                <span class="dt">stat =</span> <span class="kw">stat</span>(), <span class="dt">around.mean =</span> input$variability, <span class="dt">d.grp =</span> <span class="kw">datCollapseGroups</span>(), 
+                <span class="dt">d.pool =</span> <span class="kw">datCollapsePooled</span>(), <span class="dt">grp =</span> input$group3, <span class="dt">n.grp =</span> <span class="kw">n.groups3</span>(), 
+                <span class="dt">ingroup.subjects =</span> <span class="kw">subjectChoices3</span>(), <span class="dt">panels =</span> <span class="kw">facet.panels3</span>(), 
+                <span class="dt">facet.by =</span> input$facet3, <span class="dt">vert.facet =</span> input$vert.facet3, <span class="dt">fontsize =</span> input$plotFontSize3, 
+                <span class="dt">colpal =</span> input$colorpalettes_vr, <span class="dt">boxplots =</span> input$boxplots, 
+                <span class="dt">pts.alpha =</span> input$alpha3, <span class="dt">bartype =</span> input$bartype3, <span class="dt">bardirection =</span> input$bardirection3, 
+                <span class="dt">show.points =</span> input$vr_showpts, <span class="dt">show.lines =</span> input$vr_showlines, 
+                <span class="dt">show.overlay =</span> input$vr_showCRU, <span class="dt">overlay =</span> <span class="kw">CRU</span>(), <span class="dt">jit =</span> input$vr_jitterXY, 
+                <span class="dt">plot.title =</span> <span class="kw">plot_var_title</span>(), <span class="dt">plot.subtitle =</span> <span class="kw">plot_var_subtitle</span>(), 
+                <span class="dt">show.panel.text =</span> input$vr_showPanelText, <span class="dt">show.title =</span> input$vr_showTitle, 
+                <span class="dt">lgd.pos =</span> input$legendPos3, <span class="dt">units =</span> <span class="kw">currentUnits</span>(), <span class="dt">yrange =</span> input$yrange, 
+                <span class="dt">clbootbar =</span> input$clbootbar, <span class="dt">clbootsmooth =</span> input$clbootsmooth, 
+                <span class="dt">plot.theme.dark =</span> input$vr_plotThemeDark, <span class="dt">logo.mat =</span> logo.mat, 
+                ...)
+        } else <span class="ot">NULL</span>
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="distribution-plots-wrapper-function" class="section level5">
+<h5>Distribution plots wrapper function</h5>
+<pre class="sourceCode r"><code class="sourceCode r">doPlot_spatial &lt;-<span class="st"> </span>function(...) {
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">pooledVarSpatial</span>()) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$groupSpatial)) {
+        if (!(input$groupSpatial !=<span class="st"> &quot;None&quot;</span> &amp;<span class="st"> </span>!<span class="kw">length</span>(input$colorpalettes_sp))) {
+            <span class="kw">spatialPlot</span>(<span class="dt">d =</span> <span class="kw">dat_spatial</span>(), <span class="dt">x =</span> input$spatial_x, <span class="dt">y =</span> <span class="st">&quot;Val&quot;</span>, <span class="dt">grp =</span> input$groupSpatial, 
+                <span class="dt">n.grp =</span> <span class="kw">nGroupsSpatial</span>(), <span class="dt">ingroup.subjects =</span> <span class="kw">subjectChoicesSpatial</span>(), 
+                <span class="dt">plottype =</span> input$plotTypeSpatial, <span class="dt">thin.sample =</span> <span class="kw">as.numeric</span>(input$thinSpatialSample), 
+                <span class="dt">panels =</span> <span class="kw">facetPanelsSpatial</span>(), <span class="dt">facet.by =</span> input$facetSpatial, 
+                <span class="dt">vert.facet =</span> input$vertFacetSpatial, <span class="dt">fontsize =</span> input$plotFontSizeSpatial, 
+                <span class="dt">colpal =</span> input$colorpalettes_sp, <span class="dt">linePlot =</span> input$linePlotSpatial, 
+                <span class="dt">boxplots =</span> input$boxplotsSpatial, <span class="dt">pts.alpha =</span> input$alphaSpatial, 
+                <span class="dt">density.type =</span> input$densityTypeSpatial, <span class="dt">strip.direction =</span> input$stripDirectionSpatial, 
+                <span class="dt">show.points =</span> input$sp_showpts, <span class="dt">show.lines =</span> input$sp_showlines, 
+                <span class="dt">show.overlay =</span> input$sp_showCRU, <span class="dt">overlay =</span> <span class="kw">CRU_spatial</span>(), <span class="dt">jit =</span> input$sp_jitterXY, 
+                <span class="dt">plot.title =</span> <span class="kw">plot_spatial_title</span>(), <span class="dt">plot.subtitle =</span> <span class="kw">plot_spatial_subtitle</span>(), 
+                <span class="dt">show.panel.text =</span> input$sp_showPanelText, <span class="dt">show.title =</span> input$sp_showTitle, 
+                <span class="dt">lgd.pos =</span> input$legendPosSpatial, <span class="dt">units =</span> <span class="kw">currentUnits</span>(), <span class="dt">plot.theme.dark =</span> input$sp_plotThemeDark, 
+                <span class="dt">logo.mat =</span> logo.mat, ...)
+        } else <span class="ot">NULL</span>
+    } else <span class="ot">NULL</span>
+}</code></pre>
+<p>Outputs below include browser-rendered plots, plot downloads, and data downloads.</p>
+</div>
+</div>
+<div id="time-series-outputs" class="section level4">
+<h4>Time series outputs</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Primary outputs Time series plot</span>
+output$PlotTS &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({
+    if (<span class="kw">twoBtnNullOrZero_ts</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        progress &lt;-<span class="st"> </span>Progress$<span class="kw">new</span>(session, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">10</span>)
+        <span class="kw">on.exit</span>(progress$<span class="kw">close</span>())
+        progress$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Generating plot...&quot;</span>, <span class="dt">value =</span> <span class="dv">10</span>)
+        <span class="kw">doPlot_ts</span>(<span class="dt">show.logo =</span> F)
+    })
+}, <span class="dt">height =</span> function() {
+    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_ts</span>()) 
+        <span class="dv">0</span> else session$clientData$output_PlotTS_width
+    <span class="kw">round</span>((<span class="dv">7</span>/<span class="dv">12</span>) *<span class="st"> </span>w)
+}, <span class="dt">width =</span> <span class="st">&quot;auto&quot;</span>)
+
+output$dlCurPlotTS &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> <span class="st">&quot;timeseries.pdf&quot;</span>, <span class="dt">content =</span> function(file) {
+    if (input$ts_plotThemeDark) 
+        bg &lt;-<span class="st"> &quot;black&quot;</span> else bg &lt;-<span class="st"> &quot;white&quot;</span>
+    <span class="kw">pdf</span>(<span class="dt">file =</span> file, <span class="dt">width =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">12</span>, <span class="dt">height =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">7</span>, <span class="dt">pointsize =</span> <span class="dv">12</span>, <span class="dt">onefile =</span> <span class="ot">FALSE</span>, 
+        <span class="dt">bg =</span> bg)
+    <span class="kw">doPlot_ts</span>(<span class="dt">show.logo =</span> T)
+    <span class="kw">dev.off</span>()
+})
+
+output$dlCurTableTS &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> function() {
+    <span class="st">&quot;timeseries_data.csv&quot;</span>
+}, <span class="dt">content =</span> function(file) {
+    <span class="kw">write.csv</span>(<span class="kw">dat</span>(), file)
+})</code></pre>
+</div>
+<div id="scatter-plot-outputs" class="section level4">
+<h4>Scatter plot outputs</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Scatterplot</span>
+plot_scatter_ht &lt;-<span class="st"> </span>function() {
+    if (<span class="kw">twoBtnNullOrZero_sc</span>()) 
+        <span class="kw">return</span>(<span class="dv">0</span>)
+    ht &lt;-<span class="st"> </span><span class="dv">700</span>
+    if (!<span class="kw">is.null</span>(<span class="kw">facet.panels2</span>())) {
+        cols &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="kw">sqrt</span>(<span class="kw">facet.panels2</span>()))
+        rows &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="kw">facet.panels2</span>()/cols)
+        ht &lt;-<span class="st"> </span>ht *<span class="st"> </span>(rows/cols)
+    }
+    ht
+}
+
+output$PlotScatter &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({
+    if (<span class="kw">twoBtnNullOrZero_sc</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        progress &lt;-<span class="st"> </span>Progress$<span class="kw">new</span>(session, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">10</span>)
+        <span class="kw">on.exit</span>(progress$<span class="kw">close</span>())
+        progress$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Generating plot...&quot;</span>, <span class="dt">value =</span> <span class="dv">10</span>)
+        <span class="kw">doPlot_scatter</span>(<span class="dt">show.logo =</span> F)
+    })
+}, <span class="dt">height =</span> function() {
+    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_sc</span>()) 
+        <span class="dv">0</span> else session$clientData$output_PlotScatter_width
+    w
+}, <span class="dt">width =</span> <span class="st">&quot;auto&quot;</span>)
+
+output$dlCurPlotScatter &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> <span class="st">&quot;scatterplot.pdf&quot;</span>, <span class="dt">content =</span> function(file) {
+    if (input$sc_plotThemeDark) 
+        bg &lt;-<span class="st"> &quot;black&quot;</span> else bg &lt;-<span class="st"> &quot;white&quot;</span>
+    <span class="kw">pdf</span>(<span class="dt">file =</span> file, <span class="dt">width =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">12</span>, <span class="dt">height =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">12</span>, <span class="dt">pointsize =</span> <span class="dv">12</span>, <span class="dt">onefile =</span> <span class="ot">FALSE</span>, 
+        <span class="dt">bg =</span> bg)
+    <span class="kw">doPlot_scatter</span>(<span class="dt">show.logo =</span> T)
+    <span class="kw">dev.off</span>()
+})
+
+output$dlCurTableScatter &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> function() {
+    <span class="st">&quot;scatterplot_data.csv&quot;</span>
+}, <span class="dt">content =</span> function(file) {
+    <span class="kw">write.csv</span>(<span class="kw">dat2</span>(), file)
+})</code></pre>
+</div>
+<div id="heat-map-outputs" class="section level4">
+<h4>Heat map outputs</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Variability plot</span>
+output$PlotVariability &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({
+    if (<span class="kw">twoBtnNullOrZero_vr</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        progress &lt;-<span class="st"> </span>Progress$<span class="kw">new</span>(session, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">10</span>)
+        <span class="kw">on.exit</span>(progress$<span class="kw">close</span>())
+        progress$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Generating plot...&quot;</span>, <span class="dt">value =</span> <span class="dv">10</span>)
+        <span class="kw">doPlot_var</span>(<span class="dt">show.logo =</span> F)
+    })
+}, <span class="dt">height =</span> function() {
+    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_vr</span>()) 
+        <span class="dv">0</span> else session$clientData$output_PlotVariability_width
+    <span class="kw">round</span>((<span class="dv">7</span>/<span class="dv">12</span>) *<span class="st"> </span>w)
+}, <span class="dt">width =</span> <span class="st">&quot;auto&quot;</span>)
+
+output$dlCurPlotVariability &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> <span class="st">&quot;variability.pdf&quot;</span>, 
+    <span class="dt">content =</span> function(file) {
+        if (input$vr_plotThemeDark) 
+            bg &lt;-<span class="st"> &quot;black&quot;</span> else bg &lt;-<span class="st"> &quot;white&quot;</span>
+        <span class="kw">pdf</span>(<span class="dt">file =</span> file, <span class="dt">width =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">12</span>, <span class="dt">height =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">7</span>, <span class="dt">pointsize =</span> <span class="dv">12</span>, 
+            <span class="dt">onefile =</span> <span class="ot">FALSE</span>, <span class="dt">bg =</span> bg)
+        <span class="kw">doPlot_var</span>(<span class="dt">show.logo =</span> T)
+        <span class="kw">dev.off</span>()
+    })
+
+output$dlCurTableVariability &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> function() {
+    <span class="st">&quot;variability_data.csv&quot;</span>
+}, <span class="dt">content =</span> function(file) {
+    <span class="kw">write.csv</span>(<span class="kw">dat</span>(), file)
+})</code></pre>
+</div>
+<div id="variability-plots-outputs" class="section level4">
+<h4>Variability plots outputs</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Heatmap plot</span>
+output$PlotHeatmap &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({
+    if (<span class="kw">twoBtnNullOrZero_hm</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        progress &lt;-<span class="st"> </span>Progress$<span class="kw">new</span>(session, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">10</span>)
+        <span class="kw">on.exit</span>(progress$<span class="kw">close</span>())
+        progress$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Generating plot...&quot;</span>, <span class="dt">value =</span> <span class="dv">10</span>)
+        <span class="kw">doPlot_heatmap</span>(<span class="dt">show.logo =</span> F)
+    })
+}, <span class="dt">height =</span> function() {
+    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_hm</span>()) 
+        <span class="dv">0</span> else session$clientData$output_PlotHeatmap_width
+    <span class="kw">round</span>((<span class="dv">7</span>/<span class="dv">12</span>) *<span class="st"> </span>w)
+}, <span class="dt">width =</span> <span class="st">&quot;auto&quot;</span>)
+
+output$dlCurPlotHeatmap &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> <span class="st">&quot;heatmap.pdf&quot;</span>, <span class="dt">content =</span> function(file) {
+    if (input$hm_plotThemeDark) 
+        bg &lt;-<span class="st"> &quot;black&quot;</span> else bg &lt;-<span class="st"> &quot;white&quot;</span>
+    <span class="kw">pdf</span>(<span class="dt">file =</span> file, <span class="dt">width =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">12</span>, <span class="dt">height =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">7</span>, <span class="dt">pointsize =</span> <span class="dv">12</span>, <span class="dt">onefile =</span> <span class="ot">FALSE</span>, 
+        <span class="dt">bg =</span> bg)
+    <span class="kw">doPlot_heatmap</span>(<span class="dt">show.logo =</span> T)
+    <span class="kw">dev.off</span>()
+})
+
+output$dlCurTableHeatmap &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> function() {
+    <span class="st">&quot;heatmap_data.csv&quot;</span>
+}, <span class="dt">content =</span> function(file) {
+    <span class="kw">write.csv</span>(<span class="kw">dat</span>(), file)
+})</code></pre>
+</div>
+<div id="distribution-plots-outputs" class="section level4">
+<h4>Distribution plots outputs</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Spatial plot</span>
+output$PlotSpatial &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({
+    if (<span class="kw">twoBtnNullOrZero_sp</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        progress &lt;-<span class="st"> </span>Progress$<span class="kw">new</span>(session, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">10</span>)
+        <span class="kw">on.exit</span>(progress$<span class="kw">close</span>())
+        progress$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Generating plot...&quot;</span>, <span class="dt">value =</span> <span class="dv">10</span>)
+        <span class="kw">doPlot_spatial</span>(<span class="dt">show.logo =</span> F)
+    })
+}, <span class="dt">height =</span> function() {
+    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_sp</span>()) 
+        <span class="dv">0</span> else session$clientData$output_PlotSpatial_width
+    <span class="kw">round</span>((<span class="dv">7</span>/<span class="dv">12</span>) *<span class="st"> </span>w)
+}, <span class="dt">width =</span> <span class="st">&quot;auto&quot;</span>)
+
+output$dlCurPlotSpatial &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> <span class="st">&quot;spatial.pdf&quot;</span>, <span class="dt">content =</span> function(file) {
+    if (input$sp_plotThemeDark) 
+        bg &lt;-<span class="st"> &quot;black&quot;</span> else bg &lt;-<span class="st"> &quot;white&quot;</span>
+    <span class="kw">pdf</span>(<span class="dt">file =</span> file, <span class="dt">width =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">12</span>, <span class="dt">height =</span> <span class="fl">1.5</span> *<span class="st"> </span><span class="dv">7</span>, <span class="dt">pointsize =</span> <span class="dv">12</span>, <span class="dt">onefile =</span> <span class="ot">FALSE</span>, 
+        <span class="dt">bg =</span> bg)
+    <span class="kw">doPlot_spatial</span>(<span class="dt">show.logo =</span> T)
+    <span class="kw">dev.off</span>()
+})
+
+output$dlCurTableSpatial &lt;-<span class="st"> </span><span class="kw">downloadHandler</span>(<span class="dt">filename =</span> function() {
+    <span class="st">&quot;spatial_data.csv&quot;</span>
+}, <span class="dt">content =</span> function(file) {
+    <span class="kw">write.csv</span>(<span class="kw">dat_spatial</span>(), file)
+})</code></pre>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="snap-data-qaqc-shiny-app-r-code" class="section level2">
+<h2>SNAP data QA/QC Shiny app R code</h2>
+<p><code>sidebar.R</code> contains conditional panels for data selection and plot options and is sourced by <code>ui.R</code>. The browser-side <strong>R</strong> code contains many conditional panels. In the top panel, data selection, most options are static, while some appear or disappear depending on the selection of others. Some options are also specific to the selected plot type (tab panel). In the below panel, plot options, there is much dependency upon data selection as well as plot type. Therefore, most of these options are conditional and few are fixed.</p>
+<p>The general reactivity hierarchy associated with these sidebar input control panels is as follows. Until data selection options are filled in by the user enough to non-ambiguously generate a data subset, the data subsetting button does not appear. Once data are sufficiently selected, the button appears. Only once the button is pressed is the subsetting operation performed.</p>
+<p>Once this data subset reactive expression exists and is not <code>NULL</code>, the data download button appears. At this time the data selection menu updates by minimizing, leaving only the subset and download buttons visible. This clears up vertical space in the sidebar for the plot options panel, which will also update by expanding open if currently minimized.</p>
+<p>Similar to the subset button in the data selection panel, the plot button will only appear once sufficient plot settings are chosen by the user, though it may appear right away if the combination of selected data and default input control values are sufficient to plot. Similar to the download data button, the download plot button will appear after a plot has been created in the main panel area.</p>
+<p>Because the plot options depend not only on the plot type, but also on the selected daat subset, if the user elects to re-expand the data selection menu and change any data selection input, any plot options and associated plot will clear. The plot options panel will minimize again. This forces the user to use the subset button again to explicitly request a data subset. This is best practice because otherwise it would be possible to unwittingly draw or download a plot that is of the “old” data or of the “new” data. Any changes to data require re-plotting.</p>
+<p>When switching among plot types via the navbar menu, data selection remains based on the previous subsetting operation unless the user makes a change. Some plot types use more data than others. For example, the scatter plot may use both temperature and precipation whereas the time series plot is univariate. This additional data would appear when switching to the scatter plot tab, but it would not invalidate the time series plot. A noticeable lag may occur momentarily when switching to the spatial distributions tab, which uses entirely different (and much more) data. Again, despite this reactivity update, other plots and the data selection in general is not invalidated.</p>
+<p>This is more obvious with the plot options panels, which clearly differ among the different plot types. Each plot type, selected via the navbar menu, will conditionally display its own plot options panel. Even options which repeat from panel to panel such as the option to display a plot title, may be labeled the same but underneath they are plot type-specific reactive inputs.</p>
+<div id="plot_heatmap.r" class="section level3">
+<h3>plot_heatmap.R</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">column</span>(<span class="dv">4</span>,
+    #### Data selection panel
+    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_heatmap&#39; || input.tsp == &#39;plot_ts&#39; || input.tsp == &#39;plot_scatter&#39; || input.tsp == &#39;plot_variability&#39; || input.tsp == &#39;plot_spatial&#39;&quot;</span>,
+    <span class="kw">wellPanel</span>(
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;showDataPanel1&quot;</span>, <span class="kw">h5</span>(<span class="st">&quot;Data Selection&quot;</span>), <span class="ot">TRUE</span>),
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.showDataPanel1&quot;</span>,
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;loctype&quot;</span>, <span class="st">&quot;Spatial scale:&quot;</span>, region.names, <span class="dt">selected=</span>region.names[<span class="dv">1</span>], <span class="dt">multiple=</span><span class="ot">FALSE</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)), <span class="co"># May use multiple=TRUE later</span>
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Location&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">selectInput</span>(<span class="st">&quot;vars&quot;</span>, <span class="st">&quot;Variable:&quot;</span>, varnames, <span class="dt">selected=</span>varnames[<span class="dv">1</span>], <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_scatter&#39;&quot;</span>, <span class="kw">selectInput</span>(<span class="st">&quot;vars2&quot;</span>, <span class="st">&quot;Variable 2:&quot;</span>, varnames, <span class="dt">selected=</span>varnames[<span class="dv">2</span>], <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                ),
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp != &#39;plot_spatial&#39;&quot;</span>, <span class="kw">selectInput</span>(<span class="st">&quot;aggStats&quot;</span>, <span class="st">&quot;Stat:&quot;</span>, agg.stat.names, <span class="dt">selected=</span>agg.stat.names[<span class="dv">1</span>], <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_scatter&#39;&quot;</span>, <span class="kw">selectInput</span>(<span class="st">&quot;aggStats2&quot;</span>, <span class="st">&quot;Stat:&quot;</span>, agg.stat.names, <span class="dt">selected=</span>agg.stat.names[<span class="dv">1</span>], <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_spatial&#39;&quot;</span>, <span class="kw">selectInput</span>(<span class="st">&quot;bootSamples&quot;</span>, <span class="st">&quot;Bootstrap samples [CAUTION!]:&quot;</span>, <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">250</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">2500</span>, <span class="dv">5000</span>, <span class="dv">10000</span>), <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                )
+            ),
+            <span class="kw">checkboxInput</span>(<span class="st">&quot;convert_units&quot;</span>, <span class="st">&quot;Convert units to F, in&quot;</span>, <span class="ot">FALSE</span>),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;cmip3scens&quot;</span>, <span class="st">&quot;AR4 emissions scenarios:&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, scennames[[<span class="dv">1</span>]]), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">multiple=</span>T, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;cmip5scens&quot;</span>, <span class="st">&quot;AR5 emissions scenarios:&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, scennames[[<span class="dv">2</span>]]), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">multiple=</span>T, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;cmip3models&quot;</span>, <span class="st">&quot;AR4 climate models:&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, modnames[[<span class="dv">1</span>]]), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">multiple=</span>T, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;cmip5models&quot;</span>, <span class="st">&quot;AR5 climate models:&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, modnames[[<span class="dv">2</span>]]), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">multiple=</span>T, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">12</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;compositeModel&quot;</span>, <span class="st">&quot;Make composite(s) of selected models&quot;</span>, <span class="ot">FALSE</span>))
+            ),
+            <span class="kw">sliderInput</span>(<span class="st">&quot;yrs&quot;</span>,<span class="st">&quot;Years:&quot;</span>, <span class="dt">min=</span><span class="kw">min</span>(years), <span class="dt">max=</span><span class="kw">max</span>(years), <span class="dt">value=</span><span class="kw">range</span>(years), <span class="dt">step=</span><span class="dv">1</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;mos&quot;</span>, <span class="st">&quot;Months:&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, month.abb), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">multiple=</span>T, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>,  <span class="kw">selectInput</span>(<span class="st">&quot;decs&quot;</span>, <span class="st">&quot;Decades:&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="kw">paste0</span>(decades,<span class="st">&quot;s&quot;</span>)), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">multiple=</span>T, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Months2Seasons&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;N_Seasons&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Decades2Periods&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;N_Periods&quot;</span>))
+            )
+        ),
+        <span class="kw">fluidRow</span>(
+            <span class="kw">column</span>(<span class="dv">6</span>, 
+            <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.vars !== null &amp;&amp;</span>
+<span class="st">            ( (input.loctype !== &#39;Cities&#39; &amp;&amp; input.locs_regions !== null) || (input.loctype == &#39;Cities&#39; &amp;&amp; input.locs_cities !== null) ) &amp;&amp;</span>
+<span class="st">                ( (input.cmip3scens !== null &amp;&amp; input.cmip3models !== null) || (input.cmip5scens !== null &amp;&amp; input.cmip5models !== null) )&quot;</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;GoButton&quot;</span>))
+            ),
+            <span class="kw">column</span>(<span class="dv">6</span>,
+                <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_heatmap&#39; &amp;&amp; input.goButton &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurTableHeatmap&quot;</span>, <span class="st">&quot;Download Data&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)),
+                <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_ts&#39; &amp;&amp; input.goButton &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurTableTS&quot;</span>, <span class="st">&quot;Download Data&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)),
+                <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_scatter&#39; &amp;&amp; input.goButton &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurTableScatter&quot;</span>, <span class="st">&quot;Download Data&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)),
+                <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_variability&#39; &amp;&amp; input.goButton &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurTableVariability&quot;</span>, <span class="st">&quot;Download Data&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)),
+                <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_spatial&#39; &amp;&amp; input.goButton &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurTableSpatial&quot;</span>, <span class="st">&quot;Download Data&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>))
+            )
+        )
+    )
+    ),
+    #### Plot options panel
+    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;output.ShowPlotOptionsPanel == true &amp;&amp; (input.tsp == &#39;plot_heatmap&#39; || input.tsp == &#39;plot_ts&#39; || input.tsp == &#39;plot_scatter&#39; || input.tsp == &#39;plot_variability&#39; || input.tsp == &#39;plot_spatial&#39;)&quot;</span>,
+    <span class="kw">wellPanel</span>(
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;showDisplayPanel1&quot;</span>, <span class="kw">h5</span>(<span class="st">&quot;Plot Options&quot;</span>), <span class="ot">TRUE</span>),
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.showDisplayPanel1&quot;</span>,
+        
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_heatmap&#39;&quot;</span>,
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Heatmap_x&quot;</span>)), <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Heatmap_y&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>,<span class="kw">uiOutput</span>(<span class="st">&quot;FacetHeatmap&quot;</span>)), <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;StatHeatmap&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">uiOutput</span>(<span class="st">&quot;PooledVarHeatmap&quot;</span>)),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;hm_showTitle&quot;</span>, <span class="st">&quot;Title&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;hm_showPanelText&quot;</span>, <span class="st">&quot;Panel text&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;hm_showCRU&quot;</span>,<span class="st">&quot;Show CRU 3.2&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;aspect1to1&quot;</span>, <span class="st">&quot;1:1 Aspect&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;revHeatmapColors&quot;</span>, <span class="st">&quot;Reverse colors&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;showHeatmapVals&quot;</span>, <span class="st">&quot;Cell values&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.vars !== null &amp;&amp; input.vars[0] !== &#39;Temperature&#39;&quot;</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;log_hm&quot;</span>, <span class="st">&quot;Log transform&quot;</span>, <span class="ot">FALSE</span>))), <span class="kw">column</span>(<span class="dv">4</span>, <span class="st">&quot;&quot;</span>), <span class="kw">column</span>(<span class="dv">4</span>, <span class="st">&quot;&quot;</span>)),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;hm_plotThemeDark&quot;</span>, <span class="st">&quot;Dark theme&quot;</span>, <span class="ot">TRUE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.heatmap_x !== null &amp;&amp; input.heatmap_y !== null&quot;</span>,
+                        <span class="kw">selectInput</span>(<span class="st">&quot;legendPosHeatmap&quot;</span>,<span class="st">&quot;Legend&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Bottom&quot;</span>, <span class="st">&quot;Right&quot;</span>, <span class="st">&quot;Top&quot;</span>, <span class="st">&quot;Left&quot;</span>),<span class="dt">selected=</span><span class="st">&quot;Bottom&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                ),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Colorpalettes_hm&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;PlotFontSizeHeatmap&quot;</span>))
+            )
+        ),
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_ts&#39;&quot;</span>,
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">selectInput</span>(<span class="st">&quot;xtime&quot;</span>, <span class="st">&quot;X-axis (time)&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Decade&quot;</span>), <span class="dt">selected=</span><span class="st">&quot;Year&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)), <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Group&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>,<span class="kw">uiOutput</span>(<span class="st">&quot;Facet&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">uiOutput</span>(<span class="st">&quot;PooledVar&quot;</span>)),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_showTitle&quot;</span>, <span class="st">&quot;Title&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_showPanelText&quot;</span>, <span class="st">&quot;Panel text&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_showCRU&quot;</span>,<span class="st">&quot;Show CRU 3.2&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_showpts&quot;</span>, <span class="st">&quot;Show points&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_jitterXY&quot;</span>, <span class="st">&quot;Jitter points&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_showlines&quot;</span>, <span class="st">&quot;Show lines&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;linePlot&quot;</span>, <span class="st">&quot;Trend lines&quot;</span>, <span class="ot">FALSE</span>)),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;yrange&quot;</span>, <span class="st">&quot;Group range&quot;</span>, <span class="ot">FALSE</span>)),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;clbootsmooth&quot;</span>, <span class="st">&quot;Confidence band&quot;</span>, <span class="ot">FALSE</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;VertFacet&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.vars !== null &amp;&amp; input.vars[0] !== &#39;Temperature&#39;&quot;</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;barPlot&quot;</span>, <span class="st">&quot;Barplot&quot;</span>, <span class="ot">FALSE</span>))),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.vars !== null &amp;&amp; input.vars[0] !== &#39;Temperature&#39;&quot;</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;log_ts&quot;</span>, <span class="st">&quot;Log transform&quot;</span>, <span class="ot">FALSE</span>))),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="st">&quot;&quot;</span>)
+            ),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Yrange&quot;</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="st">&quot;&quot;</span>), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;CLbootsmooth&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;ts_plotThemeDark&quot;</span>, <span class="st">&quot;Dark theme&quot;</span>, <span class="ot">TRUE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">uiOutput</span>(<span class="st">&quot;Alpha1&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;Bardirection&quot;</span>),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.group !== null &amp;&amp; input.group !== &#39;None&#39;&quot;</span>,
+                        <span class="kw">selectInput</span>(<span class="st">&quot;legendPos1&quot;</span>,<span class="st">&quot;Legend&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Bottom&quot;</span>, <span class="st">&quot;Right&quot;</span>, <span class="st">&quot;Top&quot;</span>, <span class="st">&quot;Left&quot;</span>),<span class="dt">selected=</span><span class="st">&quot;Bottom&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                    ),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Colorpalettes_ts&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;PlotFontSize&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;Bartype&quot;</span>))
+            )
+        ),
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_scatter&#39;&quot;</span>,
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Sc_X&quot;</span>)), <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Group2&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>,<span class="kw">uiOutput</span>(<span class="st">&quot;Facet2&quot;</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">uiOutput</span>(<span class="st">&quot;PooledVar2&quot;</span>)),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_showTitle&quot;</span>, <span class="st">&quot;Title&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_showPanelText&quot;</span>, <span class="st">&quot;Panel text&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_showCRU&quot;</span>,<span class="st">&quot;Show CRU 3.2&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_showpts&quot;</span>, <span class="st">&quot;Show points&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_jitterXY&quot;</span>, <span class="st">&quot;Jitter points&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_showlines&quot;</span>, <span class="st">&quot;Show lines&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Hexbin&quot;</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;log_sc_x&quot;</span>, <span class="st">&quot;Log transform X&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;log_sc_y&quot;</span>, <span class="st">&quot;Log transform Y&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sc_plotThemeDark&quot;</span>, <span class="st">&quot;Dark theme&quot;</span>, <span class="ot">TRUE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>, 
+                <span class="kw">uiOutput</span>(<span class="st">&quot;Alpha2&quot;</span>), 
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.group2 !== null &amp;&amp; input.group2 !== &#39;None&#39;&quot;</span>,
+                        <span class="kw">selectInput</span>(<span class="st">&quot;legendPos2&quot;</span>,<span class="st">&quot;Legend&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Bottom&quot;</span>, <span class="st">&quot;Right&quot;</span>, <span class="st">&quot;Top&quot;</span>, <span class="st">&quot;Left&quot;</span>),<span class="dt">selected=</span><span class="st">&quot;Bottom&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                ),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Colorpalettes_sc&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;PlotFontSize2&quot;</span>))
+            )
+        ),
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_variability&#39;&quot;</span>,
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Xvar&quot;</span>)), <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Group3&quot;</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,<span class="kw">uiOutput</span>(<span class="st">&quot;Facet3&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.variability == true &amp;&amp; input.boxplots == &#39;&#39;&quot;</span>, <span class="kw">selectInput</span>(<span class="st">&quot;errorBars&quot;</span>, <span class="st">&quot;Error bars&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;95% CI&quot;</span>, <span class="st">&quot;SD&quot;</span>, <span class="st">&quot;SE&quot;</span>, <span class="st">&quot;Range&quot;</span>), <span class="dt">selected=</span><span class="st">&quot;&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>)),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.variability == false&quot;</span>, <span class="kw">selectInput</span>(<span class="st">&quot;dispersion&quot;</span>, <span class="st">&quot;Dispersion stat&quot;</span>, <span class="dt">choices=</span><span class="kw">c</span>(<span class="st">&quot;SD&quot;</span>, <span class="st">&quot;SE&quot;</span>, <span class="st">&quot;Full Spread&quot;</span>), <span class="dt">selected=</span><span class="st">&quot;SD&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                )
+            ),
+            <span class="kw">fluidRow</span>(<span class="kw">uiOutput</span>(<span class="st">&quot;PooledVar3&quot;</span>)),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_showTitle&quot;</span>, <span class="st">&quot;Title&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_showPanelText&quot;</span>, <span class="st">&quot;Panel text&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_showCRU&quot;</span>,<span class="st">&quot;Show CRU 3.2&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_showpts&quot;</span>, <span class="st">&quot;Show points&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_jitterXY&quot;</span>, <span class="st">&quot;Jitter points&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_showlines&quot;</span>, <span class="st">&quot;Show lines&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Variability&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;boxplots&quot;</span>, <span class="st">&quot;Box plots&quot;</span>, <span class="ot">FALSE</span>)),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;VertFacet3&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;vr_plotThemeDark&quot;</span>, <span class="st">&quot;Dark theme&quot;</span>, <span class="ot">TRUE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">uiOutput</span>(<span class="st">&quot;Alpha3&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;Bardirection3&quot;</span>),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.group3 !== null &amp;&amp; input.group3 !== &#39;None&#39;&quot;</span>,
+                        <span class="kw">selectInput</span>(<span class="st">&quot;legendPos3&quot;</span>,<span class="st">&quot;Legend&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Bottom&quot;</span>, <span class="st">&quot;Right&quot;</span>, <span class="st">&quot;Top&quot;</span>, <span class="st">&quot;Left&quot;</span>),<span class="dt">selected=</span><span class="st">&quot;Bottom&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                ),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Colorpalettes_vr&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;PlotFontSize3&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;Bartype3&quot;</span>))
+            )
+        ),
+        <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_spatial&#39;&quot;</span>,
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Spatial_x&quot;</span>)), <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;GroupSpatial&quot;</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,<span class="kw">uiOutput</span>(<span class="st">&quot;FacetSpatial&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>,<span class="kw">uiOutput</span>(<span class="st">&quot;PlotTypeSpatial&quot;</span>))
+            ),
+            <span class="co">#conditionalPanel(condition=&quot;input.plotTypeSpatial == &#39;Stripchart&#39;&quot;, </span>
+            <span class="kw">sliderInput</span>(<span class="st">&quot;thinSpatialSample&quot;</span>, <span class="st">&quot;Thin samples&quot;</span>, <span class="fl">0.05</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">step=</span><span class="fl">0.05</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>),
+            <span class="co">#),</span>
+            <span class="kw">fluidRow</span>(<span class="kw">uiOutput</span>(<span class="st">&quot;PooledVarSpatial&quot;</span>)),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_showTitle&quot;</span>, <span class="st">&quot;Title&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_showPanelText&quot;</span>, <span class="st">&quot;Panel text&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_showCRU&quot;</span>,<span class="st">&quot;Show CRU 3.2&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_showpts&quot;</span>, <span class="st">&quot;Show points&quot;</span>, <span class="ot">TRUE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_jitterXY&quot;</span>, <span class="st">&quot;Jitter points&quot;</span>, <span class="ot">FALSE</span>)), <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_showlines&quot;</span>, <span class="st">&quot;Show lines&quot;</span>, <span class="ot">FALSE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">4</span>,
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotTypeSpatial !== &#39;Stripchart&#39;&quot;</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;linePlotSpatial&quot;</span>, <span class="st">&quot;Trend lines&quot;</span>, <span class="ot">FALSE</span>)),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotTypeSpatial == &#39;Stripchart&#39;&quot;</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;boxplotsSpatial&quot;</span>, <span class="st">&quot;Box plots&quot;</span>, <span class="ot">FALSE</span>))
+                ),
+                <span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;VertFacetSpatial&quot;</span>))
+            ),
+            <span class="kw">fluidRow</span>(<span class="kw">column</span>(<span class="dv">4</span>, <span class="kw">checkboxInput</span>(<span class="st">&quot;sp_plotThemeDark&quot;</span>, <span class="st">&quot;Dark theme&quot;</span>, <span class="ot">TRUE</span>))),
+            <span class="kw">fluidRow</span>(
+                <span class="kw">column</span>(<span class="dv">6</span>,
+                    <span class="kw">uiOutput</span>(<span class="st">&quot;AlphaSpatial&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;DensityTypeSpatial&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;StripDirectionSpatial&quot;</span>),
+                    <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.groupSpatial !== null &amp;&amp; input.groupSpatial !== &#39;None&#39;&quot;</span>,
+                        <span class="kw">selectInput</span>(<span class="st">&quot;legendPosSpatial&quot;</span>,<span class="st">&quot;Legend&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Bottom&quot;</span>, <span class="st">&quot;Right&quot;</span>, <span class="st">&quot;Top&quot;</span>, <span class="st">&quot;Left&quot;</span>),<span class="dt">selected=</span><span class="st">&quot;Bottom&quot;</span>, <span class="dt">width=</span><span class="st">&quot;100%&quot;</span>))
+                ),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;Colorpalettes_sp&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;PlotFontSizeSpatial&quot;</span>))
+            )
+        )
+        ),
+        <span class="kw">fluidRow</span>(
+            <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_heatmap&#39;&quot;</span>, <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;PlotButton_hm&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotButton_hm &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurPlotHeatmap&quot;</span>, <span class="st">&quot;Download Plot&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)))),
+            <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_ts&#39;&quot;</span>, <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;PlotButton_ts&quot;</span>)), 
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotButton_ts &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurPlotTS&quot;</span>, <span class="st">&quot;Download Plot&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)))),
+            <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_scatter&#39;&quot;</span>, <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;PlotButton_sc&quot;</span>)),
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotButton_sc &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurPlotScatter&quot;</span>, <span class="st">&quot;Download Plot&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)))),
+            <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_variability&#39;&quot;</span>, <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;PlotButton_vr&quot;</span>)), 
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotButton_vr &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurPlotVariability&quot;</span>, <span class="st">&quot;Download Plot&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>)))),
+            <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.tsp == &#39;plot_spatial&#39;&quot;</span>, <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">uiOutput</span>(<span class="st">&quot;PlotButton_sp&quot;</span>)), 
+                <span class="kw">column</span>(<span class="dv">6</span>, <span class="kw">conditionalPanel</span>(<span class="dt">condition=</span><span class="st">&quot;input.plotButton_sp &gt; 0&quot;</span>, <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurPlotSpatial&quot;</span>, <span class="st">&quot;Download Plot&quot;</span>, <span class="dt">class=</span><span class="st">&quot;btn-success btn-block&quot;</span>))))
+        )
+    )
+    )
+)</code></pre>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>
