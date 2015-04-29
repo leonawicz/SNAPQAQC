@@ -28,7 +28,7 @@ it prevents a significant amount of code duplication.
 
 #### R packages, themes, colors, and logo
 
-```{r sh_setup}
+```{r sh_setup, tidy=FALSE}
 ```
 
 #### nullOrZero
@@ -190,5 +190,5 @@ It is worth flagging on to check, but in general I turn this option off just as 
 #### addLogo
 This function assists with adding a `SNAP` logo to a downloaded plot.
 
-```{r sh_func25}
+```{r sh_func25, tidy=FALSE}
 ```
