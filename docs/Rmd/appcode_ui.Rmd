@@ -2,7 +2,7 @@
 output:
   html_document:
     toc: false
-    theme: flatly
+    theme: cosmo
     highlight: zenburn
     keep_md: true
 ---
