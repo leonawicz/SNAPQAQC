@@ -1,0 +1,39 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: united
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
+read_chunk("../../code/PRISM_extract.R")
+```
+
+##
+##
+## PRISM 2-km Data Extraction Code
+
+The `PRISM_extract.R` script extracts PRISM 2-km temperature and precipitation data for specific point locations via the raster grid cell in which given spatial coordinates fall.
+The extracted values serve as optional historical baseline climatologies for the SNAP Community Charts application.
+Use of PRISM values for this purpose has since been superceded by CRU 3.x data.
+This script sequentially loads a number of inter-related workspace files containing CRU and GCM data and resaves these workspaces, respectively, under new file names with PRISM data folded into each.
+
+### **R** Code
+
+#### Setup
+
+```{r setup}
+```
+
+#### Subset city data
+
+```{r cities}
+```
+
+#### Load and save workspaces
+
+```{r save}
+```
