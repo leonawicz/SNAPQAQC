@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="snap-data-qaqc-shiny-app-r-code" class="section level2">
+<h2>SNAP data QA/QC Shiny app R code</h2>
+<p><code>plot_variability.R</code> contains the variability plots function and is sourced by <code>app.R</code>.</p>
+<div id="plot_variability.r" class="section level3">
+<h3>plot_variability.R</h3>
+<pre class="sourceCode r"><code class="sourceCode r">function(d, d.grp, d.pool, x, y, y.name, <span class="dt">stat =</span> <span class="st">&quot;SD&quot;</span>, <span class="dt">around.mean =</span> <span class="ot">FALSE</span>, <span class="dt">error.bars =</span> <span class="ot">FALSE</span>, 
+    panels, grp, n.grp, <span class="dt">ingroup.subjects =</span> <span class="ot">NULL</span>, <span class="dt">facet.cols =</span> <span class="kw">min</span>(<span class="kw">ceiling</span>(<span class="kw">sqrt</span>(panels)), 
+        <span class="dv">5</span>), facet.by, <span class="dt">vert.facet =</span> <span class="ot">FALSE</span>, <span class="dt">fontsize =</span> <span class="dv">16</span>, colpal, <span class="dt">boxplots =</span> <span class="ot">FALSE</span>, 
+    <span class="dt">pts.alpha =</span> <span class="fl">0.5</span>, bartype, bardirection, <span class="dt">show.points =</span> <span class="ot">FALSE</span>, <span class="dt">show.lines =</span> <span class="ot">FALSE</span>, 
+    <span class="dt">show.overlay =</span> <span class="ot">FALSE</span>, <span class="dt">overlay =</span> <span class="ot">NULL</span>, <span class="dt">jit =</span> <span class="ot">FALSE</span>, <span class="dt">plot.title =</span> <span class="st">&quot;&quot;</span>, <span class="dt">plot.subtitle =</span> <span class="st">&quot;&quot;</span>, 
+    <span class="dt">show.panel.text =</span> <span class="ot">FALSE</span>, <span class="dt">show.title =</span> <span class="ot">FALSE</span>, <span class="dt">lgd.pos =</span> <span class="st">&quot;Top&quot;</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;C&quot;</span>, 
+        <span class="st">&quot;mm&quot;</span>), yrange, clbootbar, clbootsmooth, <span class="dt">plot.theme.dark =</span> <span class="ot">FALSE</span>, <span class="dt">show.logo =</span> F, 
+    <span class="dt">logo.mat =</span> <span class="ot">NULL</span>) {
+    if (<span class="kw">is.null</span>(d)) 
+        <span class="kw">return</span>(<span class="kw">plot</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dt">type =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">axes =</span> F, <span class="dt">xlab =</span> <span class="st">&quot;&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;&quot;</span>))
+    if (plot.theme.dark) {
+        bg.theme &lt;-<span class="st"> &quot;black&quot;</span>
+        color.theme &lt;-<span class="st"> &quot;white&quot;</span>
+    } else {
+        bg.theme &lt;-<span class="st"> &quot;white&quot;</span>
+        color.theme &lt;-<span class="st"> &quot;black&quot;</span>
+    }
+    if (!show.lines) 
+        ingroup.subjects &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    if (show.overlay &amp;<span class="st"> </span>!<span class="kw">is.null</span>(overlay)) 
+        show.overlay &lt;-<span class="st"> </span><span class="ot">TRUE</span> else show.overlay &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+    if (show.overlay) {
+        n.d &lt;-<span class="st"> </span><span class="kw">nrow</span>(d)
+        mods.d &lt;-<span class="st"> </span><span class="kw">unique</span>(d$Model)
+        yrs.tmp &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">c</span>(<span class="kw">as.character</span>(d$Year), <span class="kw">as.character</span>(overlay$Year)))
+        d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">rbind</span>(d[<span class="dv">1</span>:<span class="dv">6</span>], overlay[<span class="dv">1</span>:<span class="dv">6</span>]), <span class="dt">Year =</span> yrs.tmp, <span class="kw">rbind</span>(d[<span class="dv">8</span>:<span class="kw">ncol</span>(d)], 
+            overlay[<span class="dv">8</span>:<span class="kw">ncol</span>(overlay)]))
+        <span class="co"># d$Year &lt;- yrs.tmp</span>
+        d$Source &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;Modeled&quot;</span>, n.d), <span class="kw">rep</span>(<span class="st">&quot;Observed&quot;</span>, <span class="kw">nrow</span>(overlay))))
+        d$Model &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Model, <span class="dt">levels =</span> <span class="kw">c</span>(overlay$Model[<span class="dv">1</span>], mods.d))
+    }
+    bar.pos &lt;-<span class="st"> &quot;dodge&quot;</span>
+    if (!<span class="kw">length</span>(lgd.pos)) 
+        lgd.pos =<span class="st"> &quot;Top&quot;</span>
+    if (!<span class="kw">length</span>(fontsize)) 
+        fontsize &lt;-<span class="st"> </span><span class="dv">16</span>
+    fontsize =<span class="st"> </span><span class="kw">as.numeric</span>(fontsize)
+    if (<span class="kw">is.null</span>(pts.alpha)) 
+        pts.alpha &lt;-<span class="st"> </span><span class="fl">0.5</span>
+    
+    #### Point dodging when using grouping variable
+    wid &lt;-<span class="st"> </span><span class="fl">0.9</span>
+    dodge &lt;-<span class="st"> </span><span class="kw">position_dodge</span>(<span class="dt">width =</span> wid)
+    x.n &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[, x]))
+    if (<span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
+        dodge.pts &lt;-<span class="st"> </span><span class="kw">dodgePoints</span>(d, x, grp, n.grp, facet.by, <span class="dt">width =</span> wid)
+        xdodge &lt;-<span class="st"> &quot;xdodge&quot;</span>
+        d$xdodge &lt;-<span class="st"> </span>dodge.pts$x.num +<span class="st"> </span>dodge.pts$grp.num
+        if (show.overlay) 
+            n.grp &lt;-<span class="st"> </span>n.grp +<span class="st"> </span><span class="dv">1</span>
+    }
+    
+    if (around.mean) 
+        ylb.insert &lt;-<span class="st"> &quot;&quot;</span> else ylb.insert &lt;-<span class="st"> </span><span class="kw">paste0</span>(stat, <span class="st">&quot; &quot;</span>)
+    if (d$Var[<span class="dv">1</span>] ==<span class="st"> &quot;Temperature&quot;</span>) 
+        ylb &lt;-<span class="st"> </span><span class="kw">paste0</span>(y.name, <span class="st">&quot; temperature &quot;</span>, ylb.insert, <span class="st">&quot;(&quot;</span>, units[<span class="dv">1</span>], <span class="st">&quot;)&quot;</span>) else ylb &lt;-<span class="st"> </span><span class="kw">paste0</span>(y.name, <span class="st">&quot; precipitation &quot;</span>, ylb.insert, <span class="st">&quot;(&quot;</span>, units[<span class="dv">2</span>], 
+        <span class="st">&quot;)&quot;</span>)
+    main &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;&quot;</span>, <span class="kw">tolower</span>(d$Var[<span class="dv">1</span>]), <span class="st">&quot; variability: &quot;</span>, plot.title)
+    if (jit) 
+        point.pos &lt;-<span class="st"> </span><span class="kw">position_jitter</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>) else point.pos &lt;-<span class="st"> &quot;identity&quot;</span>
+    if (!<span class="kw">is.null</span>(bartype)) {
+        bar.pos &lt;-<span class="st"> </span><span class="kw">tolower</span>(<span class="kw">strsplit</span>(bartype, <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]][<span class="dv">1</span>])
+        if (bartype ==<span class="st"> &quot;Fill (Proportions)&quot;</span>) 
+            ylb &lt;-<span class="st"> &quot;Precipitation (proportions)&quot;</span>
+    } else bar.pos &lt;-<span class="st"> &quot;dodge&quot;</span>
+    wgl &lt;-<span class="st"> </span><span class="kw">withinGroupLines</span>(<span class="dt">x =</span> x, <span class="dt">subjects =</span> ingroup.subjects)
+    ingroup.subjects &lt;-<span class="st"> </span>wgl$subjects
+    subject.lines &lt;-<span class="st"> </span>wgl$subjectlines
+    if (<span class="kw">is.null</span>(grp) ||<span class="st"> </span>grp ==<span class="st"> &quot;None&quot;</span>) 
+        grp &lt;-<span class="st"> </span><span class="dv">1</span>
+    if (n.grp ==<span class="st"> </span><span class="dv">1</span>) 
+        grp &lt;-<span class="st"> </span><span class="dv">1</span>
+    if (grp ==<span class="st"> </span><span class="dv">1</span>) {
+        colpal &lt;-<span class="st"> &quot;none&quot;</span>
+        color &lt;-<span class="st"> </span>fill &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    } else color &lt;-<span class="st"> </span>fill &lt;-<span class="st"> </span>grp
+    scfm &lt;-<span class="st"> </span><span class="kw">scaleColFillMan_prep</span>(<span class="dt">fill =</span> fill, <span class="dt">col =</span> colpal)
+    fill &lt;-<span class="st"> </span>scfm$fill
+    if (<span class="kw">length</span>(vert.facet)) 
+        if (vert.facet) 
+            facet.cols &lt;-<span class="st"> </span><span class="dv">1</span>
+    if (grp ==<span class="st"> </span><span class="dv">1</span>) 
+        ply.vars &lt;-<span class="st"> </span>x else ply.vars &lt;-<span class="st"> </span><span class="kw">c</span>(x, grp)
+    if (!<span class="kw">is.null</span>(facet.by) &amp;&amp;<span class="st"> </span>facet.by !=<span class="st"> &quot;None&quot;</span>) 
+        ply.vars &lt;-<span class="st"> </span><span class="kw">c</span>(ply.vars, facet.by)
+    
+    d.sum &lt;-<span class="st"> </span><span class="kw">ddply</span>(d, ply.vars, <span class="kw">here</span>(summarise), <span class="dt">Mean1 =</span> <span class="kw">mean</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y))), 
+        <span class="dt">SD1 =</span> <span class="kw">sd</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y))), <span class="dt">SE =</span> <span class="kw">sd</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y)))/<span class="kw">sqrt</span>(<span class="kw">length</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y)))), 
+        <span class="dt">tval95 =</span> <span class="kw">qt</span>(<span class="fl">0.975</span>, <span class="dt">df =</span> <span class="kw">length</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y)))), <span class="dt">Min =</span> <span class="kw">min</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y))), 
+        <span class="dt">Max =</span> <span class="kw">max</span>(<span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> y))))
+    <span class="kw">names</span>(d.sum)[<span class="kw">length</span>(ply.vars) +<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">2</span>)] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;SD&quot;</span>)
+    
+    if (around.mean) {
+        if (<span class="kw">is.null</span>(boxplots) ||<span class="st"> </span>boxplots ==<span class="st"> </span><span class="ot">FALSE</span>) {
+            g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(d, <span class="kw">aes_string</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">order =</span> grp, <span class="dt">colour =</span> color, 
+                <span class="dt">fill =</span> fill))
+        } else {
+            d$Year &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Year)
+            g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(d, <span class="kw">aes_string</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y))
+        }
+    } else g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(d, <span class="kw">aes_string</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">group =</span> grp, <span class="dt">order =</span> grp, <span class="dt">colour =</span> color, 
+        <span class="dt">fill =</span> fill))
+    if (plot.theme.dark) 
+        g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">theme_black</span>(<span class="dt">base_size =</span> fontsize) else g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">theme_bw</span>(<span class="dt">base_size =</span> fontsize)
+    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">ylab</span>(ylb) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="kw">tolower</span>(lgd.pos))
+    if (!show.logo &amp;&amp;<span class="st"> </span>show.title) 
+        g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="kw">bquote</span>(<span class="kw">atop</span>(.(main))))
+    if (<span class="kw">length</span>(colpal)) 
+        g &lt;-<span class="st"> </span><span class="kw">scaleColFillMan</span>(<span class="dt">g =</span> g, <span class="dt">default =</span> scfm$scfm, <span class="dt">colpal =</span> colpal, <span class="dt">n.grp =</span> n.grp, 
+            <span class="dt">cbpalette =</span> cbpalette)  <span class="co"># cbpalette source?</span>
+    if (!<span class="kw">is.null</span>(facet.by)) 
+        if (facet.by !=<span class="st"> &quot;None&quot;</span>) 
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">facet_wrap</span>(<span class="kw">as.formula</span>(<span class="kw">paste</span>(<span class="st">&quot;~&quot;</span>, facet.by)), <span class="dt">ncol =</span> facet.cols)
+    if (!around.mean &amp;<span class="st"> </span>stat %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SD&quot;</span>, <span class="st">&quot;SE&quot;</span>, <span class="st">&quot;Full Spread&quot;</span>)) {
+        fsd &lt;-<span class="st"> </span>function(x) {
+            x &lt;-<span class="st"> </span><span class="kw">sd</span>(x)
+            if (<span class="kw">is.na</span>(x)) 
+                <span class="kw">return</span>(<span class="dv">0</span>) else <span class="kw">return</span>(x)
+        }  <span class="co"># force zero when NA</span>
+        f &lt;-<span class="st"> </span>switch(stat, <span class="dt">SD =</span> fsd, <span class="dt">SE =</span> function(x) <span class="kw">fsd</span>(x)/<span class="kw">sqrt</span>(<span class="kw">length</span>(x)), 
+            <span class="st">`</span><span class="dt">Full Spread</span><span class="st">`</span> =<span class="st"> </span>function(x) <span class="kw">diff</span>(<span class="kw">range</span>(x)))
+        if (<span class="kw">length</span>(<span class="kw">grep</span>(<span class="st">&quot;border&quot;</span>, colpal))) {
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">stat_summary</span>(<span class="kw">aes_string</span>(<span class="dt">group =</span> grp), <span class="dt">fun.y =</span> f, <span class="dt">geom =</span> <span class="st">&quot;bar&quot;</span>, 
+                <span class="dt">position =</span> bar.pos)
+        } else g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">stat_summary</span>(<span class="kw">aes_string</span>(<span class="dt">group =</span> grp), <span class="dt">colour =</span> color.theme, 
+            <span class="dt">fun.y =</span> f, <span class="dt">geom =</span> <span class="st">&quot;bar&quot;</span>, <span class="dt">position =</span> bar.pos)
+    }
+    if (around.mean) {
+        if (subject.lines) {
+            if (grp ==<span class="st"> </span><span class="dv">1</span>) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes_string</span>(<span class="dt">group =</span> ingroup.subjects), <span class="dt">position =</span> <span class="st">&quot;identity&quot;</span>, 
+                  <span class="dt">colour =</span> color.theme, <span class="dt">alpha =</span> pts.alpha) else g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes_string</span>(<span class="dt">group =</span> ingroup.subjects, <span class="dt">colour =</span> grp), 
+                <span class="dt">position =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">alpha =</span> pts.alpha)
+        }
+        if (grp ==<span class="st"> </span><span class="dv">1</span>) 
+            basic.fill.clr &lt;-<span class="st"> </span><span class="ot">NULL</span> else basic.fill.clr &lt;-<span class="st"> </span>grp
+        if (boxplots &amp;<span class="st"> </span>!show.points) 
+            if (grp ==<span class="st"> </span><span class="dv">1</span>) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="dt">fill =</span> <span class="st">&quot;#AAAAAA&quot;</span>, <span class="dt">colour =</span> color.theme, 
+                  <span class="dt">outlier.colour =</span> color.theme) else g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes_string</span>(<span class="dt">fill =</span> basic.fill.clr), <span class="dt">colour =</span> color.theme, 
+                <span class="dt">outlier.colour =</span> color.theme)
+        if (boxplots &amp;<span class="st"> </span>show.points) {
+            if (<span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes_string</span>(<span class="dt">colour =</span> basic.fill.clr), <span class="dt">fill =</span> bg.theme, 
+                  <span class="dt">outlier.colour =</span> <span class="ot">NA</span>, <span class="dt">position =</span> dodge)
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes_string</span>(<span class="dt">x =</span> xdodge, <span class="dt">fill =</span> basic.fill.clr), 
+                  <span class="dt">pch =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">4</span>, <span class="dt">colour =</span> color.theme, <span class="dt">alpha =</span> pts.alpha, 
+                  <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> wid/(x.n *<span class="st"> </span><span class="kw">mean</span>(dodge.pts$grp.n))))
+            } else {
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="dt">fill =</span> bg.theme, <span class="dt">colour =</span> color.theme, 
+                  <span class="dt">outlier.colour =</span> <span class="ot">NA</span>, <span class="dt">position =</span> dodge)
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes_string</span>(<span class="dt">fill =</span> basic.fill.clr), <span class="dt">pch =</span> <span class="dv">21</span>, 
+                  <span class="dt">size =</span> <span class="dv">4</span>, <span class="dt">colour =</span> color.theme, <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">alpha =</span> pts.alpha, 
+                  <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> wid/x.n))
+            }
+        }
+        if (<span class="kw">is.null</span>(boxplots) ||<span class="st"> </span>boxplots ==<span class="st"> </span><span class="ot">FALSE</span>) {
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">aes_string</span>(<span class="dt">group =</span> grp)
+            if (!subject.lines) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>, <span class="dt">lwd =</span> <span class="dv">1</span>)
+            if (show.points) {
+                if (<span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
+                  g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">position =</span> point.pos, <span class="dt">pch =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">4</span>, 
+                    <span class="dt">colour =</span> color.theme, <span class="dt">alpha =</span> pts.alpha)
+                } else {
+                  g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">position =</span> point.pos, <span class="dt">pch =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">4</span>, 
+                    <span class="dt">colour =</span> color.theme, <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">alpha =</span> pts.alpha)
+                }
+            }
+            if (stat ==<span class="st"> &quot;95% CI&quot;</span>) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">y =</span> Mean, <span class="dt">ymin =</span> Mean -<span class="st"> </span>tval95 *<span class="st"> </span>
+<span class="st">                  </span>SE, <span class="dt">ymax =</span> Mean +<span class="st"> </span>tval95 *<span class="st"> </span>SE), <span class="dt">data =</span> d.sum, <span class="dt">width =</span> <span class="fl">0.25</span>)
+            if (stat ==<span class="st"> &quot;SD&quot;</span>) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">y =</span> Mean, <span class="dt">ymin =</span> Mean -<span class="st"> </span>SD, <span class="dt">ymax =</span> Mean +<span class="st"> </span>
+<span class="st">                  </span>SD), <span class="dt">data =</span> d.sum, <span class="dt">width =</span> <span class="fl">0.25</span>)
+            if (stat ==<span class="st"> &quot;SE&quot;</span>) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">y =</span> Mean, <span class="dt">ymin =</span> Mean -<span class="st"> </span>SE, <span class="dt">ymax =</span> Mean +<span class="st"> </span>
+<span class="st">                  </span>SE), <span class="dt">data =</span> d.sum, <span class="dt">width =</span> <span class="fl">0.25</span>)
+            if (stat ==<span class="st"> &quot;Range&quot;</span>) 
+                g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">y =</span> Mean, <span class="dt">ymin =</span> Min, <span class="dt">ymax =</span> Max), 
+                  <span class="dt">data =</span> d.sum, <span class="dt">width =</span> <span class="fl">0.25</span>)
+        }
+    }
+    
+    if (!<span class="kw">is.null</span>(bardirection)) 
+        if (bardirection ==<span class="st"> &quot;Horizontal bars&quot;</span>) 
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">coord_flip</span>()
+    if (show.panel.text) {
+        if (around.mean) {
+            g &lt;-<span class="st"> </span><span class="kw">annotatePlot</span>(g, <span class="dt">data =</span> d, <span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">text =</span> plot.subtitle, 
+                <span class="dt">col =</span> color.theme, <span class="dt">bp =</span> <span class="ot">FALSE</span>, <span class="dt">bp.position =</span> bar.pos, <span class="dt">n.groups =</span> n.grp/<span class="dv">2</span>)  <span class="co">#n.grp/2 is a rough estimate</span>
+        } else {
+            max.val &lt;-<span class="st"> </span>if (stat ==<span class="st"> &quot;SD&quot;</span>) 
+                <span class="kw">max</span>(d.sum[, <span class="st">&quot;SD&quot;</span>]) else if (stat ==<span class="st"> &quot;SE&quot;</span>) 
+                <span class="kw">max</span>(d.sum[, <span class="st">&quot;SE&quot;</span>]) else if (stat ==<span class="st"> &quot;Full Spread&quot;</span>) 
+                <span class="kw">max</span>(d.sum[, <span class="st">&quot;Max&quot;</span>] -<span class="st"> </span>d.sum[, <span class="st">&quot;Min&quot;</span>])
+            if (!<span class="kw">is.na</span>(max.val)) 
+                g &lt;-<span class="st"> </span><span class="kw">annotatePlot</span>(g, <span class="dt">data =</span> d, <span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">y.fixed =</span> max.val, 
+                  <span class="dt">text =</span> plot.subtitle, <span class="dt">col =</span> color.theme, <span class="dt">bp =</span> <span class="ot">TRUE</span>, <span class="dt">bp.position =</span> bar.pos, 
+                  <span class="dt">n.groups =</span> n.grp)  <span class="co">#n.grp is a rough estimate</span>
+        }
+    }
+    g &lt;-<span class="st"> </span><span class="kw">addLogo</span>(g, show.logo, logo.mat, show.title, main, fontsize)
+    if (<span class="kw">length</span>(g$layers)) 
+        <span class="kw">print</span>(g)
+}</code></pre>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

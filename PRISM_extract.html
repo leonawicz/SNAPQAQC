@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="prism-2-km-data-extraction-code" class="section level2">
+<h2>PRISM 2-km Data Extraction Code</h2>
+<p>The <code>PRISM_extract.R</code> script extracts PRISM 2-km temperature and precipitation data for specific point locations via the raster grid cell in which given spatial coordinates fall. The extracted values serve as optional historical baseline climatologies for the SNAP Community Charts application. Use of PRISM values for this purpose has since been superceded by CRU 3.x data. This script sequentially loads a number of inter-related workspace files containing CRU and GCM data and resaves these workspaces, respectively, under new file names with PRISM data folded into each.</p>
+<div id="r-code" class="section level3">
+<h3><strong>R</strong> Code</h3>
+<div id="setup" class="section level4">
+<h4>Setup</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final&quot;</span>)
+<span class="kw">library</span>(raster)
+<span class="co"># At this time, no buffered 10-minute resolution WGS84 mean value version</span>
+<span class="co"># extracted for domain=&#39;world10min&#39;</span>
+domain &lt;-<span class="st"> &quot;akcan2km&quot;</span>
+<span class="co"># domain &lt;- &#39;world10min&#39;</span>
+
+mainDir &lt;-<span class="st"> &quot;/Data/Base_Data/Climate/AK_CAN_2km/historical/singleBand/prism/AK_CAN_2km_PRISM/AK_CAN_geotiffs&quot;</span>
+pDir &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) <span class="st">&quot;pr/ak83albers&quot;</span> else <span class="st">&quot;pr/wgs84&quot;</span>
+tDir &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) <span class="st">&quot;tas/ak83albers&quot;</span> else <span class="st">&quot;tas/wgs84&quot;</span>
+
+locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv&quot;</span>)
+s.p &lt;-<span class="st"> </span><span class="kw">stack</span>(<span class="kw">list.files</span>(<span class="kw">file.path</span>(mainDir, pDir), <span class="dt">pattern =</span> <span class="st">&quot;.tif$&quot;</span>, <span class="dt">full =</span> <span class="ot">TRUE</span>))
+s.t &lt;-<span class="st"> </span><span class="kw">stack</span>(<span class="kw">list.files</span>(<span class="kw">file.path</span>(mainDir, tDir), <span class="dt">pattern =</span> <span class="st">&quot;.tif$&quot;</span>, <span class="dt">full =</span> <span class="ot">TRUE</span>))</code></pre>
+</div>
+<div id="subset-city-data" class="section level4">
+<h4>Subset city data</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select cities and extract data</span>
+locs &lt;-<span class="st"> </span><span class="kw">subset</span>(locs, region !=<span class="st"> &quot;NWT&quot;</span>)
+<span class="co"># locs &lt;- locs[locs$pop &gt; 10,]</span>
+l &lt;-<span class="st"> </span><span class="kw">paste</span>(locs$region, locs$loc)
+lu &lt;-<span class="st"> </span><span class="kw">unique</span>(l)
+dup &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">duplicated</span>(l))
+l.dup.u &lt;-<span class="st"> </span><span class="kw">unique</span>(l[dup])
+drp &lt;-<span class="st"> </span><span class="kw">c</span>()
+for (i in <span class="dv">1</span>:<span class="kw">length</span>(l.dup.u)) {
+    ind &lt;-<span class="st"> </span><span class="kw">which</span>(l ==<span class="st"> </span>l.dup.u[i])
+    ind &lt;-<span class="st"> </span>ind[-<span class="kw">which.max</span>(locs$pop[ind])[<span class="dv">1</span>]]
+    drp &lt;-<span class="st"> </span><span class="kw">c</span>(drp, ind)
+}
+cities &lt;-<span class="st"> </span>locs[-drp, ]
+prism.cities &lt;-<span class="st"> </span><span class="kw">paste</span>(cities$loc, cities$region, <span class="dt">sep =</span> <span class="st">&quot;, &quot;</span>)
+cities &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) <span class="kw">cbind</span>(cities$lon_albers, cities$lat_albers) else if (domain ==<span class="st"> </span>
+<span class="st">    &quot;world10min&quot;</span>) <span class="kw">cbind</span>(cities$lon, cities$lat)
+
+prism.p &lt;-<span class="st"> </span><span class="kw">extract</span>(s.p, cities)
+prism.t &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">extract</span>(s.t, cities), <span class="dv">1</span>)
+
+<span class="co"># rm(list=ls()[!(ls() %in% c(&#39;prism.p&#39;, &#39;prism.t&#39;, &#39;prism.cities&#39;))])</span></code></pre>
+</div>
+<div id="load-and-save-workspaces" class="section level4">
+<h4>Load and save workspaces</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save results</span>
+file1 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru31_prism_akcan2km.RData&quot;</span>
+file2 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru32_prism_akcan2km.RData&quot;</span>
+file3 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru3132_prism_akcan2km.RData&quot;</span>
+file4 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru31_prism_world10min.RData&quot;</span>
+file5 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru32_prism_world10min.RData&quot;</span>
+file6 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru3132_prism_world10min.RData&quot;</span>
+if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) {
+    <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru31_akcan2km.RData&quot;</span>))
+    <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru32_akcan2km.RData&quot;</span>))
+    <span class="kw">save</span>(d.2km, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_prism_akcan2km.RData&quot;</span>)
+    <span class="kw">save</span>(d.2km, d.cru31.2km, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file1)
+    <span class="kw">save</span>(d.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file2)
+    <span class="kw">save</span>(d.2km, d.cru31.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, 
+        <span class="dt">file =</span> file3)
+} else if (domain ==<span class="st"> &quot;world10min&quot;</span>) {
+    <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru31_world10min.RData&quot;</span>))
+    <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru32_world10min.RData&quot;</span>))
+    <span class="kw">save</span>(d.10min, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_prism_world10min.RData&quot;</span>)
+    <span class="kw">save</span>(d.10min, d.cru31.10min, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file4)
+    <span class="kw">save</span>(d.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file5)
+    <span class="kw">save</span>(d.10min, d.cru31.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, 
+        <span class="dt">file =</span> file6)
+}
+
+if (<span class="kw">all</span>(<span class="kw">file.exists</span>(file3, file6))) {
+    <span class="kw">load</span>(file3)
+    locs.2km &lt;-<span class="st"> </span>locs
+    <span class="kw">load</span>(file6)
+    locs.10min &lt;-<span class="st"> </span>locs
+    <span class="kw">save</span>(d.2km, d.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, 
+        <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_prism_2km10min.RData&quot;</span>)
+    <span class="kw">save</span>(d.2km, d.10min, d.cru31.2km, d.cru31.10min, locs.2km, locs.10min, prism.p, 
+        prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_cru31_prism_2km10min.RData&quot;</span>)
+    <span class="kw">save</span>(d.2km, d.10min, d.cru32.2km, d.cru32.10min, locs.2km, locs.10min, prism.p, 
+        prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_cru32_prism_2km10min.RData&quot;</span>)
+    <span class="kw">save</span>(d.2km, d.10min, d.cru31.2km, d.cru31.10min, d.cru32.2km, d.cru32.10min, 
+        locs.2km, locs.10min, prism.p, prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_cru3132_prism_2km10min.RData&quot;</span>)
+}</code></pre>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="snap-data-qaqc-shiny-app-r-code" class="section level2">
+<h2>SNAP data QA/QC Shiny app R code</h2>
+<p><code>io_main.R</code> is a server-side <strong>R</strong> script sourced by <code>app.R</code>, which is in turn sourced by <code>server.R</code>. It contains a number of reactive outputs rendered in the browser, specifically outputs which are sent to the sidebar panel area of the app to inform user input controls based on the values of other inputs and outputs.</p>
+<div id="io_main.r" class="section level3">
+<h3>io_main.R</h3>
+<div id="panel-display-options-and-observation" class="section level4">
+<h4>Panel display, options, and observation</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$ShowPlotOptionsPanel &lt;-<span class="st"> </span><span class="kw">reactive</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        x &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+    })
+    x
+})
+<span class="kw">outputOptions</span>(output, <span class="st">&quot;ShowPlotOptionsPanel&quot;</span>, <span class="dt">suspendWhenHidden =</span> <span class="ot">FALSE</span>)
+
+<span class="kw">observe</span>({
+    input$goButton
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton !=<span class="st"> </span><span class="dv">0</span>) 
+        <span class="kw">updateCheckboxInput</span>(session, <span class="st">&quot;showDataPanel1&quot;</span>, <span class="dt">value =</span> <span class="ot">FALSE</span>))
+})</code></pre>
+</div>
+<div id="geographic-locations" class="section level4">
+<h4>Geographic locations</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Location &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">is.null</span>(input$loctype)) 
+        <span class="kw">return</span>()
+    if (input$loctype !=<span class="st"> &quot;Cities&quot;</span>) 
+        x &lt;-<span class="st"> </span><span class="kw">selectInput</span>(<span class="st">&quot;locs_regions&quot;</span>, <span class="st">&quot;Regions:&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, region.names.out[[input$loctype]]), 
+            <span class="dt">selected =</span> <span class="st">&quot;&quot;</span>, <span class="dt">multiple =</span> T, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    if (input$loctype ==<span class="st"> &quot;Cities&quot;</span>) 
+        x &lt;-<span class="st"> </span><span class="kw">selectInput</span>(<span class="st">&quot;locs_cities&quot;</span>, <span class="st">&quot;Cities:&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, city.names), <span class="dt">selected =</span> <span class="st">&quot;&quot;</span>, 
+            <span class="dt">multiple =</span> T, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    x
+})</code></pre>
+</div>
+<div id="months-to-seasons-aggregation" class="section level4">
+<h4>Months to seasons aggregation</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Months2Seasons &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">SeasonLength</span>())) 
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;months2seasons&quot;</span>, <span class="st">&quot;Make equal-length season(s) of months&quot;</span>, 
+            <span class="ot">FALSE</span>) else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length seasons</span>
+})
+
+output$N_Seasons &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">is.null</span>(input$months2seasons) ||<span class="st"> </span>!input$months2seasons) 
+        <span class="kw">return</span>()
+    if (<span class="kw">length</span>(input$mos) &lt;<span class="st"> </span><span class="dv">2</span>) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        n &lt;-<span class="st"> </span><span class="kw">SeasonLength</span>()
+        if (<span class="kw">is.null</span>(n)) {
+            x &lt;-<span class="st"> </span><span class="ot">NULL</span>
+        } else {
+            v &lt;-<span class="st"> </span><span class="dv">1</span>:(n[<span class="dv">1</span>] -<span class="st"> </span><span class="dv">1</span>)  <span class="co"># Do not permit 1-month &#39;seasons&#39;</span>
+            v &lt;-<span class="st"> </span>v[<span class="kw">which</span>((n[<span class="dv">1</span>]%%v) ==<span class="st"> </span><span class="dv">0</span>)] *<span class="st"> </span><span class="kw">length</span>(n)
+            x &lt;-<span class="st"> </span><span class="kw">selectInput</span>(<span class="st">&quot;n_seasons&quot;</span>, <span class="st">&quot;Number of seasons:&quot;</span>, <span class="dt">choices =</span> v, 
+                <span class="dt">selected =</span> v[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+        }
+    })
+    x
+})
+<span class="kw">outputOptions</span>(output, <span class="st">&quot;N_Seasons&quot;</span>, <span class="dt">suspendWhenHidden =</span> <span class="ot">FALSE</span>)</code></pre>
+</div>
+<div id="decades-to-longer-term-periods-aggregation" class="section level4">
+<h4>Decades to longer-term periods aggregation</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Decades2Periods &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">PeriodLength</span>())) 
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;decades2periods&quot;</span>, <span class="st">&quot;Make equal-length periods(s) of decades&quot;</span>, 
+            <span class="ot">FALSE</span>) else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length periods</span>
+})
+
+output$N_Periods &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">is.null</span>(input$decades2periods) ||<span class="st"> </span>!input$decades2periods) 
+        <span class="kw">return</span>()
+    if (<span class="kw">length</span>(input$decs) &lt;<span class="st"> </span><span class="dv">2</span>) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>({
+        n &lt;-<span class="st"> </span><span class="kw">PeriodLength</span>()
+        if (<span class="kw">is.null</span>(n)) {
+            x &lt;-<span class="st"> </span><span class="ot">NULL</span>
+        } else {
+            v &lt;-<span class="st"> </span><span class="dv">1</span>:(n[<span class="dv">1</span>] -<span class="st"> </span><span class="dv">1</span>)  <span class="co"># Do not permit 1-decade &#39;periods&#39;</span>
+            v &lt;-<span class="st"> </span>v[<span class="kw">which</span>((n[<span class="dv">1</span>]%%v) ==<span class="st"> </span><span class="dv">0</span>)] *<span class="st"> </span><span class="kw">length</span>(n)
+            x &lt;-<span class="st"> </span><span class="kw">selectInput</span>(<span class="st">&quot;n_periods&quot;</span>, <span class="st">&quot;Number of Periods:&quot;</span>, <span class="dt">choices =</span> v, 
+                <span class="dt">selected =</span> v[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+        }
+    })
+    x
+})
+<span class="kw">outputOptions</span>(output, <span class="st">&quot;N_Periods&quot;</span>, <span class="dt">suspendWhenHidden =</span> <span class="ot">FALSE</span>)</code></pre>
+</div>
+<div id="the-data-subsetting-button" class="section level4">
+<h4>The data subsetting button</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$GoButton &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    input$vars
+    input$vars2
+    input$units
+    input$cmip3scens
+    input$cmip5scens
+    input$cmip3models
+    input$cmip5models
+    input$compositeModel
+    input$yrs
+    input$mos
+    input$decs
+    input$loctype
+    input$locs_regions
+    input$locs_cities
+    input$months2seasons
+    input$decades2periods
+    input$n_seasons
+    input$n_periods
+    input$aggStats
+    input$aggStats2
+    <span class="kw">actionButton</span>(<span class="st">&quot;goButton&quot;</span>, <span class="st">&quot;Subset Data&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})</code></pre>
+<p>The plot-specific input controls below deal with choice of axis variables, grouping (coloring) variables, faceting variables, and choice of plot subtype or statistic.</p>
+</div>
+<div id="time-series-input-controls" class="section level4">
+<h4>Time series input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Group &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$xtime
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesTS</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;group&quot;</span>, <span class="st">&quot;Group/color by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesTS</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesTS</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+output$Facet &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$xtime
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesTS</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;facet&quot;</span>, <span class="st">&quot;Facet/panel by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesTS</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesTS</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+<span class="co"># output$Subjects &lt;- renderUI({ if(goBtnNullOrZero()) return() input$xtime</span>
+<span class="co"># input$group input$facet isolate( if(!is.null(subjectChoices()))</span>
+<span class="co"># selectInput(&#39;subjects&#39;, &#39;Subject/Within-group lines:&#39;,</span>
+<span class="co"># choices=subjectChoices(), selected=subjectChoices()[1], width=&#39;100%&#39;) ) })</span></code></pre>
+</div>
+<div id="scatter-plot-input-controls" class="section level4">
+<h4>Scatter plot input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Sc_X &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">selectInput</span>(<span class="st">&quot;sc_x&quot;</span>, <span class="st">&quot;X-axis&quot;</span>, <span class="dt">choices =</span> <span class="kw">c</span>(input$vars, input$vars2), <span class="dt">selected =</span> input$vars, 
+        <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$Group2 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesScatter</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;group2&quot;</span>, <span class="st">&quot;Group/color by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesScatter</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesScatter</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+output$Facet2 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesScatter</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;facet2&quot;</span>, <span class="st">&quot;Facet/panel by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesScatter</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesScatter</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})</code></pre>
+</div>
+<div id="heat-map-input-controls" class="section level4">
+<h4>Heat map input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Heatmap_x &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">heatmap_x_choices</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;heatmap_x&quot;</span>, <span class="st">&quot;X axis:&quot;</span>, <span class="dt">choices =</span> <span class="kw">heatmap_x_choices</span>(), <span class="dt">selected =</span> <span class="kw">heatmap_x_choices</span>()[<span class="dv">1</span>], 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$Heatmap_y &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">heatmap_y_choices</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;heatmap_y&quot;</span>, <span class="st">&quot;Y axis:&quot;</span>, <span class="dt">choices =</span> <span class="kw">heatmap_y_choices</span>(), <span class="dt">selected =</span> <span class="kw">heatmap_y_choices</span>()[<span class="dv">1</span>], 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$FacetHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$heatmap_x
+    input$heatmap_y
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">facetChoicesHeatmap</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;facetHeatmap&quot;</span>, <span class="st">&quot;Facet/panel by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">facetChoicesHeatmap</span>(), 
+            <span class="dt">selected =</span> <span class="kw">facetChoicesHeatmap</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+output$StatHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$heatmap_x
+    input$heatmap_y
+    input$facetHeatmap
+    <span class="kw">isolate</span>({
+        stats &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;Total&quot;</span>, <span class="st">&quot;SD&quot;</span>)
+        statChoicesHeatmap &lt;-<span class="st"> </span>stats[<span class="kw">which</span>(stats %in%<span class="st"> </span><span class="kw">names</span>(<span class="kw">dat_heatmap</span>()))]
+        if (!<span class="kw">length</span>(statChoicesHeatmap)) 
+            x &lt;-<span class="st"> </span><span class="ot">NULL</span> else x &lt;-<span class="st"> </span><span class="kw">selectInput</span>(<span class="st">&quot;statHeatmap&quot;</span>, <span class="st">&quot;Stat:&quot;</span>, <span class="dt">choices =</span> statChoicesHeatmap, 
+            <span class="dt">selected =</span> statChoicesHeatmap[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    })
+})</code></pre>
+</div>
+<div id="variability-plots-input-controls" class="section level4">
+<h4>Variability plots input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Xvar &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">xvarChoices</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;xvar&quot;</span>, <span class="st">&quot;Primary axis:&quot;</span>, <span class="dt">choices =</span> <span class="kw">xvarChoices</span>(), <span class="dt">selected =</span> <span class="kw">xvarChoices</span>()[<span class="dv">1</span>], 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$Group3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$xvar
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesVar</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;group3&quot;</span>, <span class="st">&quot;Group/color by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesVar</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesVar</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+output$Facet3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$xvar
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesVar</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;facet3&quot;</span>, <span class="st">&quot;Facet/panel by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesVar</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesVar</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+<span class="co"># output$Subjects3 &lt;- renderUI({ if(goBtnNullOrZero()) return() input$xvar</span>
+<span class="co"># input$group3 input$facet3 x &lt;- NULL isolate(</span>
+<span class="co"># if(!is.null(subjectChoices3())){ x &lt;- selectInput(&#39;subjects3&#39;,</span>
+<span class="co"># &#39;Subject/Within-group lines:&#39;, choices=subjectChoices3(),</span>
+<span class="co"># selected=subjectChoices3()[1], width=&#39;100%&#39;) } ) x })</span></code></pre>
+</div>
+<div id="distribution-plots-input-controls" class="section level4">
+<h4>Distribution plots input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r">output$Spatial_x &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">spatial_x_choices</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;spatial_x&quot;</span>, <span class="st">&quot;Primary axis:&quot;</span>, <span class="dt">choices =</span> <span class="kw">spatial_x_choices</span>(), 
+            <span class="dt">selected =</span> <span class="kw">spatial_x_choices</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$GroupSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$spatial_x
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesSpatial</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;groupSpatial&quot;</span>, <span class="st">&quot;Group/color by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesSpatial</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesSpatial</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+output$FacetSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$spatial_x
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(<span class="kw">groupFacetChoicesSpatial</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;facetSpatial&quot;</span>, <span class="st">&quot;Facet/panel by:&quot;</span>, <span class="dt">choices =</span> <span class="kw">groupFacetChoicesSpatial</span>(), 
+            <span class="dt">selected =</span> <span class="kw">groupFacetChoicesSpatial</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+output$PlotTypeSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    input$spatial_x
+    <span class="kw">isolate</span>(if (!<span class="kw">is.null</span>(input$spatial_x)) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;plotTypeSpatial&quot;</span>, <span class="st">&quot;Plot type:&quot;</span>, <span class="dt">choices =</span> <span class="kw">plotTypeChoicesSpatial</span>(), 
+            <span class="dt">selected =</span> <span class="kw">plotTypeChoicesSpatial</span>()[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+})
+
+<span class="co"># output$SubjectsSpatial &lt;- renderUI({ if(goBtnNullOrZero()) return()</span>
+<span class="co"># input$spatial_x input$groupSpatial input$facetSpatial x &lt;- NULL isolate(</span>
+<span class="co"># if(!is.null(subjectChoicesSpatial())){ x &lt;- selectInput(&#39;subjectsSpatial&#39;,</span>
+<span class="co"># &#39;Subject/Within-group lines:&#39;, choices=subjectChoicesSpatial(),</span>
+<span class="co"># selected=subjectChoicesSpatial()[1], width=&#39;100%&#39;) } ) x })</span></code></pre>
+</div>
+<div id="vertical-faceting-and-pooled-variable-text-for-each-plot-type" class="section level4">
+<h4>Vertical faceting and pooled variable text for each plot type</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Options for jittering, faceting, and pooling</span>
+output$VertFacet &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">facet.panels</span>())) 
+        if (<span class="kw">facet.panels</span>() &gt;<span class="st"> </span><span class="dv">1</span>) 
+            <span class="kw">checkboxInput</span>(<span class="st">&quot;vert.facet&quot;</span>, <span class="st">&quot;Vertical facet&quot;</span>, <span class="dt">value =</span> <span class="ot">FALSE</span>)
+})
+
+output$PooledVar &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">length</span>(<span class="kw">pooled.var</span>())) 
+        <span class="kw">HTML</span>(<span class="kw">paste</span>(<span class="st">&quot;&lt;div&gt;Pooled variable(s): &quot;</span>, <span class="kw">paste</span>(<span class="kw">pooled.var</span>(), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+            <span class="st">&quot;&lt;/div&gt;&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+})
+
+#### I may bring this back, but when changing all plot types&#39; vertical facet
+#### option to a number of columns option. output$VertFacet2 &lt;- renderUI({
+#### if(!is.null(facet.panels2())) if(facet.panels2()&gt;1)
+#### checkboxInput(&#39;vert.facet2&#39;, &#39;Vertical facet&#39;, value=FALSE) })
+
+output$PooledVar2 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">length</span>(<span class="kw">pooled.var2</span>())) 
+        <span class="kw">HTML</span>(<span class="kw">paste</span>(<span class="st">&quot;&lt;div&gt;Pooled variable(s): &quot;</span>, <span class="kw">paste</span>(<span class="kw">pooled.var2</span>(), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+            <span class="st">&quot;&lt;/div&gt;&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+})
+
+output$PooledVarHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">length</span>(<span class="kw">pooledVarHeatmap</span>())) 
+        <span class="kw">HTML</span>(<span class="kw">paste</span>(<span class="st">&quot;&lt;div&gt;Pooled variable(s): &quot;</span>, <span class="kw">paste</span>(<span class="kw">pooledVarHeatmap</span>(), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+            <span class="st">&quot;&lt;/div&gt;&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+})
+
+output$VertFacet3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">facet.panels3</span>())) 
+        if (<span class="kw">facet.panels3</span>() &gt;<span class="st"> </span><span class="dv">1</span>) 
+            <span class="kw">checkboxInput</span>(<span class="st">&quot;vert.facet3&quot;</span>, <span class="st">&quot;Vertical facet&quot;</span>, <span class="dt">value =</span> <span class="ot">FALSE</span>)
+})
+
+output$PooledVar3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">length</span>(<span class="kw">pooled.var3</span>())) 
+        <span class="kw">HTML</span>(<span class="kw">paste</span>(<span class="st">&quot;&lt;div&gt;Pooled variable(s): &quot;</span>, <span class="kw">paste</span>(<span class="kw">pooled.var3</span>(), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+            <span class="st">&quot;&lt;/div&gt;&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+})
+
+output$VertFacetSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">facetPanelsSpatial</span>())) 
+        if (<span class="kw">facetPanelsSpatial</span>() &gt;<span class="st"> </span><span class="dv">1</span>) 
+            <span class="kw">checkboxInput</span>(<span class="st">&quot;vertFacetSpatial&quot;</span>, <span class="st">&quot;Vertical facet&quot;</span>, <span class="dt">value =</span> <span class="ot">FALSE</span>)
+})
+
+output$PooledVarSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">length</span>(<span class="kw">pooledVarSpatial</span>())) 
+        <span class="kw">HTML</span>(<span class="kw">paste</span>(<span class="st">&quot;&lt;div&gt;Pooled variable(s): &quot;</span>, <span class="kw">paste</span>(<span class="kw">pooledVarSpatial</span>(), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+            <span class="st">&quot;&lt;/div&gt;&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+})</code></pre>
+<p>The plot-specific input controls below deal with mainly with aesthetic options such as color palettes, alpha levels, font size, and other aspects of graph display.</p>
+</div>
+<div id="time-series-input-controls-1" class="section level4">
+<h4>Time series input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># time series plot</span>
+output$Colorpalettes_ts &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    <span class="kw">getColorPalettes</span>(<span class="dt">id =</span> <span class="st">&quot;colorpalettes_ts&quot;</span>, <span class="dt">colseq =</span> <span class="kw">colorseq_ts</span>(), <span class="dt">grp =</span> input$group, 
+        <span class="dt">n.grp =</span> <span class="kw">n.groups</span>(), <span class="dt">fill.vs.border =</span> input$barPlot, <span class="dt">fill.vs.border2 =</span> <span class="kw">dat</span>()$Var[<span class="dv">1</span>] ==<span class="st"> </span>
+<span class="st">            &quot;Precipitation&quot;</span>)
+})
+
+output$Alpha1 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;alpha1&quot;</span>, <span class="st">&quot;Transparency&quot;</span>, <span class="kw">seq</span>(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>), <span class="dt">selected =</span> <span class="fl">0.5</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$PlotFontSize &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;plotFontSize&quot;</span>, <span class="st">&quot;Font size&quot;</span>, <span class="kw">seq</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">2</span>), <span class="dt">selected =</span> <span class="dv">16</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$Bartype &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">is.null</span>(input$group) ||<span class="st"> </span>input$group ==<span class="st"> &quot;None&quot;</span>) 
+        <span class="kw">return</span>()
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) {
+        styles &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Dodge (Grouped)&quot;</span>, <span class="st">&quot;Stack (Totals)&quot;</span>, <span class="st">&quot;Fill (Proportions)&quot;</span>)
+        if (!<span class="kw">is.null</span>(input$barPlot)) 
+            if (input$barPlot &amp;<span class="st"> </span><span class="kw">dat</span>()$Var[<span class="dv">1</span>] ==<span class="st"> &quot;Precipitation&quot;</span>) 
+                <span class="kw">selectInput</span>(<span class="st">&quot;bartype&quot;</span>, <span class="st">&quot;Barplot style&quot;</span>, styles, <span class="dt">selected =</span> styles[<span class="dv">1</span>], 
+                  <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    }
+})
+
+output$Bardirection &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) {
+        directions &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Vertical bars&quot;</span>, <span class="st">&quot;Horizontal bars&quot;</span>)
+        if (!<span class="kw">is.null</span>(input$barPlot)) 
+            if (input$barPlot &amp;<span class="st"> </span><span class="kw">dat</span>()$Var[<span class="dv">1</span>] ==<span class="st"> &quot;Precipitation&quot;</span>) 
+                <span class="kw">selectInput</span>(<span class="st">&quot;bardirection&quot;</span>, <span class="st">&quot;Barplot orientation&quot;</span>, directions, 
+                  <span class="dt">selected =</span> directions[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    }
+})</code></pre>
+</div>
+<div id="scatter-plot-input-controls-1" class="section level4">
+<h4>Scatter plot input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># scatter plot</span>
+output$Colorpalettes_sc &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    <span class="kw">getColorPalettes</span>(<span class="dt">id =</span> <span class="st">&quot;colorpalettes_sc&quot;</span>, <span class="dt">colseq =</span> <span class="kw">colorseq_sc</span>(), <span class="dt">grp =</span> input$group2, 
+        <span class="dt">n.grp =</span> <span class="kw">n.groups2</span>())
+})
+
+output$Alpha2 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat2</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;alpha2&quot;</span>, <span class="st">&quot;Transparency&quot;</span>, <span class="kw">seq</span>(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>), <span class="dt">selected =</span> <span class="fl">0.5</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$PlotFontSize2 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat2</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;plotFontSize2&quot;</span>, <span class="st">&quot;Font size&quot;</span>, <span class="kw">seq</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">2</span>), <span class="dt">selected =</span> <span class="dv">16</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$Hexbin &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    <span class="kw">checkboxInput</span>(<span class="st">&quot;hexbin&quot;</span>, <span class="st">&quot;Hex bins&quot;</span>, <span class="ot">FALSE</span>)
+})</code></pre>
+</div>
+<div id="heat-map-input-controls-1" class="section level4">
+<h4>Heat map input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># heatmap</span>
+output$Colorpalettes_hm &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    <span class="kw">getColorPalettes</span>(<span class="dt">id =</span> <span class="st">&quot;colorpalettes_hm&quot;</span>, <span class="dt">colseq =</span> <span class="kw">colorseq_hm</span>(), <span class="dt">heat =</span> <span class="ot">TRUE</span>)
+})
+
+output$PlotFontSizeHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat_heatmap</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;plotFontSizeHeatmap&quot;</span>, <span class="st">&quot;Font size&quot;</span>, <span class="kw">seq</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">2</span>), 
+            <span class="dt">selected =</span> <span class="dv">16</span>, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})</code></pre>
+</div>
+<div id="variability-plots-input-controls-1" class="section level4">
+<h4>Variability plots input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># variability plots</span>
+output$Colorpalettes_vr &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    <span class="kw">getColorPalettes</span>(<span class="dt">id =</span> <span class="st">&quot;colorpalettes_vr&quot;</span>, <span class="dt">colseq =</span> <span class="kw">colorseq_vr</span>(), <span class="dt">grp =</span> input$group3, 
+        <span class="dt">n.grp =</span> <span class="kw">n.groups3</span>(), <span class="dt">fill.vs.border =</span> <span class="kw">Variability</span>(), <span class="dt">overlay =</span> input$vr_showCRU)
+})
+
+output$Alpha3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;alpha3&quot;</span>, <span class="st">&quot;Transparency&quot;</span>, <span class="kw">seq</span>(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>), <span class="dt">selected =</span> <span class="fl">0.5</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$PlotFontSize3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;plotFontSize3&quot;</span>, <span class="st">&quot;Font size&quot;</span>, <span class="kw">seq</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">2</span>), <span class="dt">selected =</span> <span class="dv">16</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$Bartype3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">is.null</span>(input$group3) ||<span class="st"> </span>input$group3 ==<span class="st"> &quot;None&quot;</span>) 
+        <span class="kw">return</span>()
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$variability)) {
+        if (!input$variability) {
+            styles &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Dodge (Grouped)&quot;</span>, <span class="st">&quot;Stack (Totals)&quot;</span>, <span class="st">&quot;Fill (Proportions)&quot;</span>)
+            <span class="kw">selectInput</span>(<span class="st">&quot;bartype3&quot;</span>, <span class="st">&quot;Barplot style&quot;</span>, styles, <span class="dt">selected =</span> styles[<span class="dv">1</span>], 
+                <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+        } else <span class="kw">return</span>()
+    } else <span class="kw">return</span>()
+})
+
+output$Bardirection3 &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$variability)) {
+        if (!input$variability) {
+            directions &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Vertical bars&quot;</span>, <span class="st">&quot;Horizontal bars&quot;</span>)
+            <span class="kw">selectInput</span>(<span class="st">&quot;bardirection3&quot;</span>, <span class="st">&quot;Barplot orientation&quot;</span>, directions, 
+                <span class="dt">selected =</span> directions[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+        }
+    }
+})
+
+output$Variability &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;variability&quot;</span>, <span class="st">&quot;Center on mean&quot;</span>, <span class="ot">FALSE</span>)
+})
+
+<span class="co"># output$Boxplots &lt;- renderUI({ if(!is.null(input$variability))</span>
+<span class="co"># if(input$variability) checkboxInput(&#39;boxplots&#39;, &#39;Box plots&#39;, FALSE) })</span>
+
+<span class="co"># output$Dispersion &lt;- renderUI({ if(!is.null(input$variability) &amp;&amp;</span>
+<span class="co"># !input$variability) selectInput(&#39;dispersion&#39;, &#39;Dispersion stat&#39;,</span>
+<span class="co"># choices=c(&#39;SD&#39;, &#39;SE&#39;, &#39;Full Spread&#39;), selected=&#39;SD&#39;, width=&#39;100%&#39;) })</span>
+<span class="co"># output$ErrorBars &lt;- renderUI({ if(!is.null(input$variability) &amp;&amp;</span>
+<span class="co"># input$variability){ if(!is.null(input$boxplots) &amp;&amp; input$boxplots==&#39;&#39;)</span>
+<span class="co"># selectInput(&#39;errorBars&#39;, &#39;Error bars&#39;, choices=c(&#39;&#39;, &#39;95% CI&#39;, &#39;SD&#39;, &#39;SE&#39;,</span>
+<span class="co"># &#39;Range&#39;), selected=&#39;&#39;, width=&#39;100%&#39;) } })</span></code></pre>
+</div>
+<div id="distribution-plots-input-controls-1" class="section level4">
+<h4>Distribution plots input controls</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Conditional inputs (tabset panel tab: spatial plots)</span>
+output$Colorpalettes_sp &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    <span class="kw">getColorPalettes</span>(<span class="dt">id =</span> <span class="st">&quot;colorpalettes_sp&quot;</span>, <span class="dt">colseq =</span> <span class="kw">colorseq_sp</span>(), <span class="dt">grp =</span> input$groupSpatial, 
+        <span class="dt">n.grp =</span> <span class="kw">nGroupsSpatial</span>(), <span class="dt">overlay =</span> input$sp_showCRU)
+})
+
+output$AlphaSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;alphaSpatial&quot;</span>, <span class="st">&quot;Transparency&quot;</span>, <span class="kw">seq</span>(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>), <span class="dt">selected =</span> <span class="fl">0.5</span>, 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$PlotFontSizeSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>())) 
+        <span class="kw">selectInput</span>(<span class="st">&quot;plotFontSizeSpatial&quot;</span>, <span class="st">&quot;Font size&quot;</span>, <span class="kw">seq</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">2</span>), 
+            <span class="dt">selected =</span> <span class="dv">16</span>, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+})
+
+output$DensityTypeSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">is.null</span>(input$groupSpatial) ||<span class="st"> </span>input$groupSpatial ==<span class="st"> &quot;None&quot;</span>) 
+        <span class="kw">return</span>()
+    if (!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>()) &amp;&amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$plotTypeSpatial) &amp;&amp;<span class="st"> </span>input$plotTypeSpatial !=<span class="st"> </span>
+<span class="st">        &quot;Stripchart&quot;</span>) {
+        styles &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Overlay&quot;</span>, <span class="st">&quot;Fill/Relative&quot;</span>)  #### Cn combine with boxplots/points? NO
+        <span class="kw">selectInput</span>(<span class="st">&quot;densityTypeSpatial&quot;</span>, <span class="st">&quot;Density style&quot;</span>, styles, <span class="dt">selected =</span> styles[<span class="dv">1</span>], 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    } else <span class="kw">return</span>()
+})
+
+output$StripDirectionSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    #### Consider swapping this out for a checkbox in each plot tab in which it
+    #### occurs
+    if (!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>()) &amp;&amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$plotTypeSpatial) &amp;&amp;<span class="st"> </span>input$plotTypeSpatial ==<span class="st"> </span>
+<span class="st">        &quot;Stripchart&quot;</span>) {
+        directions &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Vertical strips&quot;</span>, <span class="st">&quot;Horizontal strips&quot;</span>)
+        <span class="kw">selectInput</span>(<span class="st">&quot;stripDirectionSpatial&quot;</span>, <span class="st">&quot;Stripchart orientation&quot;</span>, directions, 
+            <span class="dt">selected =</span> directions[<span class="dv">1</span>], <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>)
+    }
+})</code></pre>
+</div>
+<div id="conditional-plot-buttons" class="section level4">
+<h4>Conditional plot buttons</h4>
+<p>These buttons display depending on the current status of data selection and other similarly required non-<code>NULL</code>-valued reactive inputs and outputs referenced by the <code>permitPlot</code> reactive expression.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot buttons</span>
+output$PlotButton_ts &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
+<span class="st">        </span><span class="dv">0</span>)) 
+        if (<span class="kw">nrow</span>(<span class="kw">dat</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
+            <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_ts&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
+                <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})
+
+output$PlotButton_sc &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat2</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
+<span class="st">        </span><span class="dv">0</span>)) 
+        if (<span class="kw">nrow</span>(<span class="kw">dat2</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
+            <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_sc&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
+                <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})
+
+output$PlotButton_hm &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
+<span class="st">        </span><span class="dv">0</span>)) 
+        if (<span class="kw">nrow</span>(<span class="kw">dat</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
+            <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_hm&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
+                <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})
+
+output$PlotButton_vr &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
+<span class="st">        </span><span class="dv">0</span>)) 
+        if (<span class="kw">nrow</span>(<span class="kw">dat</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
+            <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_vr&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
+                <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})
+
+output$PlotButton_sp &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>
+<span class="st">        </span>input$goButton &gt;<span class="st"> </span><span class="dv">0</span>)) 
+        if (<span class="kw">nrow</span>(<span class="kw">dat_spatial</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
+            <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_sp&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
+                <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})</code></pre>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

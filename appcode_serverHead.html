@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; }
+code > span.dt { color: #dfdfbf; }
+code > span.dv { color: #dcdccc; }
+code > span.bn { color: #dca3a3; }
+code > span.fl { color: #c0bed1; }
+code > span.ch { color: #dca3a3; }
+code > span.st { color: #cc9393; }
+code > span.co { color: #7f9f7f; }
+code > span.ot { color: #efef8f; }
+code > span.al { color: #ffcfaf; }
+code > span.fu { color: #efef8f; }
+code > span.er { color: #c3bf9f; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="snap-data-qaqc-shiny-app-r-code" class="section level2">
+<h2>SNAP data QA/QC Shiny app R code</h2>
+<p>The <code>serverHead.R</code> script is sourced by <code>server.R</code> prior to the <code>shinyServer</code> call. It loads required server-side <strong>R</strong> packages and contains numerous support functions used by the app. A key purpose of including many standard <strong>R</strong> functions here is that many of them are used repeatedly in order to perform the same operations for different plot types. While this externalization adds another layer of abstraction to the code, and while some of these functions clearly serve highly specific purposes and would make no sense without the fuller code context, it prevents a significant amount of code duplication.</p>
+<div id="serverhead.r" class="section level3">
+<h3>serverHead.R</h3>
+<div id="r-packages-themes-colors-and-logo" class="section level4">
+<h4>R packages, themes, colors, and logo</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(shiny)
+<span class="kw">library</span>(Hmisc); <span class="kw">library</span>(png); <span class="kw">library</span>(RColorBrewer); <span class="kw">library</span>(ggplot2); <span class="kw">library</span>(plyr); <span class="kw">library</span>(reshape2); <span class="kw">library</span>(data.table); <span class="kw">library</span>(gridExtra)
+
+theme_black=function(<span class="dt">base_size=</span><span class="dv">12</span>,<span class="dt">base_family=</span><span class="st">&quot;&quot;</span>) {
+  <span class="kw">theme_grey</span>(<span class="dt">base_size=</span>base_size,<span class="dt">base_family=</span>base_family) %+replace%
+<span class="st">    </span><span class="kw">theme</span>(
+      <span class="co"># Specify axis options</span>
+      <span class="dt">axis.line=</span><span class="kw">element_blank</span>(), 
+      <span class="dt">axis.text.x=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">0.8</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>,
+                               <span class="dt">lineheight=</span><span class="fl">0.9</span>,<span class="dt">vjust=</span><span class="dv">1</span>), 
+      <span class="dt">axis.text.y=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">0.8</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>,
+                               <span class="dt">lineheight=</span><span class="fl">0.9</span>,<span class="dt">hjust=</span><span class="dv">1</span>), 
+      <span class="dt">axis.ticks=</span><span class="kw">element_line</span>(<span class="dt">color=</span><span class="st">&quot;white&quot;</span>,<span class="dt">size =</span> <span class="fl">0.2</span>), 
+      <span class="dt">axis.title.x=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>,<span class="dt">vjust=</span><span class="dv">1</span>), 
+      <span class="dt">axis.title.y=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>,<span class="dt">angle=</span><span class="dv">90</span>,
+                                <span class="dt">vjust=</span><span class="fl">0.5</span>), 
+      <span class="dt">axis.ticks.length=</span><span class="kw">unit</span>(<span class="fl">0.3</span>,<span class="st">&quot;lines&quot;</span>), 
+      <span class="dt">axis.ticks.margin=</span><span class="kw">unit</span>(<span class="fl">0.5</span>,<span class="st">&quot;lines&quot;</span>),
+      <span class="co"># Specify legend options</span>
+      <span class="dt">legend.background=</span><span class="kw">element_rect</span>(<span class="dt">color=</span><span class="ot">NA</span>,<span class="dt">fill=</span><span class="st">&quot;black&quot;</span>), 
+      <span class="dt">legend.key=</span><span class="kw">element_rect</span>(<span class="dt">color=</span><span class="st">&quot;white&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;black&quot;</span>), 
+      <span class="dt">legend.key.size=</span><span class="kw">unit</span>(<span class="fl">1.2</span>,<span class="st">&quot;lines&quot;</span>), 
+      <span class="dt">legend.key.height=</span><span class="ot">NULL</span>, 
+      <span class="dt">legend.key.width=</span><span class="ot">NULL</span>,     
+      <span class="dt">legend.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">0.8</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>), 
+      <span class="dt">legend.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">0.8</span>,<span class="dt">face=</span><span class="st">&quot;bold&quot;</span>,<span class="dt">hjust=</span><span class="dv">0</span>,
+                                <span class="dt">color=</span><span class="st">&quot;white&quot;</span>), 
+      <span class="co">#legend.position=&quot;right&quot;, </span>
+      <span class="dt">legend.text.align=</span><span class="ot">NULL</span>, 
+      <span class="dt">legend.title.align=</span><span class="ot">NULL</span>, 
+      <span class="co">#legend.direction=&quot;vertical&quot;, </span>
+      <span class="dt">legend.box=</span><span class="ot">NULL</span>,
+      <span class="co"># Specify panel options</span>
+      <span class="dt">panel.background=</span><span class="kw">element_rect</span>(<span class="dt">fill=</span><span class="st">&quot;black&quot;</span>,<span class="dt">color =</span> <span class="ot">NA</span>), 
+      <span class="dt">panel.border=</span><span class="kw">element_rect</span>(<span class="dt">fill=</span><span class="ot">NA</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>), 
+      <span class="co">#panel.grid.major=element_blank(), </span>
+      <span class="co">#panel.grid.minor=element_blank(), </span>
+      <span class="dt">panel.grid.major =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;grey10&quot;</span>, <span class="dt">size =</span> <span class="fl">0.2</span>), <span class="co"># test alternate</span>
+      <span class="dt">panel.grid.minor =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;grey2&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>), <span class="co"># test alternate</span>
+      <span class="dt">panel.margin=</span><span class="kw">unit</span>(<span class="fl">0.25</span>,<span class="st">&quot;lines&quot;</span>),  
+      <span class="co"># Specify facetting options</span>
+      <span class="dt">strip.background=</span><span class="kw">element_rect</span>(<span class="dt">fill=</span><span class="st">&quot;grey30&quot;</span>,<span class="dt">color=</span><span class="st">&quot;grey10&quot;</span>), 
+      <span class="dt">strip.text.x=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">0.8</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>), 
+      <span class="dt">strip.text.y=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">0.8</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>,
+                                <span class="dt">angle=</span>-<span class="dv">90</span>), 
+      <span class="co"># Specify plot options</span>
+      <span class="dt">plot.background=</span><span class="kw">element_rect</span>(<span class="dt">color=</span><span class="st">&quot;black&quot;</span>,<span class="dt">fill=</span><span class="st">&quot;black&quot;</span>), 
+      <span class="dt">plot.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span>base_size*<span class="fl">1.2</span>,<span class="dt">color=</span><span class="st">&quot;white&quot;</span>), 
+      <span class="dt">plot.margin=</span><span class="kw">unit</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="fl">0.5</span>,<span class="fl">0.5</span>),<span class="st">&quot;lines&quot;</span>)
+    )
+}
+
+colorsHCL &lt;-<span class="st"> </span>function(n) <span class="kw">hcl</span>(<span class="dt">h=</span><span class="kw">seq</span>(<span class="dv">0</span>,(n<span class="dv">-1</span>)/(n),<span class="dt">length=</span>n)*<span class="dv">360</span>,<span class="dt">c=</span><span class="dv">100</span>,<span class="dt">l=</span><span class="dv">65</span>,<span class="dt">fixup=</span><span class="ot">TRUE</span>) <span class="co"># evenly spaced colors</span>
+cbpalette &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;#E69F00&quot;</span>, <span class="st">&quot;#56B4E9&quot;</span>, <span class="st">&quot;#009E73&quot;</span>, <span class="st">&quot;#F0E442&quot;</span>, <span class="st">&quot;#0072B2&quot;</span>, <span class="st">&quot;#D55E00&quot;</span>, <span class="st">&quot;#CC79A7&quot;</span>, <span class="st">&quot;#999999&quot;</span>) <span class="co"># colorblind-friendly palette option</span>
+
+logo &lt;-<span class="st"> </span><span class="kw">readPNG</span>(<span class="st">&quot;www/img/SNAP_acronym_100px.png&quot;</span>)
+logo.alpha &lt;-<span class="st"> </span><span class="dv">1</span>
+logo.mat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rgb</span>(logo[,,<span class="dv">1</span>],logo[,,<span class="dv">2</span>],logo[,,<span class="dv">3</span>],logo[,,<span class="dv">4</span>]*logo.alpha), <span class="dt">nrow=</span><span class="kw">dim</span>(logo)[<span class="dv">1</span>])</code></pre>
+</div>
+<div id="nullorzero" class="section level4">
+<h4>nullOrZero</h4>
+<p>Check if an input is <code>NULL</code> or zero.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># These functions are written with the structure of the app in mind. They</span>
+<span class="co"># are intended to avoid code duplication.</span>
+nullOrZero &lt;-<span class="st"> </span>function(x) <span class="kw">is.null</span>(x) ||<span class="st"> </span>x ==<span class="st"> </span><span class="dv">0</span></code></pre>
+</div>
+<div id="mod2ar" class="section level4">
+<h4>mod2ar</h4>
+<p>Obtain the AR ID (CMIP phase) based on the climate model.</p>
+<pre class="sourceCode r"><code class="sourceCode r">mod2ar &lt;-<span class="st"> </span>function(x) {
+    if (x %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;CCCMAcgcm31&quot;</span>, <span class="st">&quot;GFDLcm21&quot;</span>, <span class="st">&quot;MIROC32m&quot;</span>, <span class="st">&quot;MPIecham5&quot;</span>, <span class="st">&quot;ukmoHADcm3&quot;</span>)) 
+        <span class="kw">return</span>(<span class="st">&quot;AR4&quot;</span>)
+    if (x %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;CCSM4&quot;</span>, <span class="st">&quot;GFDLcm3&quot;</span>, <span class="st">&quot;GISSe2-r&quot;</span>, <span class="st">&quot;IPSLcm5a-lr&quot;</span>, <span class="st">&quot;MRIcgcm3&quot;</span>)) 
+        <span class="kw">return</span>(<span class="st">&quot;AR5&quot;</span>)
+}</code></pre>
+</div>
+<div id="density2bootstrap" class="section level4">
+<h4>density2bootstrap</h4>
+<p>Sample from an empirical, estimated probability density function. This is used for distribution plots.</p>
+<pre class="sourceCode r"><code class="sourceCode r">density2bootstrap &lt;-<span class="st"> </span>function(d, n.density, <span class="dt">n.boot =</span> <span class="dv">10000</span>, <span class="dt">interp =</span> <span class="ot">FALSE</span>, 
+    <span class="dt">n.interp =</span> <span class="dv">1000</span>, ...) {
+    n.fact &lt;-<span class="st"> </span>n.boot/n.density
+    n.grp &lt;-<span class="st"> </span><span class="kw">nrow</span>(d)/n.density
+    d$Index &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>:n.grp, <span class="dt">each =</span> n.density)
+    d2 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">lapply</span>(d, rep, <span class="dt">length =</span> n.fact *<span class="st"> </span><span class="kw">nrow</span>(d)), <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
+    prob.col &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">names</span>(d2) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Prob&quot;</span>, <span class="st">&quot;Index&quot;</span>))
+    d2 &lt;-<span class="st"> </span>d2[<span class="kw">order</span>(d2$Index), -prob.col]
+    d2$Val &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">vapply</span>(<span class="dt">X =</span> <span class="dv">1</span>:n.grp, <span class="dt">FUN =</span> function(i, d, n, interp, 
+        n.interp, ...) {
+        p &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">x =</span> d$Val[d$Index ==<span class="st"> </span>i], <span class="dt">y =</span> d$Prob[d$Index ==<span class="st"> </span>i])
+        if (interp) p &lt;-<span class="st"> </span><span class="kw">approx</span>(p$x, p$y, <span class="dt">n =</span> n.interp)
+        <span class="kw">round</span>(<span class="kw">sample</span>(p$x, n, <span class="dt">prob =</span> p$y, <span class="dt">rep =</span> T), ...)
+    }, <span class="dt">FUN.VALUE =</span> <span class="kw">numeric</span>(n.boot), <span class="dt">d =</span> d, <span class="dt">n =</span> n.boot, <span class="dt">interp =</span> interp, <span class="dt">n.interp =</span> n.interp, 
+        ...))
+    d2
+}</code></pre>
+</div>
+<div id="splitat" class="section level4">
+<h4>splitAt</h4>
+<p>This function assists <code>periodLength</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">splitAt &lt;-<span class="st"> </span>function(x, <span class="dt">pos =</span> <span class="ot">NULL</span>) if (<span class="kw">is.null</span>(pos)) <span class="kw">list</span>(x) else <span class="kw">unname</span>(<span class="kw">split</span>(x, 
+    <span class="kw">cumsum</span>(<span class="kw">seq_along</span>(x) %in%<span class="st"> </span>pos)))</code></pre>
+</div>
+<div id="periodlength" class="section level4">
+<h4>periodLength</h4>
+<p>This function obtains the length of a defined period (combination of decades) when the user exercises the option to concatenate multiple selected decades into one or more equal-length longer-term periods.</p>
+<pre class="sourceCode r"><code class="sourceCode r">periodLength &lt;-<span class="st"> </span>function(x) {
+    x.diff &lt;-<span class="st"> </span><span class="kw">diff</span>(<span class="kw">sort</span>(x))
+    pos.split &lt;-<span class="st"> </span>if (<span class="kw">all</span>(x.diff ==<span class="st"> </span><span class="dv">1</span>)) 
+        <span class="ot">NULL</span> else <span class="kw">which</span>(x.diff !=<span class="st"> </span><span class="dv">1</span>) +<span class="st"> </span><span class="dv">1</span>
+    x &lt;-<span class="st"> </span><span class="kw">splitAt</span>(<span class="dt">x =</span> x, <span class="dt">pos =</span> pos.split)
+    n &lt;-<span class="st"> </span><span class="kw">sapply</span>(x, length)
+    if (<span class="kw">length</span>(n) ==<span class="st"> </span><span class="dv">1</span> ||<span class="st"> </span><span class="kw">all</span>(<span class="kw">diff</span>(n) ==<span class="st"> </span><span class="dv">0</span>)) 
+        n else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length periods</span>
+}</code></pre>
+</div>
+<div id="collapsemonths" class="section level4">
+<h4>collapseMonths</h4>
+<p>This function aggregates consecutive months into one or more equal-length seasons.</p>
+<pre class="sourceCode r"><code class="sourceCode r">collapseMonths &lt;-<span class="st"> </span>function(d, variable, n.s, mos, <span class="dt">n.samples =</span> <span class="dv">1</span>) {
+    nrx &lt;-<span class="st"> </span><span class="kw">nrow</span>(d)
+    p &lt;-<span class="st"> </span><span class="kw">length</span>(mos)/n.s
+    ind.keep &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>, nrx, <span class="dt">by =</span> p *<span class="st"> </span>n.samples), <span class="dt">each =</span> n.samples) +<span class="st"> </span><span class="dv">0</span>:(n.samples -<span class="st"> </span>
+<span class="st">        </span><span class="dv">1</span>)
+    m &lt;-<span class="st"> </span><span class="kw">length</span>(ind.keep)
+    id.seasons &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">split</span>(mos, <span class="kw">rep</span>(<span class="dv">1</span>:n.s, <span class="dt">each =</span> p)), function(x) <span class="kw">paste</span>(<span class="kw">c</span>(x[<span class="dv">1</span>], 
+        <span class="kw">tail</span>(x, <span class="dv">1</span>)), <span class="dt">collapse =</span> <span class="st">&quot;-&quot;</span>))
+    id.seasons &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">factor</span>(id.seasons, <span class="dt">levels =</span> id.seasons), <span class="dt">each =</span> n.samples), 
+        <span class="dt">length =</span> m)
+    v &lt;-<span class="st"> </span><span class="kw">list</span>()
+    for (k in <span class="dv">1</span>:<span class="kw">length</span>(variable)) {
+        if (n.samples &gt;<span class="st"> </span><span class="dv">1</span>) 
+            v[[k]] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">unlist</span>(<span class="kw">tapply</span>(d[[variable[k]]], <span class="kw">rep</span>(<span class="dv">1</span>:(nrx/(p *<span class="st"> </span>
+<span class="st">                </span>n.samples)), <span class="dt">each =</span> p *<span class="st"> </span>n.samples), <span class="dt">FUN =</span> function(x, nc) <span class="kw">rowMeans</span>(<span class="kw">matrix</span>(x, 
+                <span class="dt">ncol =</span> nc)), <span class="dt">nc =</span> p)), <span class="dv">1</span>)
+        if (n.samples ==<span class="st"> </span><span class="dv">1</span>) 
+            v[[k]] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">tapply</span>(d[[variable[k]]], <span class="kw">rep</span>(<span class="dv">1</span>:(nrx/p), <span class="dt">each =</span> p), 
+                <span class="dt">FUN =</span> mean), <span class="dv">1</span>)
+    }
+    d &lt;-<span class="st"> </span>d[ind.keep, ]
+    d$Month &lt;-<span class="st"> </span>id.seasons
+    for (k in <span class="dv">1</span>:<span class="kw">length</span>(variable)) {
+        d[[variable[k]]] &lt;-<span class="st"> </span>v[[k]]
+        if (<span class="kw">any</span>(d$Var ==<span class="st"> &quot;Precipitation&quot;</span>)) 
+            d[[variable[k]]][d$Var ==<span class="st"> &quot;Precipitation&quot;</span>] &lt;-<span class="st"> </span><span class="kw">round</span>(p *<span class="st"> </span>d[[variable[k]]][d$Var ==<span class="st"> </span>
+<span class="st">                &quot;Precipitation&quot;</span>])
+    }
+    d
+}</code></pre>
+</div>
+<div id="periodsfromdecades" class="section level4">
+<h4>periodsFromDecades</h4>
+<p>This function concatenates decades into one or more equal-length longer-term periods.</p>
+<pre class="sourceCode r"><code class="sourceCode r">periodsFromDecades &lt;-<span class="st"> </span>function(d, n.p, decs, <span class="dt">check.years =</span> <span class="ot">FALSE</span>, <span class="dt">n.samples =</span> <span class="dv">1</span>) {
+    decs &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(decs, <span class="dv">1</span>, <span class="dv">4</span>))
+    n.mos &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d$Month))
+    p &lt;-<span class="st"> </span><span class="kw">length</span>(decs)/n.p
+    splt &lt;-<span class="st"> </span><span class="kw">split</span>(decs, <span class="kw">rep</span>(<span class="dv">1</span>:n.p, <span class="dt">each =</span> p))
+    if (check.years) {
+        <span class="co"># Ensure inclusion only of CRU data which span an entire defined</span>
+        <span class="co"># multi-decade period</span>
+        keep.ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">sapply</span>(splt, function(x) <span class="kw">all</span>(x %in%<span class="st"> </span><span class="kw">unique</span>(d$Decade))))
+        if (<span class="kw">length</span>(keep.ind)) {
+            splt &lt;-<span class="st"> </span>splt[keep.ind]
+            periods &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(<span class="kw">sapply</span>(splt, function(x) <span class="kw">paste</span>(<span class="kw">c</span>(x[<span class="dv">1</span>], 
+                <span class="kw">tail</span>(x, <span class="dv">1</span>)), <span class="dt">collapse =</span> <span class="st">&quot;-&quot;</span>)), <span class="dv">1</span>, <span class="dv">8</span>), <span class="dv">9</span>)
+            for (i in <span class="dv">1</span>:<span class="kw">length</span>(periods)) d$Decade[d$Decade %in%<span class="st"> </span>splt[[i]]] &lt;-<span class="st"> </span>periods[i]
+            d &lt;-<span class="st"> </span><span class="kw">subset</span>(d, <span class="kw">nchar</span>(Decade) &gt;<span class="st"> </span><span class="dv">4</span>)
+        } else d &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    } else {
+        periods &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(<span class="kw">sapply</span>(splt, function(x) <span class="kw">paste</span>(<span class="kw">c</span>(x[<span class="dv">1</span>], <span class="kw">tail</span>(x, 
+            <span class="dv">1</span>)), <span class="dt">collapse =</span> <span class="st">&quot;-&quot;</span>)), <span class="dv">1</span>, <span class="dv">8</span>), <span class="dv">9</span>)
+        d$Decade &lt;-<span class="st"> </span><span class="kw">rep</span>(periods, <span class="dt">each =</span> n.mos *<span class="st"> </span><span class="dv">10</span> *<span class="st"> </span>p *<span class="st"> </span>n.samples)
+    }
+    d
+}</code></pre>
+</div>
+<div id="dodgepoints" class="section level4">
+<h4>dodgePoints</h4>
+<p>This function is used to properly dodge points when points are overlaid on top of other dodged elements such as bars or box plots. This is necessary when grouping and faceting by categorical values. <code>ggplot</code> is not good at handling this nuance on its own.</p>
+<pre class="sourceCode r"><code class="sourceCode r">dodgePoints &lt;-<span class="st"> </span>function(d, x, grp, n.grp, facet.by, <span class="dt">width =</span> <span class="fl">0.9</span>) {
+    if (<span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
+        if (facet.by ==<span class="st"> &quot;None&quot;</span>) {
+            x.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(d[, x]))
+            x.num &lt;-<span class="st"> </span>grp.n &lt;-<span class="st"> </span>grp.num &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(d))
+            for (m in <span class="dv">1</span>:<span class="kw">length</span>(x.names)) {
+                ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">as.character</span>(d[, x]) ==<span class="st"> </span>x.names[m])
+                grp.n[ind] &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[ind, grp]))
+                x.num[ind] &lt;-<span class="st"> </span>m
+                grp.num[ind] &lt;-<span class="st"> </span>width *<span class="st"> </span>((<span class="kw">as.numeric</span>(<span class="kw">factor</span>(d[ind, grp]))/grp.n[ind]) -<span class="st"> </span>
+<span class="st">                  </span>(<span class="dv">1</span>/grp.n[ind] +<span class="st"> </span>((grp.n[ind] -<span class="st"> </span><span class="dv">1</span>)/<span class="dv">2</span>)/(grp.n[ind])))
+            }
+        } else if (facet.by !=<span class="st"> &quot;None&quot;</span>) {
+            x.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(d[, x]))
+            panel.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(d[, facet.by]))
+            n.panels &lt;-<span class="st"> </span><span class="kw">length</span>(panel.names)
+            x.num &lt;-<span class="st"> </span>grp.n &lt;-<span class="st"> </span>grp.num &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(d))
+            for (m in <span class="dv">1</span>:n.panels) {
+                for (mm in <span class="dv">1</span>:<span class="kw">length</span>(x.names)) {
+                  ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">as.character</span>(d[, facet.by]) ==<span class="st"> </span>panel.names[m] &amp;<span class="st"> </span>
+<span class="st">                    </span><span class="kw">as.character</span>(d[, x]) ==<span class="st"> </span>x.names[mm])
+                  grp.n[ind] &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[ind, grp]))
+                  x.num[ind] &lt;-<span class="st"> </span>mm -<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">factor</span>(d[ind, x]))
+                  grp.num[ind] &lt;-<span class="st"> </span>width *<span class="st"> </span>((<span class="kw">as.numeric</span>(<span class="kw">factor</span>(d[ind, grp]))/grp.n[ind]) -<span class="st"> </span>
+<span class="st">                    </span>(<span class="dv">1</span>/grp.n[ind] +<span class="st"> </span>((grp.n[ind] -<span class="st"> </span><span class="dv">1</span>)/<span class="dv">2</span>)/(grp.n[ind])))
+                }
+            }
+        }
+        <span class="kw">return</span>(<span class="kw">list</span>(<span class="dt">x.num =</span> x.num, <span class="dt">grp.num =</span> grp.num, <span class="dt">grp.n =</span> grp.n))
+    }
+}</code></pre>
+</div>
+<div id="getheatmapaxischoices" class="section level4">
+<h4>getHeatmapAxisChoices</h4>
+<p>This function lists the categorical variables available for use along the axes of a heat map.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getHeatmapAxisChoices &lt;-<span class="st"> </span>function(scens, mods, locs, mos, yrs, decs, cmip3scens, 
+    cmip5scens, cmip3models, cmip5models) {
+    ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">list</span>(phases, scens, mods, locs, mos, yrs, decs), 
+        length)) &gt;<span class="st"> </span><span class="dv">0</span>)
+    if (<span class="kw">length</span>(ind)) 
+        choices &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Year&quot;</span>, 
+            <span class="st">&quot;Decade&quot;</span>)[ind] else choices &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    if (<span class="kw">length</span>(choices)) {
+        if (<span class="kw">length</span>(scens) &lt;<span class="st"> </span><span class="dv">1</span>) 
+            choices &lt;-<span class="st"> </span>choices[choices !=<span class="st"> &quot;Scenario&quot;</span>]
+        if (<span class="kw">length</span>(mods) &lt;<span class="st"> </span><span class="dv">1</span>) 
+            choices &lt;-<span class="st"> </span>choices[choices !=<span class="st"> &quot;Model&quot;</span>]
+        if (!<span class="kw">length</span>(cmip3scens) |<span class="st"> </span>!<span class="kw">length</span>(cmip5scens)) 
+            choices &lt;-<span class="st"> </span>choices[choices !=<span class="st"> &quot;Phase&quot;</span>]
+        if (!<span class="kw">length</span>(cmip3models) |<span class="st"> </span>!<span class="kw">length</span>(cmip5models)) 
+            choices &lt;-<span class="st"> </span>choices[choices !=<span class="st"> &quot;Phase&quot;</span>]
+    } else choices &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    choices
+}</code></pre>
+</div>
+<div id="ngroups" class="section level4">
+<h4>nGroups</h4>
+<p>This function returns the number of levels in a cetegorical variable used as the grouping variable.</p>
+<pre class="sourceCode r"><code class="sourceCode r">nGroups &lt;-<span class="st"> </span>function(grp, scenarios, models, mos, decs, locs) {
+    if (<span class="kw">is.null</span>(grp) ||<span class="st"> </span>grp ==<span class="st"> &quot;None&quot;</span>) 
+        <span class="kw">return</span>(<span class="dv">1</span>)
+    if (grp ==<span class="st"> &quot;Phase&quot;</span>) 
+        <span class="kw">return</span>(<span class="dv">2</span>)
+    if (grp ==<span class="st"> &quot;Model&quot;</span>) 
+        <span class="kw">return</span>(<span class="kw">length</span>(models))
+    if (grp ==<span class="st"> &quot;Scenario&quot;</span>) 
+        <span class="kw">return</span>(<span class="kw">length</span>(scenarios))
+    if (grp ==<span class="st"> &quot;Month&quot;</span>) {
+        x &lt;-<span class="st"> </span><span class="kw">length</span>(mos)
+        if (x ==<span class="st"> </span><span class="dv">0</span>) 
+            x &lt;-<span class="st"> </span><span class="dv">12</span>
+        <span class="kw">return</span>(x)
+    }
+    if (grp ==<span class="st"> &quot;Decade&quot;</span>) {
+        x &lt;-<span class="st"> </span><span class="kw">length</span>(decs)
+        if (x ==<span class="st"> </span><span class="dv">0</span>) 
+            x &lt;-<span class="st"> </span><span class="dv">23</span>
+        <span class="kw">return</span>(x)
+    }
+    if (grp ==<span class="st"> &quot;Location&quot;</span>) 
+        <span class="kw">return</span>(<span class="kw">length</span>(locs))
+}</code></pre>
+</div>
+<div id="getfacetchoicesheatmap" class="section level4">
+<h4>getFacetChoicesHeatmap</h4>
+<p>This function help control which variables are available for faceting by specifically in a heat map.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getFacetChoicesHeatmap &lt;-<span class="st"> </span>function(inx, <span class="dt">iny =</span> <span class="ot">NULL</span>, <span class="dt">x.choices =</span> <span class="ot">NULL</span>) {
+    if (!<span class="kw">is.null</span>(iny)) {
+        choices &lt;-<span class="st"> </span>x.choices[-<span class="kw">which</span>(x.choices ==<span class="st"> </span>inx |<span class="st"> </span>x.choices ==<span class="st"> </span>iny)]
+        if (<span class="kw">length</span>(choices)) 
+            <span class="kw">return</span>(<span class="kw">c</span>(<span class="st">&quot;None&quot;</span>, choices)) else <span class="kw">return</span>()
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="getfacetpanels" class="section level4">
+<h4>getFacetPanels</h4>
+<p>This function returns the number of panels in a plot based on the current faceting variable.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getFacetPanels &lt;-<span class="st"> </span>function(fct, mods, scens, mos, decs, locs) {
+    if (!<span class="kw">is.null</span>(fct) &amp;&amp;<span class="st"> </span>fct !=<span class="st"> &quot;None&quot;</span>) {
+        if (fct ==<span class="st"> &quot;Phase&quot;</span>) 
+            <span class="kw">return</span>(<span class="dv">2</span>)
+        if (fct ==<span class="st"> &quot;Model&quot;</span>) 
+            <span class="kw">return</span>(<span class="kw">length</span>(mods))
+        if (fct ==<span class="st"> &quot;Scenario&quot;</span>) 
+            <span class="kw">return</span>(<span class="kw">length</span>(scens))
+        if (fct ==<span class="st"> &quot;Month&quot;</span>) {
+            x &lt;-<span class="st"> </span><span class="kw">length</span>(mos)
+            if (x ==<span class="st"> </span><span class="dv">0</span>) 
+                x &lt;-<span class="st"> </span><span class="dv">12</span>
+            <span class="kw">return</span>(x)
+        }
+        if (fct ==<span class="st"> &quot;Decade&quot;</span>) {
+            x &lt;-<span class="st"> </span><span class="kw">length</span>(decs)
+            if (x ==<span class="st"> </span><span class="dv">0</span>) 
+                x &lt;-<span class="st"> </span><span class="dv">23</span>
+            <span class="kw">return</span>(x)
+        }
+        if (fct ==<span class="st"> &quot;Location&quot;</span>) 
+            <span class="kw">return</span>(<span class="kw">length</span>(locs))
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="getpooledvars" class="section level4">
+<h4>getPooledVars</h4>
+<p>This function obtains a list of currently pooled variables, if any. It is hierarchically dependent on variables present in the data subset as well as plot settings for which variables are assigned for the x and y axes, grouping, and faceting. If any variables remain in the data subset, they are known to be pooled. Additional code attempts to reduce redundancy. For example, it is pointless to output text which states that data are pooled across both years and decades.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getPooledVars &lt;-<span class="st"> </span>function(inx, <span class="dt">iny =</span> <span class="ot">NULL</span>, <span class="dt">ingrp =</span> <span class="ot">NULL</span>, infct, <span class="dt">grp.fct.choices =</span> <span class="ot">NULL</span>, 
+    choices, mos, years, decades, locs, scenarios, models, cmip3scens, cmip5scens, 
+    cmip3mods, cmip5mods) {
+    if (!<span class="kw">is.null</span>(ingrp) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(infct)) {
+        if (inx !=<span class="st"> &quot;Year&quot;</span>) 
+            grp.fct.choices &lt;-<span class="st"> </span><span class="kw">union</span>(<span class="st">&quot;Year&quot;</span>, grp.fct.choices)
+        ind &lt;-<span class="st"> </span><span class="kw">which</span>(grp.fct.choices %in%<span class="st"> </span><span class="kw">union</span>(<span class="kw">c</span>(<span class="st">&quot;None&quot;</span>, ingrp), infct))
+        if (<span class="kw">length</span>(ind)) 
+            grp.fct.choices &lt;-<span class="st"> </span>grp.fct.choices[-ind]
+        if (<span class="kw">length</span>(grp.fct.choices)) 
+            choices &lt;-<span class="st"> </span>grp.fct.choices else <span class="kw">return</span>()
+    }
+    if (!<span class="kw">is.null</span>(iny) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(infct)) 
+        ingrp &lt;-<span class="st"> </span>iny
+    if (!<span class="kw">is.null</span>(ingrp) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(infct)) {
+        pooled.var &lt;-<span class="st"> </span>choices[!(choices %in%<span class="st"> </span><span class="kw">c</span>(inx, ingrp, infct))]
+        if (infct ==<span class="st"> &quot;None&quot;</span>) {
+            pooled.var &lt;-<span class="st"> </span>choices[<span class="kw">sort</span>(<span class="kw">match</span>(<span class="kw">unique</span>(<span class="kw">c</span>(<span class="st">&quot;Year&quot;</span>, pooled.var[<span class="kw">which</span>(pooled.var %in%<span class="st"> </span>
+<span class="st">                </span>grp.fct.choices)])), choices))]
+            if (inx ==<span class="st"> &quot;Year&quot;</span>) 
+                pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Year&quot;</span>]
+        }
+        if (<span class="kw">length</span>(years) ==<span class="st"> </span><span class="dv">1</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Year&quot;</span>]
+        if (<span class="kw">length</span>(decades) ==<span class="st"> </span><span class="dv">1</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Decade&quot;</span>]
+        if (<span class="kw">length</span>(locs) ==<span class="st"> </span><span class="dv">1</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Location&quot;</span>]
+        if (<span class="kw">length</span>(scenarios) ==<span class="st"> </span><span class="dv">1</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[!(pooled.var %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>))]
+        if ((ingrp ==<span class="st"> &quot;Scenario&quot;</span> |<span class="st"> </span>infct ==<span class="st"> &quot;Scenario&quot;</span>) &amp;<span class="st"> </span><span class="kw">length</span>(cmip3scens) &amp;<span class="st"> </span>
+<span class="st">            </span><span class="kw">length</span>(cmip5scens) &amp;<span class="st"> </span><span class="kw">length</span>(models) ==<span class="st"> </span><span class="dv">2</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Model&quot;</span>]
+        if ((ingrp ==<span class="st"> &quot;Model&quot;</span> |<span class="st"> </span>infct ==<span class="st"> &quot;Model&quot;</span>) &amp;<span class="st"> </span><span class="kw">length</span>(cmip3scens) &amp;<span class="st"> </span><span class="kw">length</span>(cmip5scens) &amp;<span class="st"> </span>
+<span class="st">            </span><span class="kw">length</span>(models) ==<span class="st"> </span><span class="dv">2</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Scenario&quot;</span>]
+        if (<span class="kw">length</span>(models) ==<span class="st"> </span><span class="dv">1</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[!(pooled.var %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Model&quot;</span>))]
+        if (!<span class="kw">length</span>(cmip3scens) |<span class="st"> </span>!<span class="kw">length</span>(cmip5scens) |<span class="st"> </span>!<span class="kw">length</span>(cmip3mods) |<span class="st"> </span>
+<span class="st">            </span>!<span class="kw">length</span>(cmip5mods) |<span class="st"> </span>ingrp ==<span class="st"> &quot;Scenario&quot;</span> |<span class="st"> </span>infct ==<span class="st"> &quot;Scenario&quot;</span> |<span class="st"> </span>
+<span class="st">            </span>ingrp ==<span class="st"> &quot;Model&quot;</span> |<span class="st"> </span>infct ==<span class="st"> &quot;Model&quot;</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Phase&quot;</span>]
+        if (<span class="kw">length</span>(cmip3scens) &amp;<span class="st"> </span><span class="kw">length</span>(cmip5scens) &amp;<span class="st"> </span><span class="kw">length</span>(scenarios) ==<span class="st"> </span><span class="dv">2</span> &amp;<span class="st"> </span>
+<span class="st">            </span>(ingrp ==<span class="st"> &quot;Phase&quot;</span> |<span class="st"> </span>infct ==<span class="st"> &quot;Phase&quot;</span>)) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Scenario&quot;</span>]
+        if (<span class="kw">length</span>(cmip3mods) &amp;<span class="st"> </span><span class="kw">length</span>(cmip5mods) &amp;<span class="st"> </span><span class="kw">length</span>(models) ==<span class="st"> </span><span class="dv">2</span> &amp;<span class="st"> </span>(ingrp ==<span class="st"> </span>
+<span class="st">            &quot;Phase&quot;</span> |<span class="st"> </span>infct ==<span class="st"> &quot;Phase&quot;</span>)) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Model&quot;</span>]
+        if (<span class="kw">length</span>(mos) ==<span class="st"> </span><span class="dv">1</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Month&quot;</span>]
+        if (<span class="st">&quot;Year&quot;</span> %in%<span class="st"> </span>pooled.var |<span class="st"> </span>inx ==<span class="st"> &quot;Year&quot;</span>) 
+            pooled.var &lt;-<span class="st"> </span>pooled.var[pooled.var !=<span class="st"> &quot;Decade&quot;</span>]
+        pooled.var
+    } else <span class="kw">return</span>()
+}</code></pre>
+</div>
+<div id="getplotsubtitle" class="section level4">
+<h4>getPlotSubTitle</h4>
+<p>This function provides a “semi-smart” in-panel text annotation based on current plot settings, emphasis on the “semi”.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getPlotSubTitle &lt;-<span class="st"> </span>function(pooled, yrs, mos, mod, scen, <span class="dt">phase =</span> <span class="kw">c</span>(<span class="st">&quot;AR4&quot;</span>, <span class="st">&quot;AR5&quot;</span>), 
+    loc) {
+    if (!<span class="kw">length</span>(mos)) 
+        mos &lt;-<span class="st"> &quot;Jan - Dec&quot;</span>
+    yrs.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Year&quot;</span> %in%<span class="st"> </span>pooled, <span class="kw">paste</span>(<span class="st">&quot;Years: &quot;</span>, <span class="kw">paste</span>(yrs[<span class="dv">1</span>], <span class="st">&quot;-&quot;</span>, 
+        <span class="kw">tail</span>(yrs, <span class="dv">1</span>)), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>), <span class="st">&quot;&quot;</span>)
+    mos.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Month&quot;</span> %in%<span class="st"> </span>pooled, <span class="kw">paste</span>(<span class="st">&quot;Months: &quot;</span>, <span class="kw">paste</span>(mos, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+        <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>), <span class="st">&quot;&quot;</span>)
+    mod.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Model&quot;</span> %in%<span class="st"> </span>pooled, <span class="kw">paste</span>(<span class="st">&quot;GCMs: &quot;</span>, <span class="kw">paste</span>(mod, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), 
+        <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>), <span class="st">&quot;&quot;</span>)
+    scen.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Scenario&quot;</span> %in%<span class="st"> </span>pooled, <span class="kw">paste</span>(<span class="st">&quot;Scenarios: &quot;</span>, <span class="kw">paste</span>(scen, 
+        <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>), <span class="st">&quot;&quot;</span>)
+    phase.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Phase&quot;</span> %in%<span class="st"> </span>pooled, <span class="kw">paste</span>(<span class="st">&quot;Phases: &quot;</span>, <span class="kw">paste</span>(phase, 
+        <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>), <span class="st">&quot;&quot;</span>)
+    loc.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Location&quot;</span> %in%<span class="st"> </span>pooled, <span class="kw">paste</span>(<span class="st">&quot;Locations: &quot;</span>, <span class="kw">paste</span>(loc, 
+        <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot;&quot;</span>), <span class="st">&quot;&quot;</span>)
+    no.pooled &lt;-<span class="st"> </span><span class="kw">all</span>(<span class="kw">c</span>(loc.lab, phase.lab, scen.lab, mod.lab, mos.lab, yrs.lab) ==<span class="st"> </span>
+<span class="st">        &quot;&quot;</span>)
+    x &lt;-<span class="st"> </span><span class="kw">ifelse</span>(no.pooled, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(<span class="st">&quot;Pooled variables:</span><span class="ch">\n</span><span class="st">&quot;</span>, loc.lab, phase.lab, 
+        scen.lab, mod.lab, mos.lab, yrs.lab, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+    x
+}</code></pre>
+</div>
+<div id="getplottitle" class="section level4">
+<h4>getPlotTitle</h4>
+<p>This function provides a “semi-smart” title to some plots based on current plot settings, emphasis on the “semi”.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getPlotTitle &lt;-<span class="st"> </span>function(grp, facet, pooled, yrs, mos, mod, scen, <span class="dt">phase =</span> <span class="kw">c</span>(<span class="st">&quot;AR4&quot;</span>, 
+    <span class="st">&quot;AR5&quot;</span>), loc) {
+    gfp &lt;-<span class="st"> </span><span class="kw">c</span>(grp, facet, pooled)
+    if (!<span class="kw">length</span>(mos)) 
+        mos &lt;-<span class="st"> &quot;Jan - Dec&quot;</span>
+    yrs.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Year&quot;</span> %in%<span class="st"> </span>gfp, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(yrs[<span class="dv">1</span>], <span class="st">&quot;-&quot;</span>, <span class="kw">tail</span>(yrs, <span class="dv">1</span>)))
+    mos.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Month&quot;</span> %in%<span class="st"> </span>gfp, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(mos, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>))
+    mod.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Model&quot;</span> %in%<span class="st"> </span>gfp, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(mod, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>))
+    scen.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Scenario&quot;</span> %in%<span class="st"> </span>gfp, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(scen, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>))
+    loc.lab &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="st">&quot;Location&quot;</span> %in%<span class="st"> </span>gfp, <span class="st">&quot;&quot;</span>, <span class="kw">paste</span>(loc, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>))
+    x &lt;-<span class="st"> </span><span class="kw">paste</span>(loc.lab, scen.lab, mod.lab, mos.lab, yrs.lab)
+    x
+}</code></pre>
+</div>
+<div id="getsubjectchoices" class="section level4">
+<h4>getSubjectChoices</h4>
+<p>This function handles “subjects” and its result is passed as an input to <code>withinGroupLines</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getSubjectChoices &lt;-<span class="st"> </span>function(inx, ingrp, pooled.vars) {
+    if (inx ==<span class="st"> &quot;Decade&quot;</span>) 
+        <span class="kw">return</span>(<span class="ot">NULL</span>)
+    x &lt;-<span class="st"> </span><span class="kw">c</span>()
+    if (!<span class="kw">is.null</span>(pooled.vars)) 
+        x &lt;-<span class="st"> </span><span class="kw">c</span>(x, pooled.vars)
+    if (inx !=<span class="st"> &quot;Year&quot;</span>) 
+        x &lt;-<span class="st"> </span><span class="kw">c</span>(x, <span class="st">&quot;Year&quot;</span>)
+    x &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">c</span>(ingrp, x[x !=<span class="st"> &quot;Decade&quot;</span>]))
+    x &lt;-<span class="st"> </span>x[x !=<span class="st"> &quot;&quot;</span> &amp;<span class="st"> </span>x !=<span class="st"> &quot;None&quot;</span>]
+    x
+}</code></pre>
+</div>
+<div id="adjustgroup" class="section level4">
+<h4>adjustGroup</h4>
+<p>This function handles idiosyncratic combinations of values of grouping variables and its number of factor levels.</p>
+<pre class="sourceCode r"><code class="sourceCode r">adjustGroup &lt;-<span class="st"> </span>function(grp, n.grp) {
+    if (<span class="kw">is.null</span>(grp) ||<span class="st"> </span>grp ==<span class="st"> &quot;None&quot;</span>) 
+        grp &lt;-<span class="st"> </span><span class="dv">1</span>
+    if (n.grp ==<span class="st"> </span><span class="dv">1</span>) 
+        grp &lt;-<span class="st"> </span><span class="dv">1</span>
+    grp
+}</code></pre>
+</div>
+<div id="withingrouplines" class="section level4">
+<h4>withinGroupLines</h4>
+<p>This function controls how lines are drawn in the context of pooled observations. For example, if there are multiple observations per time point, due to pooling of multiple variables and/or multiple levels of categorical variables, this function helps ensure that lines are drawn separately for each “subject”.</p>
+<pre class="sourceCode r"><code class="sourceCode r">withinGroupLines &lt;-<span class="st"> </span>function(x, subjects) {
+    if (x ==<span class="st"> &quot;Decade&quot;</span>) 
+        subjects &lt;-<span class="st"> </span><span class="dv">1</span>
+    if (!<span class="kw">length</span>(subjects) ||<span class="st"> </span>subjects[<span class="dv">1</span>] ==<span class="st"> &quot;&quot;</span>) 
+        subjects &lt;-<span class="st"> </span><span class="dv">1</span>
+    if (subjects[<span class="dv">1</span>] !=<span class="st"> </span><span class="dv">1</span>) {
+        subjectlines &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+        if (<span class="kw">length</span>(subjects) &gt;<span class="st"> </span><span class="dv">1</span>) 
+            subjects &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;interaction(%s)&quot;</span>, <span class="kw">paste0</span>(subjects, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>))
+    } else subjectlines &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+    <span class="kw">list</span>(<span class="dt">subjects =</span> subjects, <span class="dt">subjectlines =</span> subjectlines)
+}</code></pre>
+</div>
+<div id="scalecolfillman_prep" class="section level4">
+<h4>scaleColFillMan_prep</h4>
+<p><code>scaleColFillMan_prep</code> is a support function for <code>scaleColFillMan</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">scaleColFillMan_prep &lt;-<span class="st"> </span>function(<span class="dt">fill =</span> <span class="ot">NULL</span>, col) {
+    scfm &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+    x1 &lt;-<span class="st"> </span>!<span class="kw">length</span>(<span class="kw">grep</span>(<span class="st">&quot;friendly&quot;</span>, col))
+    if (x1) {
+        x1 &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">grep</span>(<span class="st">&quot;border&quot;</span>, col))
+        if (x1) 
+            fill &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    } else {
+        scfm &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+        x1 &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">grep</span>(<span class="st">&quot;border&quot;</span>, col))
+        if (x1) 
+            fill &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    }
+    <span class="kw">list</span>(<span class="dt">scfm =</span> scfm, <span class="dt">fill =</span> fill)
+}</code></pre>
+</div>
+<div id="scalecolfillman" class="section level4">
+<h4>scaleColFillMan</h4>
+<p>This function controls and adds <code>scale_color_manual</code>, <code>scale_fill_manual</code>, <code>scale_color_brewer</code>, and/or <code>scale_fill_brewer</code> layers to <code>ggplot</code> objects.</p>
+<pre class="sourceCode r"><code class="sourceCode r">scaleColFillMan &lt;-<span class="st"> </span>function(g, default, colpal, n.grp, cbpalette) {
+    nominal.abb &lt;-<span class="st"> </span><span class="kw">substr</span>(<span class="kw">c</span>(<span class="st">&quot;CB-friendly&quot;</span>, <span class="st">&quot;Accent&quot;</span>, <span class="st">&quot;Dark2&quot;</span>, <span class="st">&quot;Pastel1&quot;</span>, <span class="st">&quot;Pastel2&quot;</span>, 
+        <span class="st">&quot;Paired&quot;</span>, <span class="st">&quot;Set1&quot;</span>, <span class="st">&quot;Set2&quot;</span>, <span class="st">&quot;Set3&quot;</span>), <span class="dv">1</span>, <span class="dv">4</span>)
+    if (<span class="kw">substr</span>(colpal, <span class="dv">1</span>, <span class="dv">4</span>) %in%<span class="st"> </span>nominal.abb) 
+        colseq &lt;-<span class="st"> &quot;Nominal&quot;</span> else colseq &lt;-<span class="st"> &quot;Not nominal&quot;</span>
+    if (colseq ==<span class="st"> &quot;Nominal&quot;</span> &amp;<span class="st"> </span>default) 
+        g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">scale_colour_manual</span>(<span class="dt">values =</span> cbpalette) +<span class="st"> </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> cbpalette)
+    if (!default) {
+        if (<span class="kw">substr</span>(colpal, <span class="dv">1</span>, <span class="dv">3</span>) ==<span class="st"> &quot;HCL&quot;</span>) {
+            clr &lt;-<span class="st"> </span><span class="kw">colorsHCL</span>(n.grp)
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> clr) +<span class="st"> </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> clr)
+        } else if (<span class="kw">substr</span>(colpal, <span class="dv">1</span>, <span class="dv">3</span>) ==<span class="st"> &quot;Rai&quot;</span>) {
+            clr &lt;-<span class="st"> </span><span class="kw">rainbow</span>(n.grp, <span class="dt">s =</span> <span class="dv">1</span>, <span class="dt">v =</span> <span class="dv">1</span>, <span class="dt">start =</span> <span class="dv">0</span>, <span class="dt">end =</span> <span class="kw">max</span>(<span class="dv">1</span>, n.grp -<span class="st"> </span>
+<span class="st">                </span><span class="dv">1</span>)/n.grp, <span class="dt">alpha =</span> <span class="dv">1</span>)
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> clr) +<span class="st"> </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> clr)
+        } else if (colpal !=<span class="st"> &quot;none&quot;</span>) {
+            g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">scale_color_brewer</span>(<span class="dt">palette =</span> <span class="kw">strsplit</span>(colpal, <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]][<span class="dv">1</span>]) +<span class="st"> </span>
+<span class="st">                </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette =</span> <span class="kw">strsplit</span>(colpal, <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]][<span class="dv">1</span>])
+        }
+    }
+    g
+}</code></pre>
+</div>
+<div id="pooledvarscaption" class="section level4">
+<h4>pooledVarsCaption</h4>
+<p>This function is used to help inform the text output which displays below a plot detailing which, if any, selected variables are pooled together in the plot.</p>
+<pre class="sourceCode r"><code class="sourceCode r">pooledVarsCaption &lt;-<span class="st"> </span>function(pv, permit, <span class="dt">ingrp =</span> <span class="ot">NULL</span>) {
+    if (<span class="kw">length</span>(pv)) {
+        pv &lt;-<span class="st"> </span><span class="kw">tolower</span>(<span class="kw">paste0</span>(pv, <span class="st">&quot;s&quot;</span>))
+        if (<span class="kw">length</span>(pv) ==<span class="st"> </span><span class="dv">2</span>) {
+            pv &lt;-<span class="st"> </span><span class="kw">paste</span>(pv, <span class="dt">collapse =</span> <span class="st">&quot; and &quot;</span>)
+        } else if (<span class="kw">length</span>(pv) &gt;<span class="st"> </span><span class="dv">2</span>) {
+            n &lt;-<span class="st"> </span><span class="kw">length</span>(pv)
+            pv &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">c</span>(<span class="kw">paste</span>(pv[<span class="dv">1</span>:(n -<span class="st"> </span><span class="dv">2</span>)], <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>), <span class="kw">paste</span>(pv[(n -<span class="st"> </span>
+<span class="st">                </span><span class="dv">1</span>):n], <span class="dt">collapse =</span> <span class="st">&quot; and &quot;</span>)), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>)
+        }
+        if (permit) {
+            if (<span class="kw">is.null</span>(ingrp) ||<span class="st"> </span>ingrp ==<span class="st"> &quot;None&quot;</span>) 
+                <span class="kw">h5</span>(<span class="kw">paste0</span>(<span class="st">&quot;Observations include multiple &quot;</span>, pv, <span class="st">&quot;.&quot;</span>)) else <span class="kw">h5</span>(<span class="kw">paste0</span>(<span class="st">&quot;Observations in each color group include multiple &quot;</span>, 
+                pv, <span class="st">&quot;.&quot;</span>))
+        }
+    }
+}</code></pre>
+</div>
+<div id="getcolorseq" class="section level4">
+<h4>getColorSeq</h4>
+<p>This function returns color sequence options, e.g., qualitative, divergent, etc., based on the number of levels in a selected grouping variable.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getColorSeq &lt;-<span class="st"> </span>function(d, <span class="dt">grp =</span> <span class="ot">NULL</span>, <span class="dt">n.grp =</span> <span class="ot">NULL</span>, <span class="dt">heat =</span> <span class="ot">FALSE</span>, <span class="dt">overlay =</span> <span class="ot">FALSE</span>) {
+    if (!<span class="kw">is.null</span>(d) &amp;&amp;<span class="st"> </span>heat) 
+        <span class="kw">return</span>(<span class="kw">c</span>(<span class="st">&quot;Increasing&quot;</span>, <span class="st">&quot;Centered&quot;</span>))
+    if (<span class="kw">is.null</span>(grp) ||<span class="st"> </span>grp ==<span class="st"> &quot;None&quot;</span>) 
+        <span class="kw">return</span>()
+    if (overlay) 
+        n.grp &lt;-<span class="st"> </span>n.grp +<span class="st"> </span><span class="dv">1</span>
+    x &lt;-<span class="st"> &quot;Nominal&quot;</span>
+    if (n.grp &gt;=<span class="st"> </span><span class="dv">8</span>) 
+        x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Increasing&quot;</span>, <span class="st">&quot;Centered&quot;</span>, <span class="st">&quot;Cyclic&quot;</span>) else if (!(grp %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Location&quot;</span>))) 
+        x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Nominal&quot;</span>, <span class="st">&quot;Increasing&quot;</span>, <span class="st">&quot;Centered&quot;</span>, <span class="st">&quot;Cyclic&quot;</span>)
+    if (!<span class="kw">is.null</span>(d)) 
+        x else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="getcolorpalettes" class="section level4">
+<h4>getColorPalettes</h4>
+<p>This function returns color palette options based on the available color sequence types.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getColorPalettes &lt;-<span class="st"> </span>function(id, colseq, <span class="dt">grp =</span> <span class="ot">NULL</span>, <span class="dt">n.grp =</span> <span class="ot">NULL</span>, <span class="dt">fill.vs.border =</span> <span class="ot">NULL</span>, 
+    <span class="dt">fill.vs.border2 =</span> <span class="ot">TRUE</span>, <span class="dt">heat =</span> <span class="ot">FALSE</span>, <span class="dt">overlay =</span> <span class="ot">FALSE</span>) {
+    if (!<span class="kw">is.null</span>(colseq)) {
+        pal.inc &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Blues&quot;</span>, <span class="st">&quot;BuGn&quot;</span>, <span class="st">&quot;BuPu&quot;</span>, <span class="st">&quot;GnBu&quot;</span>, <span class="st">&quot;Greens&quot;</span>, <span class="st">&quot;Greys&quot;</span>, <span class="st">&quot;Oranges&quot;</span>, 
+            <span class="st">&quot;OrRd&quot;</span>, <span class="st">&quot;PuBu&quot;</span>, <span class="st">&quot;PuBuGn&quot;</span>, <span class="st">&quot;PuRd&quot;</span>, <span class="st">&quot;Purples&quot;</span>, <span class="st">&quot;RdPu&quot;</span>, <span class="st">&quot;Reds&quot;</span>, <span class="st">&quot;YlGn&quot;</span>, 
+            <span class="st">&quot;YlGnBu&quot;</span>, <span class="st">&quot;YlOrBr&quot;</span>, <span class="st">&quot;YlOrRd&quot;</span>)
+        pal.cen &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;BrBG&quot;</span>, <span class="st">&quot;PiYG&quot;</span>, <span class="st">&quot;PRGn&quot;</span>, <span class="st">&quot;PuOr&quot;</span>, <span class="st">&quot;RdBu&quot;</span>, <span class="st">&quot;RdGy&quot;</span>, <span class="st">&quot;RdYlBu&quot;</span>, 
+            <span class="st">&quot;RdYlGn&quot;</span>, <span class="st">&quot;Spectral&quot;</span>)
+        pal.nom &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Accent&quot;</span>, <span class="st">&quot;Dark2&quot;</span>, <span class="st">&quot;Pastel1&quot;</span>, <span class="st">&quot;Pastel2&quot;</span>, <span class="st">&quot;Paired&quot;</span>, <span class="st">&quot;Set1&quot;</span>, 
+            <span class="st">&quot;Set2&quot;</span>, <span class="st">&quot;Set3&quot;</span>)
+        pal.cyc &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;HCL&quot;</span>, <span class="st">&quot;Rainbow&quot;</span>)
+        x &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(colseq))
+        if (!heat) 
+            if (<span class="kw">is.null</span>(grp) ||<span class="st"> </span>grp ==<span class="st"> &quot;None&quot;</span>) 
+                <span class="kw">return</span>()
+        if (!heat &amp;&amp;<span class="st"> </span>overlay) 
+            n.grp &lt;-<span class="st"> </span>n.grp +<span class="st"> </span><span class="dv">1</span>
+        for (i in <span class="dv">1</span>:<span class="kw">length</span>(x)) {
+            if (heat &amp;<span class="st"> </span>colseq[i] ==<span class="st"> &quot;Increasing&quot;</span>) 
+                x[[i]] &lt;-<span class="st"> </span>pal.inc
+            if (heat &amp;<span class="st"> </span>colseq[i] ==<span class="st"> &quot;Centered&quot;</span>) 
+                x[[i]] &lt;-<span class="st"> </span>pal.cen
+            if (!heat) {
+                if (colseq[i] ==<span class="st"> &quot;Nominal&quot;</span>) {
+                  pal &lt;-<span class="st"> </span>pal.nom
+                  if (n.grp &lt;=<span class="st"> </span><span class="dv">8</span>) 
+                    pal &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;CB-friendly&quot;</span>, pal)
+                  if (<span class="kw">length</span>(fill.vs.border) &amp;&amp;<span class="st"> </span>fill.vs.border &amp;&amp;<span class="st"> </span>fill.vs.border2) 
+                    pal &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(pal, <span class="dt">each =</span> <span class="dv">2</span>), <span class="kw">c</span>(<span class="st">&quot;fill&quot;</span>, <span class="st">&quot;border&quot;</span>))
+                } else if (colseq[i] ==<span class="st"> &quot;Cyclic&quot;</span>) {
+                  pal &lt;-<span class="st"> </span>pal.cyc
+                  if (<span class="kw">length</span>(fill.vs.border) &amp;&amp;<span class="st"> </span>fill.vs.border &amp;&amp;<span class="st"> </span>fill.vs.border2) 
+                    pal &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(pal, <span class="dt">each =</span> <span class="dv">2</span>), <span class="kw">c</span>(<span class="st">&quot;fill&quot;</span>, <span class="st">&quot;border&quot;</span>))
+                } else if (colseq[i] ==<span class="st"> &quot;Increasing&quot;</span>) {
+                  pal &lt;-<span class="st"> </span>pal.inc
+                } else if (colseq[i] ==<span class="st"> &quot;Centered&quot;</span>) {
+                  pal &lt;-<span class="st"> </span>pal.cen
+                }
+                if (<span class="kw">exists</span>(<span class="st">&quot;pal&quot;</span>)) 
+                  x[[i]] &lt;-<span class="st"> </span>pal
+            }
+        }
+        if (<span class="kw">any</span>(<span class="kw">unlist</span>(<span class="kw">lapply</span>(x, is.null)))) 
+            <span class="kw">return</span>()
+        <span class="kw">names</span>(x) &lt;-<span class="st"> </span>colseq
+        <span class="kw">return</span>(<span class="kw">selectizeInput</span>(id, <span class="st">&quot;Color palette&quot;</span>, <span class="dt">choices =</span> x, <span class="dt">selected =</span> x[[<span class="dv">1</span>]][<span class="dv">1</span>], 
+            <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>))
+    } else <span class="ot">NULL</span>
+}</code></pre>
+</div>
+<div id="annotateplot" class="section level4">
+<h4>annotatePlot</h4>
+<p>This function assists with plot annotation. <code>annotatePlot</code> checks whether the x-axiss variable is a factor variable or numeric and attempts to smartly place annotatd text in the graphic panel. This is not always so easy with <code>ggplot</code>. Furthermore, the text itself, output from <code>getPlotSubTitle</code> which attempts to list how certain variables are pooled together in a plot, is only so “smart”. It is worth flagging on to check, but in general I turn this option off just as I tend to turn of the plot title.</p>
+<pre class="sourceCode r"><code class="sourceCode r">annotatePlot &lt;-<span class="st"> </span>function(g, data, x, y, <span class="dt">y.fixed =</span> <span class="ot">NULL</span>, text, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, 
+    <span class="dt">bp =</span> <span class="ot">NULL</span>, <span class="dt">bp.position =</span> <span class="ot">NULL</span>, <span class="dt">n.groups =</span> <span class="dv">1</span>) {
+    if (<span class="kw">is.factor</span>(data[[y]])) 
+        y.coord &lt;-<span class="st"> </span><span class="fl">0.525</span> else if (<span class="kw">is.null</span>(y.fixed)) 
+        y.coord &lt;-<span class="st"> </span><span class="kw">max</span>(data[[y]]) else y.coord &lt;-<span class="st"> </span>y.fixed
+    if (!<span class="kw">is.null</span>(bp) &amp;&amp;<span class="st"> </span>bp) 
+        if (bp.position ==<span class="st"> &quot;fill&quot;</span>) 
+            y.coord &lt;-<span class="st"> </span><span class="dv">1</span> else if (bp.position ==<span class="st"> &quot;stack&quot;</span>) 
+            y.coord &lt;-<span class="st"> </span>n.groups *<span class="st"> </span>y.coord
+    x.coord &lt;-<span class="st"> </span>if (<span class="kw">is.factor</span>(data[[x]])) 
+        <span class="fl">0.525</span> else <span class="kw">min</span>(data[[x]])
+    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="dt">y =</span> y.coord, <span class="dt">x =</span> x.coord, <span class="dt">label =</span> <span class="kw">bquote</span>(.(text)), 
+        <span class="dt">hjust =</span> <span class="dv">0</span>, <span class="dt">vjust =</span> <span class="dv">1</span>, <span class="dt">fontface =</span> <span class="dv">3</span>, <span class="dt">colour =</span> col)
+    g
+}</code></pre>
+</div>
+<div id="addlogo" class="section level4">
+<h4>addLogo</h4>
+<p>This function assists with adding a <code>SNAP</code> logo to a downloaded plot.</p>
+<pre class="sourceCode r"><code class="sourceCode r">addLogo &lt;-<span class="st"> </span>function(g, <span class="dt">show.logo=</span><span class="ot">FALSE</span>, <span class="dt">logo=</span><span class="ot">NULL</span>, <span class="dt">show.title=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">fontsize=</span><span class="dv">16</span>){
+    if(show.logo){
+        if(!show.title) main &lt;-<span class="st"> &quot;&quot;</span>
+        grid.bot &lt;-<span class="st"> </span><span class="kw">arrangeGrob</span>(<span class="kw">textGrob</span>(<span class="st">&quot;&quot;</span>), g, <span class="kw">textGrob</span>(<span class="st">&quot;&quot;</span>), <span class="dt">ncol=</span><span class="dv">3</span>, <span class="dt">widths=</span><span class="kw">c</span>(<span class="dv">1</span>/<span class="dv">40</span>,<span class="dv">19</span>/<span class="dv">20</span>,<span class="dv">1</span>/<span class="dv">40</span>))
+        grid.top &lt;-<span class="st"> </span><span class="kw">arrangeGrob</span>(
+            <span class="kw">textGrob</span>(<span class="st">&quot;&quot;</span>),
+            <span class="kw">textGrob</span>(main, <span class="dt">x=</span><span class="kw">unit</span>(<span class="fl">0.075</span>,<span class="st">&quot;npc&quot;</span>), <span class="dt">y=</span><span class="kw">unit</span>(<span class="fl">0.5</span>,<span class="st">&quot;npc&quot;</span>), <span class="dt">gp=</span><span class="kw">gpar</span>(<span class="dt">fontsize=</span>fontsize), <span class="dt">just=</span><span class="kw">c</span>(<span class="st">&quot;left&quot;</span>)),
+            <span class="kw">rasterGrob</span>(logo, <span class="dt">x=</span><span class="kw">unit</span>(<span class="fl">0.85</span>,<span class="st">&quot;npc&quot;</span>), <span class="dt">y=</span><span class="kw">unit</span>(<span class="fl">0.5</span>,<span class="st">&quot;npc&quot;</span>), <span class="dt">just=</span><span class="kw">c</span>(<span class="st">&quot;right&quot;</span>)), <span class="co"># logo source?</span>
+            <span class="kw">textGrob</span>(<span class="st">&quot;&quot;</span>),
+            <span class="dt">widths=</span><span class="kw">c</span>(<span class="dv">1</span>/<span class="dv">40</span>,<span class="fl">0.8</span>,<span class="fl">0.2</span>,<span class="dv">1</span>/<span class="dv">40</span>), <span class="dt">ncol=</span><span class="dv">4</span>)
+        g &lt;-<span class="st"> </span><span class="kw">grid.arrange</span>(<span class="kw">textGrob</span>(<span class="st">&quot;&quot;</span>), grid.top, grid.bot, <span class="kw">textGrob</span>(<span class="st">&quot;&quot;</span>), <span class="dt">heights=</span><span class="kw">c</span>(<span class="dv">1</span>/<span class="dv">40</span>,<span class="dv">1</span>/<span class="dv">20</span>,<span class="dv">18</span>/<span class="dv">20</span>,<span class="dv">1</span>/<span class="dv">40</span>), <span class="dt">ncol=</span><span class="dv">1</span>)
+    }
+    g
+}</code></pre>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>
