@@ -6,7 +6,9 @@ proj.location <- matt.proj.path # Use default file location
 docDir <- c("Rmd/include", "md", "html", "Rnw", "pdf", "timeline")
 newProject(proj.name, proj.location, docs.dirs=docDir, overwrite=T) # create a new project
 
+appcode.files <- list.files("C:/github/shiny-apps/ar4ar5", pattern="\\.R$", full=TRUE, recursive=TRUE)
 rfile.path <- file.path(proj.location, proj.name, "code") # path to R scripts
+file.copy(appcode.files, paste0(rfile.path, "/appcode_", basename(appcode.files)), overwrite=TRUE)
 docs.path <- file.path(proj.location, proj.name, "docs")
 rmd.path <- file.path(docs.path, "Rmd")
 
