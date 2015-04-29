@@ -37,7 +37,7 @@ proj.menu <- c("Overview", "Climate", "Fire & Veg", "App docs", "App code", "All
 
 proj.submenu <- list(
 	c("empty"),
-	c("Extraction", "Downscaled GCMs", "Downscaled CRU 3.x", "divider", "GCM organization", "Regions: stats", "Regions: densities", "Cities: stats", "CRU organization", "Regions: stats", "Regions: densities", "Cities: stats"),
+	c("Extraction", "Downscaled GCMs", "Downscaled CRU 3.x", "2-km PRISM", "divider", "GCM organization", "Regions: stats", "Regions: densities", "Cities: stats", "CRU organization", "Regions: stats", "Regions: densities", "Cities: stats"),
 	c("Extraction", "ALFRESCO: Rmpi", "ALFRESCO: functions", "divider", "Organization", "ALFRESCO: stats and densities"),
 	c("About", "divider", "Help documents",
 		"Getting started", "Working with data", "Graphical options", "Updating settings",
@@ -53,7 +53,7 @@ proj.submenu <- list(
 
 proj.files <- list(
 	c("index.html"),
-	c("header", "AR4_AR5_extract.html", "CRU_extract.html", "divider", "header", "stats_setup.html", "samples_setup.html", "cities_setup.html", "header", "stats_setup_CRU.html", "samples_setup_CRU.html", "cities_setup_CRU.html"),
+	c("header", "AR4_AR5_extract.html", "CRU_extract.html", "PRISM_extract.html", "divider", "header", "stats_setup.html", "samples_setup.html", "cities_setup.html", "header", "stats_setup_CRU.html", "samples_setup_CRU.html", "cities_setup_CRU.html"),
 	c("header", "alfStatsByRep_Rmpi.html", "alfStatsByRep.html", "divider", "header", "getAlfStatsAndDensities.html"),
 	c("aboutapp.html", "divider", "header",
 		paste0("help0", c("1_start", "2_data", "3_plotOptions", "4_updating", "5_01_graphTS", "5_02_graphScatter", "5_03_graphHeat", "5_04_graphVar", "5_05_graphSpatial"), ".html"),
