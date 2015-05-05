@@ -27,10 +27,10 @@ swapScenarioName <- function(x){
 	)
 }
 
-# include later: # rcp45="CMIP5", rcp60="CMIP5", rcp85="CMIP5"
+# include later: # rcp45="AR5", rcp60="AR5", rcp85="AR5"
 getPhase <- function(x){
 	switch(x,
-		sresb1="CMIP3",	sresa1b="CMIP3", sresa2="CMIP3"
+		sresb1="AR4", sresa1b="AR4", sresa2="AR4"
 	)
 }
 
