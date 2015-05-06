@@ -125,15 +125,17 @@ if(doFire){
 	abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
 	fsv.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 2))
 
-	abfc.dat$Model <- swapModelName(mod.scen[1])
-	abfc.dat$Scenario <- swapScenarioName(mod.scen[2])
-	abfc.dat$Phase <- getPhase(mod.scen[2])
+	abfc.dat[, Model := swapModelName(mod.scen[1])]
+	abfc.dat[, Scenario := swapScenarioName(mod.scen[2])]
+	abfc.dat[, Scenario := factor(Scenario, levels=scen.levels)]
+	abfc.dat[, Phase := getPhase(mod.scen[2])]
 	abfc.dat <- setcolorder(abfc.dat, c("Phase", "Scenario", "Model", "LocGroup", "Location", "Var", "Val", "Year", "Replicate"))
 	setkey(abfc.dat, Location)
 	
-	fsv.dat$Model <- swapModelName(mod.scen[1])
-	fsv.dat$Scenario <- swapScenarioName(mod.scen[2])
-	fsv.dat$Phase <- getPhase(mod.scen[2])
+	fsv.dat[, Model := swapModelName(mod.scen[1])]
+	fsv.dat[, Scenario := swapScenarioName(mod.scen[2])]
+	fsv.dat[, Scenario := factor(Scenario, levels=scen.levels)]
+	fsv.dat[, Phase := getPhase(mod.scen[2])]
 	fsv.dat <- setcolorder(fsv.dat, c("Phase", "Scenario", "Model", "LocGroup", "Location", "VegID", "Val", "FID", "Year", "Replicate"))
 	setkey(fsv.dat, Location)
 	
@@ -176,9 +178,10 @@ if(doAgeVeg){
 	print("Veg area data frame list returned from slaves.")
 
 	va.dat <- rbindlist(va.dat)
-	va.dat$Model <- swapModelName(mod.scen[1])
-	va.dat$Scenario <- swapScenarioName(mod.scen[2])
-	va.dat$Phase <- getPhase(mod.scen[2])
+	va.dat[, Model := swapModelName(mod.scen[1])]
+	va.dat[, Scenario := swapScenarioName(mod.scen[2])]
+	va.dat[, Scenario := factor(Scenario, levels=scen.levels)]
+	va.dat[, Phase := getPhase(mod.scen[2])]
 	va.dat <- setcolorder(va.dat, c("Phase", "Scenario", "Model", "LocGroup", "Location", "VegID", "Var", "Val", "Year", "Replicate"))
 	setkey(va.dat, Location)
 	print("Converted list to single veg area data table.")

@@ -137,11 +137,11 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	x$Replicate <- as.integer(i)
 	veg.area <- x[seq(1, nrow(x), by=2*n.samples)][, Val:=NULL]
 	setnames(veg.area, "VegArea", "Val")
-	veg.area[, Var:="Vegetated Area"]
+	veg.area[, Var := "Vegetated Area"]
 	setcolorder(veg.area, c("LocGroup", "Location", "VegID", "Var", "Val", "Year", "Replicate"))
 	locs <- unique(x$Location)
-	x[, VegArea:=NULL]
-	x[, Replicate:=NULL]
+	x[, VegArea := NULL]
+	x[, Replicate := NULL]
 	setkey(x, Location)
 	for(j in 1:length(locs)){
 		obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
