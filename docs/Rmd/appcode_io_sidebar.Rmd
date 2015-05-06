@@ -110,5 +110,5 @@ The plot-specific input controls below deal with mainly with aesthetic options s
 
 These buttons display depending on the current status of data selection and other similarly required non-`NULL`-valued reactive inputs and outputs referenced by the `permitPlot` reactive expression.
 
-```{r sb_out_56_60}
+```{r sb_out_56_61}
 ```

@@ -38,42 +38,42 @@ This script contains strict server-side reactive expressions.
 
 #### Units, statistics, and bootstrap sample sizes
 
-```{r re_23_26}
+```{r re_23_28}
 ```
 
 #### Geographic locations
 
-```{r re_27_30}
+```{r re_29_32}
 ```
 
 #### Plot annotations and plot permission check
 
-```{r re_31_41}
+```{r re_33_43}
 ```
 
 #### Master GCM data set
 
-```{r re_42}
+```{r re_44}
 ```
 
 #### Master CRU data set
 
-```{r re_43}
+```{r re_45}
 ```
 
 #### GCM data subsets
 
-```{r re_44_46}
+```{r re_46_48}
 ```
 
 #### CRU data subsets
 
-```{r re_47_48}
+```{r re_49_50}
 ```
 
 #### GCM distributions data files
 
-```{r re_49}
+```{r re_51}
 ```
 
 #### Master GCM distributions data set
@@ -83,43 +83,43 @@ This script contains strict server-side reactive expressions.
 
 #### Master CRU distributions data set
 
-```{r re_51}
+```{r re_53}
 ```
 
 The below plot-specific reactive expresssions pertain grouping, faceting, and pooling, and additinal plot settings where applicable.
 
 #### Time series
 
-```{r re_52_56}
+```{r re_54_58}
 ```
 
 #### Scatter plot
 
-```{r re_57_61}
+```{r re_59_63}
 ```
 
 #### Heat map
 
-```{r re_62_66}
+```{r re_64_68}
 ```
 
 #### Variability plots
 
-```{r re_67_73}
+```{r re_69_75}
 ```
 
 #### Distribution plots
 
-```{r re_74_80}
+```{r re_76_82}
 ```
 
 #### Data aggregation
 These reactive expressions perform further data manipulation on input data sets so that summary statistics and aggregated information can be added to a plot.
 
-```{r re_81_85}
+```{r re_83_87}
 ```
 
 #### Plot-specific color sequences based on input data
 
-```{r re_86_90}
+```{r re_89_92}
 ```
