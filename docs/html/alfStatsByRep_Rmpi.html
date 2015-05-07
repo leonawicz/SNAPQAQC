@@ -264,6 +264,7 @@ if (!<span class="kw">exists</span>(<span class="st">&quot;doAgeVeg&quot;</span>
 if (<span class="kw">exists</span>(<span class="st">&quot;repSample&quot;</span>) &amp;&amp;<span class="st"> </span><span class="kw">is.numeric</span>(repSample)) {
     <span class="kw">set.seed</span>(<span class="dv">47</span>)
     reps &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">sample</span>(reps, <span class="kw">min</span>(repSample, <span class="kw">length</span>(reps))))
+    <span class="kw">cat</span>(<span class="st">&quot;Sampled replicates:</span><span class="ch">\n</span><span class="st">&quot;</span>, reps, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)
 }
 
 <span class="kw">library</span>(data.table)
@@ -321,9 +322,9 @@ swapScenarioName &lt;-<span class="st"> </span>function(x) {
     switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;SRES B1&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;SRES A1B&quot;</span>, <span class="dt">sresa2 =</span> <span class="st">&quot;SRES A2&quot;</span>)
 }
 
-<span class="co"># include later: # rcp45=&#39;CMIP5&#39;, rcp60=&#39;CMIP5&#39;, rcp85=&#39;CMIP5&#39;</span>
+<span class="co"># include later: # rcp45=&#39;AR5&#39;, rcp60=&#39;AR5&#39;, rcp85=&#39;AR5&#39;</span>
 getPhase &lt;-<span class="st"> </span>function(x) {
-    switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;CMIP3&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;CMIP3&quot;</span>, <span class="dt">sresa2 =</span> <span class="st">&quot;CMIP3&quot;</span>)
+    switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;AR4&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;AR4&quot;</span>, <span class="dt">sresa2 =</span> <span class="st">&quot;AR4&quot;</span>)
 }
 <span class="kw">paste</span>(<span class="st">&quot;Remaining support objects created. Now pushing objects to slaves.&quot;</span>)</code></pre>
 </div>
@@ -378,20 +379,24 @@ if (doFire) {
     abfc.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(<span class="kw">lapply</span>(abfc.fsv.dat, <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))
     fsv.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(<span class="kw">lapply</span>(abfc.fsv.dat, <span class="st">&quot;[[&quot;</span>, <span class="dv">2</span>))
     
-    <span class="kw">rownames</span>(abfc.dat) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    abfc.dat$Model &lt;-<span class="st"> </span><span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>])
-    abfc.dat$Scenario &lt;-<span class="st"> </span><span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>])
-    abfc.dat$Phase &lt;-<span class="st"> </span><span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>])
-    abfc.dat &lt;-<span class="st"> </span><span class="kw">data.frame</span>(abfc.dat)[, <span class="kw">c</span>(<span class="dv">9</span>:<span class="dv">7</span>, <span class="dv">1</span>:<span class="dv">6</span>)]
+    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>]))]
+    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>]))]
+    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">factor</span>(Scenario, <span class="dt">levels =</span> scen.levels))]
+    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, <span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>]))]
+    abfc.dat &lt;-<span class="st"> </span><span class="kw">setcolorder</span>(abfc.dat, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;LocGroup&quot;</span>, 
+        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
+    <span class="kw">setkey</span>(abfc.dat, Location)
     
-    <span class="kw">rownames</span>(fsv.dat) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    fsv.dat$Model &lt;-<span class="st"> </span><span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>])
-    fsv.dat$Scenario &lt;-<span class="st"> </span><span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>])
-    fsv.dat$Phase &lt;-<span class="st"> </span><span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>])
-    fsv.dat &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fsv.dat)[, <span class="kw">c</span>(<span class="dv">9</span>:<span class="dv">7</span>, <span class="dv">1</span>:<span class="dv">6</span>)]
+    fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>]))]
+    fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>]))]
+    fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">factor</span>(Scenario, <span class="dt">levels =</span> scen.levels))]
+    fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, <span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>]))]
+    fsv.dat &lt;-<span class="st"> </span><span class="kw">setcolorder</span>(fsv.dat, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;LocGroup&quot;</span>, 
+        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;VegID&quot;</span>, <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;FID&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
+    <span class="kw">setkey</span>(fsv.dat, Location)
     
-    <span class="kw">print</span>(<span class="st">&quot;Converted list to area burned and fire frequency data frame and fire size by vegetation class data frame.&quot;</span>)
-    <span class="kw">print</span>(<span class="st">&quot;Saving area burned and fire frequency data frames by location to .RData file.&quot;</span>)
+    <span class="kw">print</span>(<span class="st">&quot;Converted list to area burned and fire frequency data table and fire size by vegetation class data table.&quot;</span>)
+    <span class="kw">print</span>(<span class="st">&quot;Saving area burned and fire frequency data tables by location to .RData files.&quot;</span>)
     
     locs &lt;-<span class="st"> </span><span class="kw">unique</span>(abfc.dat$Location)
     <span class="kw">dir.create</span>(abfcDir &lt;-<span class="st"> &quot;/big_scratch/mfleonawicz/Rmpi/outputs/fire/abfc&quot;</span>, 
@@ -399,10 +404,11 @@ if (doFire) {
     
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
         filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;abfc__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modnames[<span class="dv">1</span>])  <span class="co"># assume one model</span>
-        d.abfc &lt;-<span class="st"> </span>abfc.dat[abfc.dat$Location ==<span class="st"> </span>locs[j], ]
+        d.abfc &lt;-<span class="st"> </span>abfc.dat[locs[j]]
         <span class="kw">save</span>(d.abfc, locs, <span class="dt">file =</span> <span class="kw">paste0</span>(abfcDir, <span class="st">&quot;/&quot;</span>, filename.tmp, <span class="st">&quot;.RData&quot;</span>))
         <span class="kw">print</span>(<span class="kw">paste</span>(filename.tmp, <span class="st">&quot;object&quot;</span>, j, <span class="st">&quot;of&quot;</span>, <span class="kw">length</span>(locs), <span class="st">&quot;saved.&quot;</span>))
     }
+    <span class="kw">print</span>(<span class="kw">tables</span>())
     <span class="kw">rm</span>(abfc.dat, d.abfc)
     <span class="kw">gc</span>()
     
@@ -414,7 +420,7 @@ if (doFire) {
     
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
         filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;fsv__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modnames[<span class="dv">1</span>])  <span class="co"># assume one model</span>
-        d.fsv &lt;-<span class="st"> </span>fsv.dat[fsv.dat$Location ==<span class="st"> </span>locs[j], ]
+        d.fsv &lt;-<span class="st"> </span>fsv.dat[locs[j]]
         <span class="kw">save</span>(d.fsv, locs, <span class="dt">file =</span> <span class="kw">paste0</span>(fsvDir, <span class="st">&quot;/&quot;</span>, filename.tmp, <span class="st">&quot;.RData&quot;</span>))
         <span class="kw">print</span>(<span class="kw">paste</span>(filename.tmp, <span class="st">&quot;object&quot;</span>, j, <span class="st">&quot;of&quot;</span>, <span class="kw">length</span>(locs), <span class="st">&quot;saved.&quot;</span>))
     }
@@ -436,23 +442,26 @@ if (doAgeVeg) {
     <span class="kw">print</span>(<span class="st">&quot;Veg area data frame list returned from slaves.&quot;</span>)
     
     va.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(va.dat)
-    <span class="kw">rownames</span>(va.dat) &lt;-<span class="st"> </span><span class="ot">NULL</span>
-    va.dat$Model &lt;-<span class="st"> </span><span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>])
-    va.dat$Scenario &lt;-<span class="st"> </span><span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>])
-    va.dat$Phase &lt;-<span class="st"> </span><span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>])
-    va.dat &lt;-<span class="st"> </span><span class="kw">data.frame</span>(va.dat)[, <span class="kw">c</span>(<span class="dv">10</span>:<span class="dv">8</span>, <span class="dv">1</span>:<span class="dv">7</span>)]
-    <span class="kw">print</span>(<span class="st">&quot;Converted list to single veg area data frame.&quot;</span>)
-    <span class="kw">print</span>(<span class="st">&quot;Saving veg area data frames by location to .RData files.&quot;</span>)
+    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>]))]
+    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>]))]
+    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">factor</span>(Scenario, <span class="dt">levels =</span> scen.levels))]
+    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, <span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>]))]
+    va.dat &lt;-<span class="st"> </span><span class="kw">setcolorder</span>(va.dat, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;LocGroup&quot;</span>, 
+        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;VegID&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
+    <span class="kw">setkey</span>(va.dat, Location)
+    <span class="kw">print</span>(<span class="st">&quot;Converted list to single veg area data table.&quot;</span>)
+    <span class="kw">print</span>(<span class="st">&quot;Saving veg area data tables by location to .RData files.&quot;</span>)
     
     locs &lt;-<span class="st"> </span><span class="kw">unique</span>(va.dat$Location)
     <span class="kw">dir.create</span>(vegDir &lt;-<span class="st"> &quot;/big_scratch/mfleonawicz/Rmpi/outputs/veg&quot;</span>, <span class="dt">showWarnings =</span> F)
     
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
         filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;veg__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modnames[<span class="dv">1</span>])  <span class="co"># assume one model</span>
-        d.veg &lt;-<span class="st"> </span>va.dat[va.dat$Location ==<span class="st"> </span>locs[j], ]
+        d.veg &lt;-<span class="st"> </span>va.dat[locs[j]]
         <span class="kw">save</span>(d.veg, locs, <span class="dt">file =</span> <span class="kw">paste0</span>(vegDir, <span class="st">&quot;/&quot;</span>, filename.tmp, <span class="st">&quot;.RData&quot;</span>))
         <span class="kw">print</span>(<span class="kw">paste</span>(filename.tmp, <span class="st">&quot;object&quot;</span>, j, <span class="st">&quot;of&quot;</span>, <span class="kw">length</span>(locs), <span class="st">&quot;saved.&quot;</span>))
     }
+    <span class="kw">print</span>(<span class="kw">tables</span>())
     <span class="kw">rm</span>(va.dat, d.veg)
     <span class="kw">gc</span>()
 }

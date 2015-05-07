@@ -202,13 +202,13 @@ img {
 </div>
 <div id="section-3" class="section level2">
 <h2></h2>
-<p>SNAP data QAQC refers to multiple threads of collections of R code in the form of scripts and functions across various projects utilizing SNAP data sets. However, there is particular focus on SNAP’s gridded climate- and fire-related data products, including:</p>
+<p>SNAP data QA/QC refers to multiple threads of collections of <strong>R</strong> code in the form of scripts and functions across various projects utilizing SNAP data sets. However, there is particular focus on SNAP’s gridded climate- and fire-related data products, including:</p>
 <ul>
 <li>2-km resolution, Alaska-Western Canada extent, downscaled global climate model (GCM) temperature and precipitation outputs</li>
 <li>2-km resolution, Alaska-Western Canada extent, downscaled Climatological Research Unit (CRU) 3.x temperature and precipitation data.</li>
 <li>1-km resolution, Alaska-Western Canada extent, ALFRESCO fire and vegetation landscape transition simulation outputs.</li>
 </ul>
-<p>The two most prominent threads of QAQC relate to the climate data and ALFRESCO outputs noted above. The QAQC process involves extraction of data from geotiff layers of the above data products. Data are extracted based on:</p>
+<p>The two most prominent threads of QA/QC relate to the climate data and ALFRESCO outputs noted above. The QA/QC process involves extraction of data from geotiff layers of the above data products. Data are extracted based on:</p>
 <ul>
 <li>The full spatial extent</li>
 <li>A collection of spatial regions defined by shapefile polygons</li>
@@ -221,19 +221,19 @@ img {
 <li>Calculation of statistics on extracted outputs</li>
 <li>Writing extracted output statistics to new files, usually .RData workspaces</li>
 <li>Compiling and organizing statistics in a series of data curation steps, which may require a series of intermediary output files depending on the type of input</li>
-<li>Fully curated data files are made available to various projects, some unrelated and others which perform further QAQC analyses, such as the master QAQC Shiny app.</li>
+<li>Fully curated data files are made available to various projects, some unrelated and others which perform further QA/QC analyses, such as the master QA/QC Shiny app.</li>
 </ul>
-<p>Currently, here you can find documentation, including <strong>R</strong> code, which covers most of the primary (extraction) and secondary (organization) stages pertaining to the two main threads of SNAP data QAQC. Before looking at the code, it may be helpful to capture the overall picture of the process chain by looking at the code flow diagram.</p>
+<p>Currently, here you can find documentation, including <strong>R</strong> code, which covers most of the primary (extraction) and secondary (organization) stages pertaining to the two main threads of SNAP data QA/QC. Before looking at the code, it may be helpful to capture the overall picture of the process chain by looking at the code flow diagram.</p>
 </div>
 <div id="related-items" class="section level2">
 <h2>Related items</h2>
-<p>SNAP QAQC code feeds into many other projects, including the SNAP data QAQC master R Shiny app, Community Charts apps, and ALFRESCO-related projects. The primary order QAQC code is most directly related to data extraction. Secondary order code relates to organization and preparation of useful data products which are taken up by web applications and other projects to investigate the data. Tertiary order code relates to specific QAQC analyses.</p>
+<p>SNAP QA/QC code feeds into many other projects, including the SNAP data QA/QC master <strong>R</strong> Shiny app, Community Charts apps, and ALFRESCO-related projects. The primary order QA/QC code is most directly related to data extraction. Secondary order code relates to organization and preparation of useful data products which are taken up by web applications and other projects to investigate the data. Tertiary order code relates to specific QA/QC analyses.</p>
 <div id="files-and-data" class="section level3">
 <h3>Files and data</h3>
-<p>This project makes use of any SNAP data, particularly gridded climate, fire, and vegetation data sets. Files generated as part of SNAP QAQC include fortified datasets which are more accessible, compact, easier to manipulate, understand, and analyze for specific purposes.</p>
+<p>This project makes use of any SNAP data, particularly gridded climate, fire, and vegetation data sets. Files generated as part of SNAP QA/QC include fortified datasets which are more accessible, compact, easier to manipulate, understand, and analyze for specific purposes.</p>
 </div>
 <div id="snap-qaqc-code-flow" class="section level3">
-<h3>SNAP QAQC code flow</h3>
+<h3>SNAP QA/QC code flow</h3>
 <iframe srcdoc=" &lt;!doctype HTML&gt;
 &lt;meta charset = 'utf-8'&gt;
 &lt;html&gt;
@@ -256,7 +256,7 @@ img {
   &lt;/head&gt;
   &lt;body &gt;
     
-    &lt;div id = 'chart1b4c2d9b67a1' class = 'rChart d3_sankey'&gt;&lt;/div&gt;    
+    &lt;div id = 'chart16f454ef3035' class = 'rChart d3_sankey'&gt;&lt;/div&gt;    
     ï»¿&lt;!--Attribution:
 Mike Bostock https://github.com/d3/d3-plugins/tree/master/sankey
 Mike Bostock http://bost.ocks.org/mike/sankey/
@@ -265,7 +265,7 @@ Mike Bostock http://bost.ocks.org/mike/sankey/
 &lt;script&gt;
 (function(){
 var params = {
- &quot;dom&quot;: &quot;chart1b4c2d9b67a1&quot;,
+ &quot;dom&quot;: &quot;chart16f454ef3035&quot;,
 &quot;width&quot;:    900,
 &quot;height&quot;:    800,
 &quot;data&quot;: {
@@ -283,7 +283,7 @@ var params = {
 &quot;top&quot;:     50 
 },
 &quot;title&quot;: &quot;Code Flow&quot;,
-&quot;id&quot;: &quot;chart1b4c2d9b67a1&quot; 
+&quot;id&quot;: &quot;chart16f454ef3035&quot; 
 };
 
 params.units ? units = &quot; &quot; + params.units : units = &quot;&quot;;
@@ -355,67 +355,26 @@ var link = svg.append(&quot;g&quot;).selectAll(&quot;.link&quot;)
   .sort(function (a, b) { return b.dy - a.dy; });
 
 link.append(&quot;title&quot;)
-  .text(function (d) { return d.source.name + &quot; â†’ &quot; + d.target.name + &quot;\n&quot; + format(d.value); });
-
-var node = svg.append(&quot;g&quot;).selectAll(&quot;.node&quot;)
-  .data(nodes)
-.enter().append(&quot;g&quot;)
-  .attr(&quot;class&quot;, &quot;node&quot;)
-  .attr(&quot;transform&quot;, function (d) { return &quot;translate(&quot; + d.x + &quot;,&quot; + d.y + &quot;)&quot;; })
-.call(d3.behavior.drag()
-  .origin(function (d) { return d; })
-  .on(&quot;dragstart&quot;, function () { this.parentNode.appendChild(this); })
-  .on(&quot;drag&quot;, dragmove));
-
-node.append(&quot;rect&quot;)
-  .attr(&quot;height&quot;, function (d) { return d.dy; })
-  .attr(&quot;width&quot;, sankey.nodeWidth())
-  .style(&quot;fill&quot;, function (d) { return d.color = color(d.name.replace(/ .*/, &quot;&quot;)); })
-  .style(&quot;stroke&quot;, function (d) { return d3.rgb(d.color).darker(2); })
-.append(&quot;title&quot;)
-  .text(function (d) { return d.name + &quot;\n&quot; + format(d.value); });
-
-node.append(&quot;text&quot;)
-  .attr(&quot;x&quot;, -6)
-  .attr(&quot;y&quot;, function (d) { return d.dy / 2; })
-  .attr(&quot;dy&quot;, &quot;.35em&quot;)
-  .attr(&quot;text-anchor&quot;, &quot;end&quot;)
-  .attr(&quot;transform&quot;, null)
-  .text(function (d) { return d.name; })
-.filter(function (d) { return d.x &lt; params.width / 2; })
-  .attr(&quot;x&quot;, 6 + sankey.nodeWidth())
-  .attr(&quot;text-anchor&quot;, &quot;start&quot;);
-
-// the function for moving the nodes
-  function dragmove(d) {
-    d3.select(this).attr(&quot;transform&quot;, 
-        &quot;translate(&quot; + (
-                   d.x = Math.max(0, Math.min(params.width - d.dx, d3.event.x))
-                ) + &quot;,&quot; + (
-                   d.y = Math.max(0, Math.min(params.height - d.dy, d3.event.y))
-                ) + &quot;)&quot;);
-        sankey.relayout();
-        link.attr(&quot;d&quot;, path);
-  }
-})();
-&lt;/script&gt;
-    
-    
-    &lt;script&gt;
-      var cscale = d3.scale.category20b();
-      d3.selectAll('#chart1b4c2d9b67a1 svg path.link')
-        .style('stroke', function(d){
-          return cscale(d.source.name);
-        })
-      d3.selectAll('#chart1b4c2d9b67a1 svg .node rect')
-        .style('fill', function(d){
-          return cscale(d.name)
-        })
-        .style('stroke', 'none')
-    &lt;/script&gt;
-        
-  &lt;/body&gt;
-&lt;/html&gt; " scrolling="no" frameBorder="0" seamless class="rChart  http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey  " id="iframe-chart1b4c2d9b67a1">
+  .text(function (d) { return d.source.name + &quot; â&lt;U+0086&gt;">
+<p><U+0092> &quot; + d.target.name + “” + format(d.value); });</p>
+<p>var node = svg.append(“g”).selectAll(“.node”) .data(nodes) .enter().append(“g”) .attr(“class”, “node”) .attr(“transform”, function (d) { return “translate(” + d.x + “,” + d.y + “)”; }) .call(d3.behavior.drag() .origin(function (d) { return d; }) .on(“dragstart”, function () { this.parentNode.appendChild(this); }) .on(“drag”, dragmove));</p>
+<p>node.append(“rect”) .attr(“height”, function (d) { return d.dy; }) .attr(“width”, sankey.nodeWidth()) .style(“fill”, function (d) { return d.color = color(d.name.replace(/ .*/, “”)); }) .style(“stroke”, function (d) { return d3.rgb(d.color).darker(2); }) .append(“title”) .text(function (d) { return d.name + “” + format(d.value); });</p>
+<p>node.append(“text”) .attr(“x”, -6) .attr(“y”, function (d) { return d.dy / 2; }) .attr(“dy”, “.35em”) .attr(“text-anchor”, “end”) .attr(“transform”, null) .text(function (d) { return d.name; }) .filter(function (d) { return d.x &lt; params.width / 2; }) .attr(“x”, 6 + sankey.nodeWidth()) .attr(“text-anchor”, “start”);</p>
+<p>// the function for moving the nodes function dragmove(d) { d3.select(this).attr(“transform”, “translate(” + ( d.x = Math.max(0, Math.min(params.width - d.dx, d3.event.x)) ) + “,” + ( d.y = Math.max(0, Math.min(params.height - d.dy, d3.event.y)) ) + “)”); sankey.relayout(); link.attr(“d”, path); } })(); &lt;/script&gt;</p>
+<pre><code>&amp;lt;script&amp;gt;
+  var cscale = d3.scale.category20b();
+  d3.selectAll(&amp;#039;#chart16f454ef3035 svg path.link&amp;#039;)
+    .style(&amp;#039;stroke&amp;#039;, function(d){
+      return cscale(d.source.name);
+    })
+  d3.selectAll(&amp;#039;#chart16f454ef3035 svg .node rect&amp;#039;)
+    .style(&amp;#039;fill&amp;#039;, function(d){
+      return cscale(d.name)
+    })
+    .style(&amp;#039;stroke&amp;#039;, &amp;#039;none&amp;#039;)
+&amp;lt;/script&amp;gt;
+    </code></pre>
+&lt;/body&gt; &lt;/html&gt; ‘scrolling=’no’ frameBorder=‘0’ seamless class=‘rChart <a href="http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey" class="uri">http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey</a>’ id=‘iframe-chart16f454ef3035’&gt;
 </iframe>
 <style>iframe.rChart{ width: 100%; height: 400px;}</style>
 <style>iframe.rChart{ width: 100%; height: 840px;}</style>

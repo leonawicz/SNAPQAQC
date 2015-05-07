@@ -19,7 +19,7 @@ read_chunk("../../code/code_sankey.R")
 
 ##
 
-SNAP data QA/QC refers to multiple threads of collections of R code in the form of scripts and functions across various projects utilizing SNAP data sets.
+SNAP data QA/QC refers to multiple threads of collections of **R** code in the form of scripts and functions across various projects utilizing SNAP data sets.
 However, there is particular focus on SNAP's gridded climate- and fire-related data products, including:
 
 * 2-km resolution, Alaska-Western Canada extent, downscaled global climate model (GCM) temperature and precipitation outputs
@@ -54,7 +54,7 @@ Currently, here you can find documentation, including **R** code, which covers m
 Before looking at the code, it may be helpful to capture the overall picture of the process chain by looking at the code flow diagram.
 
 ## Related items
-SNAP QA/QC code feeds into many other projects, including the SNAP data QA/QC master R Shiny app, Community Charts apps, and ALFRESCO-related projects.
+SNAP QA/QC code feeds into many other projects, including the SNAP data QA/QC master **R** Shiny app, Community Charts apps, and ALFRESCO-related projects.
 The primary order QA/QC code is most directly related to data extraction.
 Secondary order code relates to organization and preparation of useful data products which are taken up by web applications and other projects to investigate the data.
 Tertiary order code relates to specific QA/QC analyses.

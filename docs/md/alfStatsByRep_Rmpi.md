@@ -61,6 +61,7 @@ if (!exists("doAgeVeg")) doAgeVeg <- TRUE
 if (exists("repSample") && is.numeric(repSample)) {
     set.seed(47)
     reps <- sort(sample(reps, min(repSample, length(reps))))
+    cat("Sampled replicates:\n", reps, "\n")
 }
 
 library(data.table)
@@ -121,9 +122,9 @@ swapScenarioName <- function(x) {
     switch(x, sresb1 = "SRES B1", sresa1b = "SRES A1B", sresa2 = "SRES A2")
 }
 
-# include later: # rcp45='CMIP5', rcp60='CMIP5', rcp85='CMIP5'
+# include later: # rcp45='AR5', rcp60='AR5', rcp85='AR5'
 getPhase <- function(x) {
-    switch(x, sresb1 = "CMIP3", sresa1b = "CMIP3", sresa2 = "CMIP3")
+    switch(x, sresb1 = "AR4", sresa1b = "AR4", sresa2 = "AR4")
 }
 paste("Remaining support objects created. Now pushing objects to slaves.")
 ```
@@ -189,20 +190,24 @@ if (doFire) {
     abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
     fsv.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 2))
     
-    rownames(abfc.dat) <- NULL
-    abfc.dat$Model <- swapModelName(mod.scen[1])
-    abfc.dat$Scenario <- swapScenarioName(mod.scen[2])
-    abfc.dat$Phase <- getPhase(mod.scen[2])
-    abfc.dat <- data.frame(abfc.dat)[, c(9:7, 1:6)]
+    abfc.dat[, `:=`(Model, swapModelName(mod.scen[1]))]
+    abfc.dat[, `:=`(Scenario, swapScenarioName(mod.scen[2]))]
+    abfc.dat[, `:=`(Scenario, factor(Scenario, levels = scen.levels))]
+    abfc.dat[, `:=`(Phase, getPhase(mod.scen[2]))]
+    abfc.dat <- setcolorder(abfc.dat, c("Phase", "Scenario", "Model", "LocGroup", 
+        "Location", "Var", "Val", "Year", "Replicate"))
+    setkey(abfc.dat, Location)
     
-    rownames(fsv.dat) <- NULL
-    fsv.dat$Model <- swapModelName(mod.scen[1])
-    fsv.dat$Scenario <- swapScenarioName(mod.scen[2])
-    fsv.dat$Phase <- getPhase(mod.scen[2])
-    fsv.dat <- data.frame(fsv.dat)[, c(9:7, 1:6)]
+    fsv.dat[, `:=`(Model, swapModelName(mod.scen[1]))]
+    fsv.dat[, `:=`(Scenario, swapScenarioName(mod.scen[2]))]
+    fsv.dat[, `:=`(Scenario, factor(Scenario, levels = scen.levels))]
+    fsv.dat[, `:=`(Phase, getPhase(mod.scen[2]))]
+    fsv.dat <- setcolorder(fsv.dat, c("Phase", "Scenario", "Model", "LocGroup", 
+        "Location", "VegID", "Val", "FID", "Year", "Replicate"))
+    setkey(fsv.dat, Location)
     
-    print("Converted list to area burned and fire frequency data frame and fire size by vegetation class data frame.")
-    print("Saving area burned and fire frequency data frames by location to .RData file.")
+    print("Converted list to area burned and fire frequency data table and fire size by vegetation class data table.")
+    print("Saving area burned and fire frequency data tables by location to .RData files.")
     
     locs <- unique(abfc.dat$Location)
     dir.create(abfcDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/abfc", 
@@ -210,10 +215,11 @@ if (doFire) {
     
     for (j in 1:length(locs)) {
         filename.tmp <- paste0("abfc__", locs[j], "__", modnames[1])  # assume one model
-        d.abfc <- abfc.dat[abfc.dat$Location == locs[j], ]
+        d.abfc <- abfc.dat[locs[j]]
         save(d.abfc, locs, file = paste0(abfcDir, "/", filename.tmp, ".RData"))
         print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
     }
+    print(tables())
     rm(abfc.dat, d.abfc)
     gc()
     
@@ -225,7 +231,7 @@ if (doFire) {
     
     for (j in 1:length(locs)) {
         filename.tmp <- paste0("fsv__", locs[j], "__", modnames[1])  # assume one model
-        d.fsv <- fsv.dat[fsv.dat$Location == locs[j], ]
+        d.fsv <- fsv.dat[locs[j]]
         save(d.fsv, locs, file = paste0(fsvDir, "/", filename.tmp, ".RData"))
         print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
     }
@@ -252,23 +258,26 @@ if (doAgeVeg) {
     print("Veg area data frame list returned from slaves.")
     
     va.dat <- rbindlist(va.dat)
-    rownames(va.dat) <- NULL
-    va.dat$Model <- swapModelName(mod.scen[1])
-    va.dat$Scenario <- swapScenarioName(mod.scen[2])
-    va.dat$Phase <- getPhase(mod.scen[2])
-    va.dat <- data.frame(va.dat)[, c(10:8, 1:7)]
-    print("Converted list to single veg area data frame.")
-    print("Saving veg area data frames by location to .RData files.")
+    va.dat[, `:=`(Model, swapModelName(mod.scen[1]))]
+    va.dat[, `:=`(Scenario, swapScenarioName(mod.scen[2]))]
+    va.dat[, `:=`(Scenario, factor(Scenario, levels = scen.levels))]
+    va.dat[, `:=`(Phase, getPhase(mod.scen[2]))]
+    va.dat <- setcolorder(va.dat, c("Phase", "Scenario", "Model", "LocGroup", 
+        "Location", "VegID", "Var", "Val", "Year", "Replicate"))
+    setkey(va.dat, Location)
+    print("Converted list to single veg area data table.")
+    print("Saving veg area data tables by location to .RData files.")
     
     locs <- unique(va.dat$Location)
     dir.create(vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg", showWarnings = F)
     
     for (j in 1:length(locs)) {
         filename.tmp <- paste0("veg__", locs[j], "__", modnames[1])  # assume one model
-        d.veg <- va.dat[va.dat$Location == locs[j], ]
+        d.veg <- va.dat[locs[j]]
         save(d.veg, locs, file = paste0(vegDir, "/", filename.tmp, ".RData"))
         print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
     }
+    print(tables())
     rm(va.dat, d.veg)
     gc()
 }

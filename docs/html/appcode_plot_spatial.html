@@ -253,13 +253,11 @@ img {
     if (show.overlay) {
         n.d &lt;-<span class="st"> </span><span class="kw">nrow</span>(d)
         mods.d &lt;-<span class="st"> </span><span class="kw">unique</span>(d$Model)
-        yrs.tmp &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">c</span>(<span class="kw">as.character</span>(d$Year), <span class="kw">as.character</span>(overlay$Year)))
-        d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">rbind</span>(d[<span class="dv">1</span>:<span class="dv">6</span>], overlay[<span class="dv">1</span>:<span class="dv">6</span>]), <span class="dt">Year =</span> yrs.tmp, <span class="kw">rbind</span>(d[<span class="dv">8</span>:<span class="kw">ncol</span>(d)], 
-            overlay[<span class="dv">8</span>:<span class="kw">ncol</span>(overlay)]))
+        d &lt;-<span class="st"> </span><span class="kw">rbind</span>(d, overlay)
         if (x ==<span class="st"> &quot;Year&quot;</span>) 
             d$Year &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Year)
-        d$Source &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;Modeled&quot;</span>, n.d), <span class="kw">rep</span>(<span class="st">&quot;Observed&quot;</span>, <span class="kw">nrow</span>(overlay))))
-        d$Model &lt;-<span class="st"> </span><span class="kw">factor</span>(d$Model, <span class="dt">levels =</span> <span class="kw">c</span>(overlay$Model[<span class="dv">1</span>], mods.d))
+        d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Source, <span class="kw">factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;Modeled&quot;</span>, n.d), <span class="kw">rep</span>(<span class="st">&quot;Observed&quot;</span>, <span class="kw">nrow</span>(overlay)))))]
+        d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">factor</span>(d$Model, <span class="dt">levels =</span> <span class="kw">c</span>(overlay$Model[<span class="dv">1</span>], mods.d)))]
     }
     if (!<span class="kw">is.null</span>(thin.sample) &amp;&amp;<span class="st"> </span><span class="kw">is.numeric</span>(thin.sample)) 
         d &lt;-<span class="st"> </span>d[<span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(d), <span class="dt">by =</span> <span class="kw">round</span>(<span class="dv">1</span>/thin.sample)), ]
@@ -275,13 +273,12 @@ img {
     #### Point dodging when using grouping variable
     wid &lt;-<span class="st"> </span><span class="fl">0.9</span>
     dodge &lt;-<span class="st"> </span><span class="kw">position_dodge</span>(<span class="dt">width =</span> wid)
-    x.n &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[, x]))
+    x.n &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[, <span class="kw">get</span>(x)]))
     if (x !=<span class="st"> </span>y &amp;<span class="st"> </span><span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
         dodge.pts &lt;-<span class="st"> </span><span class="kw">dodgePoints</span>(d, x, grp, n.grp, facet.by, <span class="dt">width =</span> wid)
         xdodge &lt;-<span class="st"> &quot;xdodge&quot;</span>
         d$xdodge &lt;-<span class="st"> </span>dodge.pts$x.num +<span class="st"> </span>dodge.pts$grp.num
     }
-    
     
     if (d$Var[<span class="dv">1</span>] ==<span class="st"> &quot;Temperature&quot;</span>) 
         ylb &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;Temperature (&quot;</span>, units[<span class="dv">1</span>], <span class="st">&quot;)&quot;</span>) else ylb &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;Precipitation (&quot;</span>, units[<span class="dv">2</span>], <span class="st">&quot;)&quot;</span>)

@@ -309,22 +309,14 @@ nullOrZero &lt;-<span class="st"> </span>function(x) <span class="kw">is.null</s
 <div id="density2bootstrap" class="section level4">
 <h4>density2bootstrap</h4>
 <p>Sample from an empirical, estimated probability density function. This is used for distribution plots.</p>
-<pre class="sourceCode r"><code class="sourceCode r">density2bootstrap &lt;-<span class="st"> </span>function(d, n.density, <span class="dt">n.boot =</span> <span class="dv">10000</span>, <span class="dt">interp =</span> <span class="ot">FALSE</span>, 
-    <span class="dt">n.interp =</span> <span class="dv">1000</span>, ...) {
-    n.fact &lt;-<span class="st"> </span>n.boot/n.density
-    n.grp &lt;-<span class="st"> </span><span class="kw">nrow</span>(d)/n.density
-    d$Index &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>:n.grp, <span class="dt">each =</span> n.density)
-    d2 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">lapply</span>(d, rep, <span class="dt">length =</span> n.fact *<span class="st"> </span><span class="kw">nrow</span>(d)), <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
-    prob.col &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">names</span>(d2) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Prob&quot;</span>, <span class="st">&quot;Index&quot;</span>))
-    d2 &lt;-<span class="st"> </span>d2[<span class="kw">order</span>(d2$Index), -prob.col]
-    d2$Val &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">vapply</span>(<span class="dt">X =</span> <span class="dv">1</span>:n.grp, <span class="dt">FUN =</span> function(i, d, n, interp, 
-        n.interp, ...) {
-        p &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">x =</span> d$Val[d$Index ==<span class="st"> </span>i], <span class="dt">y =</span> d$Prob[d$Index ==<span class="st"> </span>i])
-        if (interp) p &lt;-<span class="st"> </span><span class="kw">approx</span>(p$x, p$y, <span class="dt">n =</span> n.interp)
-        <span class="kw">round</span>(<span class="kw">sample</span>(p$x, n, <span class="dt">prob =</span> p$y, <span class="dt">rep =</span> T), ...)
-    }, <span class="dt">FUN.VALUE =</span> <span class="kw">numeric</span>(n.boot), <span class="dt">d =</span> d, <span class="dt">n =</span> n.boot, <span class="dt">interp =</span> interp, <span class="dt">n.interp =</span> n.interp, 
-        ...))
-    d2
+<pre class="sourceCode r"><code class="sourceCode r">density2bootstrap &lt;-<span class="st"> </span>function(Val, Prob, <span class="dt">n.boot =</span> <span class="dv">10000</span>, <span class="dt">interp =</span> <span class="ot">TRUE</span>, <span class="dt">n.interp =</span> <span class="dv">1000</span>, 
+    ...) {
+    if (interp) {
+        p &lt;-<span class="st"> </span><span class="kw">approx</span>(Val, Prob, <span class="dt">n =</span> n.interp)
+        Val &lt;-<span class="st"> </span>p$x
+        Prob &lt;-<span class="st"> </span>p$y
+    }
+    <span class="kw">round</span>(<span class="kw">sample</span>(Val, n.boot, Prob, <span class="dt">rep =</span> T), ...)
 }</code></pre>
 </div>
 <div id="splitat" class="section level4">
@@ -349,60 +341,55 @@ nullOrZero &lt;-<span class="st"> </span>function(x) <span class="kw">is.null</s
 <div id="collapsemonths" class="section level4">
 <h4>collapseMonths</h4>
 <p>This function aggregates consecutive months into one or more equal-length seasons.</p>
-<pre class="sourceCode r"><code class="sourceCode r">collapseMonths &lt;-<span class="st"> </span>function(d, variable, n.s, mos, <span class="dt">n.samples =</span> <span class="dv">1</span>) {
-    nrx &lt;-<span class="st"> </span><span class="kw">nrow</span>(d)
+<pre class="sourceCode r"><code class="sourceCode r">collapseMonths &lt;-<span class="st"> </span>function(d, variable, n.s, mos, <span class="dt">n.samples =</span> <span class="dv">1</span>, <span class="dt">f =</span> function(x) <span class="kw">round</span>(<span class="kw">mean</span>(x), 
+    <span class="dv">1</span>), <span class="dt">f.args =</span> <span class="kw">list</span>()) {
     p &lt;-<span class="st"> </span><span class="kw">length</span>(mos)/n.s
-    ind.keep &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>, nrx, <span class="dt">by =</span> p *<span class="st"> </span>n.samples), <span class="dt">each =</span> n.samples) +<span class="st"> </span><span class="dv">0</span>:(n.samples -<span class="st"> </span>
-<span class="st">        </span><span class="dv">1</span>)
-    m &lt;-<span class="st"> </span><span class="kw">length</span>(ind.keep)
+    ind &lt;-<span class="st"> </span><span class="kw">as.integer</span>(<span class="kw">sapply</span>(<span class="dv">1</span>:n.s, function(i, n, p) <span class="kw">rep</span>(<span class="dv">1</span>:n, p) +<span class="st"> </span>(i -<span class="st"> </span><span class="dv">1</span>) *<span class="st"> </span>
+<span class="st">        </span>n, <span class="dt">n =</span> n.samples, <span class="dt">p =</span> p))
+    d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Index, ind)]
+    d &lt;-<span class="st"> </span>d[, <span class="kw">lapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(variable), function(i, x, f.args) <span class="kw">do.call</span>(f, <span class="kw">c</span>(<span class="kw">list</span>(<span class="kw">get</span>(x[i])), 
+        f.args)), <span class="dt">x =</span> variable, <span class="dt">f.args =</span> f.args), by =<span class="st"> </span><span class="kw">list</span>(Phase, Scenario, 
+        Model, Var, Location, Year, Decade, Index)]
+    d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Index, <span class="ot">NULL</span>)]
     id.seasons &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">split</span>(mos, <span class="kw">rep</span>(<span class="dv">1</span>:n.s, <span class="dt">each =</span> p)), function(x) <span class="kw">paste</span>(<span class="kw">c</span>(x[<span class="dv">1</span>], 
         <span class="kw">tail</span>(x, <span class="dv">1</span>)), <span class="dt">collapse =</span> <span class="st">&quot;-&quot;</span>))
-    id.seasons &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">factor</span>(id.seasons, <span class="dt">levels =</span> id.seasons), <span class="dt">each =</span> n.samples), 
-        <span class="dt">length =</span> m)
-    v &lt;-<span class="st"> </span><span class="kw">list</span>()
-    for (k in <span class="dv">1</span>:<span class="kw">length</span>(variable)) {
-        if (n.samples &gt;<span class="st"> </span><span class="dv">1</span>) 
-            v[[k]] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">unlist</span>(<span class="kw">tapply</span>(d[[variable[k]]], <span class="kw">rep</span>(<span class="dv">1</span>:(nrx/(p *<span class="st"> </span>
-<span class="st">                </span>n.samples)), <span class="dt">each =</span> p *<span class="st"> </span>n.samples), <span class="dt">FUN =</span> function(x, nc) <span class="kw">rowMeans</span>(<span class="kw">matrix</span>(x, 
-                <span class="dt">ncol =</span> nc)), <span class="dt">nc =</span> p)), <span class="dv">1</span>)
-        if (n.samples ==<span class="st"> </span><span class="dv">1</span>) 
-            v[[k]] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">tapply</span>(d[[variable[k]]], <span class="kw">rep</span>(<span class="dv">1</span>:(nrx/p), <span class="dt">each =</span> p), 
-                <span class="dt">FUN =</span> mean), <span class="dv">1</span>)
-    }
-    d &lt;-<span class="st"> </span>d[ind.keep, ]
-    d$Month &lt;-<span class="st"> </span>id.seasons
-    for (k in <span class="dv">1</span>:<span class="kw">length</span>(variable)) {
-        d[[variable[k]]] &lt;-<span class="st"> </span>v[[k]]
-        if (<span class="kw">any</span>(d$Var ==<span class="st"> &quot;Precipitation&quot;</span>)) 
-            d[[variable[k]]][d$Var ==<span class="st"> &quot;Precipitation&quot;</span>] &lt;-<span class="st"> </span><span class="kw">round</span>(p *<span class="st"> </span>d[[variable[k]]][d$Var ==<span class="st"> </span>
-<span class="st">                &quot;Precipitation&quot;</span>])
-    }
+    id.seasons &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">factor</span>(id.seasons, <span class="dt">levels =</span> id.seasons), <span class="dt">each =</span> n.samples)
+    d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Month, id.seasons)]
+    <span class="kw">setnames</span>(d, <span class="kw">paste0</span>(<span class="st">&quot;V&quot;</span>, <span class="dv">1</span>:<span class="kw">length</span>(variable)), variable)
+    <span class="kw">setcolorder</span>(d, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Location&quot;</span>, variable, 
+        <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Decade&quot;</span>))
+    for (i in <span class="dv">1</span>:<span class="kw">length</span>(variable)) d[Var ==<span class="st"> &quot;Precipitation&quot;</span>, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(variable[i], 
+        <span class="kw">round</span>(p *<span class="st"> </span><span class="kw">get</span>(variable[i])))]  <span class="co"># multiply by p to sum precip, assumes mean() passed to f</span>
     d
-}</code></pre>
+}
+
+z1 &lt;-<span class="st"> </span><span class="kw">collapseMonths</span>(<span class="dt">d =</span> x, <span class="dt">variable =</span> <span class="st">&quot;Val&quot;</span>, <span class="dt">n.s =</span> <span class="dv">2</span>, <span class="dt">mos =</span> <span class="kw">c</span>(<span class="st">&quot;Jan&quot;</span>, <span class="st">&quot;Feb&quot;</span>, 
+    <span class="st">&quot;May&quot;</span>, <span class="st">&quot;Jun&quot;</span>), <span class="dt">n.samples =</span> <span class="dv">50</span>, <span class="dt">f =</span> function(x) <span class="kw">round</span>(<span class="kw">mean</span>(x), <span class="dv">1</span>), <span class="dt">f.args =</span> <span class="kw">list</span>())</code></pre>
 </div>
 <div id="periodsfromdecades" class="section level4">
 <h4>periodsFromDecades</h4>
 <p>This function concatenates decades into one or more equal-length longer-term periods.</p>
 <pre class="sourceCode r"><code class="sourceCode r">periodsFromDecades &lt;-<span class="st"> </span>function(d, n.p, decs, <span class="dt">check.years =</span> <span class="ot">FALSE</span>, <span class="dt">n.samples =</span> <span class="dv">1</span>) {
     decs &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(decs, <span class="dv">1</span>, <span class="dv">4</span>))
-    n.mos &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d$Month))
+    n.mos &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">levels</span>(d$Month))
     p &lt;-<span class="st"> </span><span class="kw">length</span>(decs)/n.p
     splt &lt;-<span class="st"> </span><span class="kw">split</span>(decs, <span class="kw">rep</span>(<span class="dv">1</span>:n.p, <span class="dt">each =</span> p))
     if (check.years) {
-        <span class="co"># Ensure inclusion only of CRU data which span an entire defined</span>
-        <span class="co"># multi-decade period</span>
+        <span class="co"># Ensure inclusion only of CRU data which exist for multi-decade period (may</span>
+        <span class="co"># be incomplete years)</span>
         keep.ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">sapply</span>(splt, function(x) <span class="kw">all</span>(x %in%<span class="st"> </span><span class="kw">unique</span>(d$Decade))))
         if (<span class="kw">length</span>(keep.ind)) {
             splt &lt;-<span class="st"> </span>splt[keep.ind]
             periods &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(<span class="kw">sapply</span>(splt, function(x) <span class="kw">paste</span>(<span class="kw">c</span>(x[<span class="dv">1</span>], 
                 <span class="kw">tail</span>(x, <span class="dv">1</span>)), <span class="dt">collapse =</span> <span class="st">&quot;-&quot;</span>)), <span class="dv">1</span>, <span class="dv">8</span>), <span class="dv">9</span>)
-            for (i in <span class="dv">1</span>:<span class="kw">length</span>(periods)) d$Decade[d$Decade %in%<span class="st"> </span>splt[[i]]] &lt;-<span class="st"> </span>periods[i]
-            d &lt;-<span class="st"> </span><span class="kw">subset</span>(d, <span class="kw">nchar</span>(Decade) &gt;<span class="st"> </span><span class="dv">4</span>)
+            for (i in <span class="dv">1</span>:<span class="kw">length</span>(periods)) d[Decade %in%<span class="st"> </span>splt[[i]], <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Decade, 
+                periods[i])]
+            d &lt;-<span class="st"> </span>d[<span class="kw">nchar</span>(Decade) &gt;<span class="st"> </span><span class="dv">4</span>, ]
         } else d &lt;-<span class="st"> </span><span class="ot">NULL</span>
     } else {
         periods &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">substr</span>(<span class="kw">sapply</span>(splt, function(x) <span class="kw">paste</span>(<span class="kw">c</span>(x[<span class="dv">1</span>], <span class="kw">tail</span>(x, 
             <span class="dv">1</span>)), <span class="dt">collapse =</span> <span class="st">&quot;-&quot;</span>)), <span class="dv">1</span>, <span class="dv">8</span>), <span class="dv">9</span>)
-        d$Decade &lt;-<span class="st"> </span><span class="kw">rep</span>(periods, <span class="dt">each =</span> n.mos *<span class="st"> </span><span class="dv">10</span> *<span class="st"> </span>p *<span class="st"> </span>n.samples)
+        d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Decade, <span class="kw">rep</span>(periods, <span class="dt">each =</span> n.mos *<span class="st"> </span><span class="dv">10</span> *<span class="st"> </span>p *<span class="st"> </span>n.samples))]
     }
     d
 }</code></pre>
@@ -412,28 +399,31 @@ nullOrZero &lt;-<span class="st"> </span>function(x) <span class="kw">is.null</s
 <p>This function is used to properly dodge points when points are overlaid on top of other dodged elements such as bars or box plots. This is necessary when grouping and faceting by categorical values. <code>ggplot</code> is not good at handling this nuance on its own.</p>
 <pre class="sourceCode r"><code class="sourceCode r">dodgePoints &lt;-<span class="st"> </span>function(d, x, grp, n.grp, facet.by, <span class="dt">width =</span> <span class="fl">0.9</span>) {
     if (<span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
+        x &lt;-<span class="st"> </span>d[, <span class="kw">get</span>(x)]
+        d.grp &lt;-<span class="st"> </span>d[, <span class="kw">get</span>(grp)]
         if (facet.by ==<span class="st"> &quot;None&quot;</span>) {
-            x.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(d[, x]))
+            x.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(x))
             x.num &lt;-<span class="st"> </span>grp.n &lt;-<span class="st"> </span>grp.num &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(d))
             for (m in <span class="dv">1</span>:<span class="kw">length</span>(x.names)) {
-                ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">as.character</span>(d[, x]) ==<span class="st"> </span>x.names[m])
-                grp.n[ind] &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[ind, grp]))
+                ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">as.character</span>(x) ==<span class="st"> </span>x.names[m])
+                grp.n[ind] &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d.grp[ind]))
                 x.num[ind] &lt;-<span class="st"> </span>m
-                grp.num[ind] &lt;-<span class="st"> </span>width *<span class="st"> </span>((<span class="kw">as.numeric</span>(<span class="kw">factor</span>(d[ind, grp]))/grp.n[ind]) -<span class="st"> </span>
+                grp.num[ind] &lt;-<span class="st"> </span>width *<span class="st"> </span>((<span class="kw">as.numeric</span>(<span class="kw">factor</span>(d.grp[ind]))/grp.n[ind]) -<span class="st"> </span>
 <span class="st">                  </span>(<span class="dv">1</span>/grp.n[ind] +<span class="st"> </span>((grp.n[ind] -<span class="st"> </span><span class="dv">1</span>)/<span class="dv">2</span>)/(grp.n[ind])))
             }
         } else if (facet.by !=<span class="st"> &quot;None&quot;</span>) {
-            x.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(d[, x]))
-            panel.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(d[, facet.by]))
+            x.names &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">as.character</span>(x))
+            d.facet &lt;-<span class="st"> </span><span class="kw">as.character</span>(d[, <span class="kw">get</span>(facet.by)])
+            panel.names &lt;-<span class="st"> </span><span class="kw">unique</span>(d.facet)
             n.panels &lt;-<span class="st"> </span><span class="kw">length</span>(panel.names)
             x.num &lt;-<span class="st"> </span>grp.n &lt;-<span class="st"> </span>grp.num &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(d))
             for (m in <span class="dv">1</span>:n.panels) {
                 for (mm in <span class="dv">1</span>:<span class="kw">length</span>(x.names)) {
-                  ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">as.character</span>(d[, facet.by]) ==<span class="st"> </span>panel.names[m] &amp;<span class="st"> </span>
-<span class="st">                    </span><span class="kw">as.character</span>(d[, x]) ==<span class="st"> </span>x.names[mm])
-                  grp.n[ind] &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[ind, grp]))
-                  x.num[ind] &lt;-<span class="st"> </span>mm -<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">factor</span>(d[ind, x]))
-                  grp.num[ind] &lt;-<span class="st"> </span>width *<span class="st"> </span>((<span class="kw">as.numeric</span>(<span class="kw">factor</span>(d[ind, grp]))/grp.n[ind]) -<span class="st"> </span>
+                  ind &lt;-<span class="st"> </span><span class="kw">which</span>(d.facet ==<span class="st"> </span>panel.names[m] &amp;<span class="st"> </span><span class="kw">as.character</span>(x) ==<span class="st"> </span>
+<span class="st">                    </span>x.names[mm])
+                  grp.n[ind] &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d.grp[ind]))
+                  x.num[ind] &lt;-<span class="st"> </span>mm -<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">factor</span>(x[ind]))
+                  grp.num[ind] &lt;-<span class="st"> </span>width *<span class="st"> </span>((<span class="kw">as.numeric</span>(<span class="kw">factor</span>(d.grp[ind]))/grp.n[ind]) -<span class="st"> </span>
 <span class="st">                    </span>(<span class="dv">1</span>/grp.n[ind] +<span class="st"> </span>((grp.n[ind] -<span class="st"> </span><span class="dv">1</span>)/<span class="dv">2</span>)/(grp.n[ind])))
                 }
             }

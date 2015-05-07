@@ -271,7 +271,7 @@ output$spatialTextSub &lt;-<span class="st"> </span><span class="kw">renderUI</s
 <h4>Time series data table</h4>
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableTS &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
-        <span class="kw">dat</span>()[-<span class="kw">which</span>(<span class="kw">names</span>(<span class="kw">dat</span>()) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Decade&quot;</span>))]
+        <span class="kw">dat</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
 }, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
 
 output$TableTS &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
@@ -285,7 +285,7 @@ output$TableTS &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
 <h4>Scatter plot data table</h4>
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableScatter &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat2</span>())) 
-        <span class="kw">dat2</span>()[-<span class="kw">which</span>(<span class="kw">names</span>(<span class="kw">dat2</span>()) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Decade&quot;</span>))]
+        <span class="kw">dat2</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
 }, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
 
 output$TableScatter &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
@@ -300,7 +300,7 @@ output$TableScatter &lt;-<span class="st"> </span><span class="kw">renderUI</spa
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableHeatmap &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat_heatmap</span>()) &amp;&amp;<span class="st"> </span><span class="kw">nrow</span>(<span class="kw">dat_heatmap</span>() &gt;<span class="st"> </span><span class="dv">0</span>)) {
         if (<span class="kw">ncol</span>(<span class="kw">dat_heatmap</span>()) &gt;=<span class="st"> </span><span class="dv">9</span>) 
-            <span class="kw">dat_heatmap</span>()[-<span class="dv">9</span>] else <span class="kw">dat_heatmap</span>()
+            <span class="kw">dat_heatmap</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>] else <span class="kw">dat_heatmap</span>()
     }
 }, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
 
@@ -316,7 +316,7 @@ output$TableHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</spa
 <h4>Variability plots data table</h4>
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableVariability &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
-        <span class="kw">dat</span>()[-<span class="kw">which</span>(<span class="kw">names</span>(<span class="kw">dat</span>()) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Decade&quot;</span>))]
+        <span class="kw">dat</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
 }, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))  <span class="co"># same as table 1</span>
 
 output$TableVariability &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
@@ -330,7 +330,7 @@ output$TableVariability &lt;-<span class="st"> </span><span class="kw">renderUI<
 <h4>Distribution plots data table</h4>
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableSpatial &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>())) 
-        <span class="kw">dat_spatial</span>()[-<span class="kw">which</span>(<span class="kw">names</span>(<span class="kw">dat_spatial</span>()) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Decade&quot;</span>))]
+        <span class="kw">dat_spatial</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
 }, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
 
 output$TableSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({

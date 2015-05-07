@@ -279,9 +279,9 @@ swapScenarioName &lt;-<span class="st"> </span>function(x) {
     switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;SRES B1&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;SRES A1B&quot;</span>, <span class="dt">sresa2 =</span> <span class="st">&quot;SRES A2&quot;</span>)
 }
 
-<span class="co"># include later: # rcp45=&#39;CMIP5&#39;, rcp60=&#39;CMIP5&#39;, rcp85=&#39;CMIP5&#39;</span>
+<span class="co"># include later: # rcp45=&#39;AR5&#39;, rcp60=&#39;AR5&#39;, rcp85=&#39;AR5&#39;</span>
 getPhase &lt;-<span class="st"> </span>function(x) {
-    switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;CMIP3&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;CMIP3&quot;</span>, <span class="dt">sresa2 =</span> <span class="st">&quot;CMIP3&quot;</span>)
+    switch(x, <span class="dt">sresb1 =</span> <span class="st">&quot;AR4&quot;</span>, <span class="dt">sresa1b =</span> <span class="st">&quot;AR4&quot;</span>, <span class="dt">sresa2 =</span> <span class="st">&quot;AR4&quot;</span>)
 }</code></pre>
 <p>Define support functions for density estimation, boostrap resampling from estimated densities, and extraction of mean, standard deviation, and quantile statistics.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Density estimation</span>
@@ -637,7 +637,7 @@ alf.ageSamples.df &lt;-<span class="st"> </span>out.age[[<span class="dv">1</spa
 alf.ageSamples.df[, samples.columns] &lt;-<span class="st"> </span><span class="ot">NA</span>
 alf.ageSamples.df$Var &lt;-<span class="st"> </span><span class="ot">NA</span>
 alf.ageSamples.df$Location &lt;-<span class="st"> </span><span class="ot">NA</span></code></pre>
-<p>Save metadata into <code>meta.RData</code>, which is used by the master QAQC Shiny app. Currently, this is saved in a backup file as a specific version of metadata since the integration of ALFRESCO output statistics into the app is in an early developmental stage and not used by most repo branches.</p>
+<p>Save metadata into <code>meta.RData</code>, which is used by the master QA/QC Shiny app. Currently, this is saved in a backup file as a specific version of metadata since the integration of ALFRESCO output statistics into the app is in an early developmental stage and not used by most repo branches.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Remove unwanted objects, load metadata workspace, save along with age</span>
 <span class="co"># metadata</span>
 <span class="kw">rm</span>(ageDirs, agg.stat.colnames, btfun, denFun, abfcDir, fsvDir, get_AgeDensities, 

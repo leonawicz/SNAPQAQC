@@ -49,7 +49,7 @@ function(d, d.grp, d.pool, x, y, y.name, Log = FALSE, panels, grp, n.grp, ingrou
     #### Point dodging when using grouping variable
     wid <- 0.9
     dodge <- position_dodge(width = wid)
-    x.n <- length(unique(d[, x]))
+    x.n <- length(unique(d[, get(x)]))
     if (is.character(grp) & n.grp > 1) {
         dodge.pts <- dodgePoints(d, x, grp, n.grp, facet.by, width = wid)
         xdodge <- "xdodge"
@@ -57,11 +57,13 @@ function(d, d.grp, d.pool, x, y, y.name, Log = FALSE, panels, grp, n.grp, ingrou
     }
     if (Log) {
         units[2] <- paste("log", units[2])
-        d[y] <- round(log(d[y] + 1), 1)
-        d.pool[y] <- round(log(d.pool[y] + 1), 1)
-        d.grp[y] <- round(log(d.grp[y] + 1), 1)
+        logy <- paste0("Log_", y)
+        d[, `:=`(c(logy), round(log(get(y) + 1), 1))]
+        d.pool[, `:=`(c(logy), round(log(get(y) + 1), 1))]
+        d.grp[, `:=`(c(logy), round(log(get(y) + 1), 1))]
         if (show.overlay) 
-            overlay[y] <- round(log(overlay[y] + 1), 1)
+            overlay[, `:=`(c(logy), round(log(get(y) + 1), 1))]
+        y <- logy
     }
     if (d$Var[1] == "Temperature") 
         ylb <- paste0(y.name, " temperature (", units[1], ")") else ylb <- paste0(y.name, " precipitation (", units[2], ")")

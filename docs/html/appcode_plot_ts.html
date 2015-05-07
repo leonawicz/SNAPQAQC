@@ -266,7 +266,7 @@ img {
     #### Point dodging when using grouping variable
     wid &lt;-<span class="st"> </span><span class="fl">0.9</span>
     dodge &lt;-<span class="st"> </span><span class="kw">position_dodge</span>(<span class="dt">width =</span> wid)
-    x.n &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[, x]))
+    x.n &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(d[, <span class="kw">get</span>(x)]))
     if (<span class="kw">is.character</span>(grp) &amp;<span class="st"> </span>n.grp &gt;<span class="st"> </span><span class="dv">1</span>) {
         dodge.pts &lt;-<span class="st"> </span><span class="kw">dodgePoints</span>(d, x, grp, n.grp, facet.by, <span class="dt">width =</span> wid)
         xdodge &lt;-<span class="st"> &quot;xdodge&quot;</span>
@@ -274,11 +274,13 @@ img {
     }
     if (Log) {
         units[<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;log&quot;</span>, units[<span class="dv">2</span>])
-        d[y] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(d[y] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
-        d.pool[y] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(d.pool[y] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
-        d.grp[y] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(d.grp[y] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
+        logy &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;Log_&quot;</span>, y)
+        d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logy), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(y) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
+        d.pool[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logy), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(y) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
+        d.grp[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logy), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(y) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
         if (show.overlay) 
-            overlay[y] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(overlay[y] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
+            overlay[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logy), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(y) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
+        y &lt;-<span class="st"> </span>logy
     }
     if (d$Var[<span class="dv">1</span>] ==<span class="st"> &quot;Temperature&quot;</span>) 
         ylb &lt;-<span class="st"> </span><span class="kw">paste0</span>(y.name, <span class="st">&quot; temperature (&quot;</span>, units[<span class="dv">1</span>], <span class="st">&quot;)&quot;</span>) else ylb &lt;-<span class="st"> </span><span class="kw">paste0</span>(y.name, <span class="st">&quot; precipitation (&quot;</span>, units[<span class="dv">2</span>], <span class="st">&quot;)&quot;</span>)

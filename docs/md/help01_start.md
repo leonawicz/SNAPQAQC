@@ -13,7 +13,7 @@ Below you can find more information regarding the data in this app, and how to m
 
 #### Explore Simpler Apps First (if you need to)
 
-If you are not familiar with <a href="http://shiny.rstudio.com/" target="_blank">Shiny</a> by RStudio, it is *highly* advised that you first get acquainted with basic R Shiny web applications for data analysis and visualization!
+If you are not familiar with <a href="http://shiny.rstudio.com/" target="_blank">Shiny</a> by RStudio, it is *highly* advised that you first get acquainted with basic **R** Shiny web applications for data analysis and visualization!
 You don't need to learn how to make them, but this app certainly shouldn't be the first one you use. But I'm a statistician; I like to urge caution. So you may take that suggestion lightly.
 Another likely possibility is that you are a colleague working in climate science who is well-versed in climate modeling and the types of data contained in this app,
 in which case you may be more at home just poking around the app until you figure things out.
@@ -65,7 +65,7 @@ ignoring for the moment that the GCMs include projected model outputs out to yea
 but that has nothing to do with what this app does with the data provided to it.
 
 ### App Layout
-This is not your grandma's R Shiny app. So let's start simple.
+This is not your grandma's **R** Shiny app. So let's start simple.
 
 #### Navigation Bar
 The navigation bar at the top has the typical `Home` tab, followed by a tab for each type of plot available in the app, labeled

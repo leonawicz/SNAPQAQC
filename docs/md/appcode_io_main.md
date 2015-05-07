@@ -79,7 +79,7 @@ The data download option will mirror this absence of selected CRU data in the ta
 ```r
 output$SubsetTableTS <- renderDataTable({
     if (!is.null(dat())) 
-        dat()[-which(names(dat()) %in% c("Decade"))]
+        dat()[, !"Decade", with = FALSE]
 }, options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 25, 50), pageLength = 5))
 
 output$TableTS <- renderUI({
@@ -96,7 +96,7 @@ output$TableTS <- renderUI({
 ```r
 output$SubsetTableScatter <- renderDataTable({
     if (!is.null(dat2())) 
-        dat2()[-which(names(dat2()) %in% c("Decade"))]
+        dat2()[, !"Decade", with = FALSE]
 }, options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 25, 50), pageLength = 5))
 
 output$TableScatter <- renderUI({
@@ -114,7 +114,7 @@ output$TableScatter <- renderUI({
 output$SubsetTableHeatmap <- renderDataTable({
     if (!is.null(dat_heatmap()) && nrow(dat_heatmap() > 0)) {
         if (ncol(dat_heatmap()) >= 9) 
-            dat_heatmap()[-9] else dat_heatmap()
+            dat_heatmap()[, !"Decade", with = FALSE] else dat_heatmap()
     }
 }, options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 25, 50), pageLength = 5))
 
@@ -133,7 +133,7 @@ output$TableHeatmap <- renderUI({
 ```r
 output$SubsetTableVariability <- renderDataTable({
     if (!is.null(dat())) 
-        dat()[-which(names(dat()) %in% c("Decade"))]
+        dat()[, !"Decade", with = FALSE]
 }, options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 25, 50), pageLength = 5))  # same as table 1
 
 output$TableVariability <- renderUI({
@@ -150,7 +150,7 @@ output$TableVariability <- renderUI({
 ```r
 output$SubsetTableSpatial <- renderDataTable({
     if (!is.null(dat_spatial())) 
-        dat_spatial()[-which(names(dat_spatial()) %in% c("Decade"))]
+        dat_spatial()[, !"Decade", with = FALSE]
 }, options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 25, 50), pageLength = 5))
 
 output$TableSpatial <- renderUI({

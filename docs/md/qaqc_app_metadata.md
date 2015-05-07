@@ -1,8 +1,8 @@
-# QAQC Shiny App Metadata Finalization
+# QA/QC Shiny App Metadata Finalization
 
 
 
-The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `cmip3_cmip5` QAQC app.
+The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `cmip3_cmip5` QA/QC app.
 Final preparations of region and city data file path locations are completed.
 This new workspace is saved over the original.
 
@@ -67,7 +67,7 @@ save(cities.meta, file = cities.meta.file)  # okay to save over original file
 rm(cities.meta.file, topDir)
 ```
 
-The `meta.RData` workspace used by the master QAQC Shiny app is loaded and re-saved.
+The `meta.RData` workspace used by the master QA/QC Shiny app is loaded and re-saved.
 
 
 ```r

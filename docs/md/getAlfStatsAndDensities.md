@@ -77,9 +77,9 @@ swapScenarioName <- function(x) {
     switch(x, sresb1 = "SRES B1", sresa1b = "SRES A1B", sresa2 = "SRES A2")
 }
 
-# include later: # rcp45='CMIP5', rcp60='CMIP5', rcp85='CMIP5'
+# include later: # rcp45='AR5', rcp60='AR5', rcp85='AR5'
 getPhase <- function(x) {
-    switch(x, sresb1 = "CMIP3", sresa1b = "CMIP3", sresa2 = "CMIP3")
+    switch(x, sresb1 = "AR4", sresa1b = "AR4", sresa2 = "AR4")
 }
 ```
 
@@ -467,7 +467,7 @@ alf.ageSamples.df$Var <- NA
 alf.ageSamples.df$Location <- NA
 ```
 
-Save metadata into `meta.RData`, which is used by the master QAQC Shiny app.
+Save metadata into `meta.RData`, which is used by the master QA/QC Shiny app.
 Currently, this is saved in a backup file as a specific version of metadata since the integration of ALFRESCO output statistics into the app is in an early developmental stage and not used by most repo branches.
 
 

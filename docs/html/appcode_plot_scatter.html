@@ -269,15 +269,19 @@ img {
         Logy &lt;-<span class="st"> </span><span class="ot">FALSE</span>
     if (Logx) {
         units[<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;log&quot;</span>, units[<span class="dv">2</span>])
-        d[x] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(d[x] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
+        logx &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;Log_&quot;</span>, x)
+        d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logx), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(x) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
         if (show.overlay) 
-            overlay[x] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(overlay[x] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
+            overlay[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logx), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(x) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
+        x &lt;-<span class="st"> </span>logx
     }
     if (Logy) {
         units[<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;log&quot;</span>, units[<span class="dv">2</span>])
-        d[y] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(d[y] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
+        logy &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;Log_&quot;</span>, y)
+        d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logy), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(y) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
         if (show.overlay) 
-            overlay[y] &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">log</span>(overlay[y] +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>)
+            overlay[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(logy), <span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">get</span>(y) +<span class="st"> </span><span class="dv">1</span>), <span class="dv">1</span>))]
+        y &lt;-<span class="st"> </span>logy
     }
     if (x ==<span class="st"> &quot;Temperature&quot;</span>) 
         xlb &lt;-<span class="st"> </span><span class="kw">paste0</span>(x.name, <span class="st">&quot; temperature (&quot;</span>, units[<span class="dv">1</span>], <span class="st">&quot;)&quot;</span>)
