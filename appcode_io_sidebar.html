@@ -747,40 +747,43 @@ output$StripDirectionSpatial &lt;-<span class="st"> </span><span class="kw">rend
 <p>These buttons display depending on the current status of data selection and other similarly required non-<code>NULL</code>-valued reactive inputs and outputs referenced by the <code>permitPlot</code> reactive expression.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot buttons</span>
 output$PlotButton_ts &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
-    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
-<span class="st">        </span><span class="dv">0</span>)) 
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>!<span class="kw">goBtnNullOrZero</span>()) 
         if (<span class="kw">nrow</span>(<span class="kw">dat</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
             <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_ts&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
                 <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
 })
 
 output$PlotButton_sc &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
-    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat2</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
-<span class="st">        </span><span class="dv">0</span>)) 
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat2</span>()) &amp;<span class="st"> </span>!<span class="kw">goBtnNullOrZero</span>()) 
         if (<span class="kw">nrow</span>(<span class="kw">dat2</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
             <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_sc&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
                 <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
 })
 
 output$PlotButton_hm &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
-    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
-<span class="st">        </span><span class="dv">0</span>)) 
-        if (<span class="kw">nrow</span>(<span class="kw">dat</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
-            <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_hm&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
-                <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+    if (<span class="kw">permitPlot</span>() &amp;&amp;<span class="st"> </span>!<span class="kw">goBtnNullOrZero</span>() &amp;&amp;<span class="st"> </span>input$heatmap_x !=<span class="st"> </span>input$heatmap_y &amp;&amp;<span class="st"> </span>
+<span class="st">        </span>!<span class="kw">is.null</span>(<span class="kw">dat_heatmap</span>()) &amp;&amp;<span class="st"> </span><span class="kw">nrow</span>(<span class="kw">dat_heatmap</span>()) &gt;<span class="st"> </span><span class="dv">1</span>) 
+        <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_hm&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
+            <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
+})
+<span class="kw">outputOptions</span>(output, <span class="st">&quot;PlotButton_hm&quot;</span>, <span class="dt">suspendWhenHidden =</span> <span class="ot">FALSE</span>)
+
+output$DlButton_hm &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
+    if (!<span class="kw">is.null</span>(input$plotButton_hm) &amp;&amp;<span class="st"> </span>input$plotButton_hm &gt;<span class="st"> </span><span class="dv">0</span> &amp;&amp;<span class="st"> </span>input$heatmap_x !=<span class="st"> </span>
+<span class="st">        </span>input$heatmap_y &amp;&amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat_heatmap</span>()) &amp;&amp;<span class="st"> </span><span class="kw">nrow</span>(<span class="kw">dat_heatmap</span>()) &gt;<span class="st"> </span>
+<span class="st">        </span><span class="dv">1</span>) 
+        <span class="kw">downloadButton</span>(<span class="st">&quot;dlCurPlotHeatmap&quot;</span>, <span class="st">&quot;Download Plot&quot;</span>, <span class="dt">class =</span> <span class="st">&quot;btn-success btn-block&quot;</span>) else <span class="ot">NULL</span>
 })
 
 output$PlotButton_vr &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
-    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>input$goButton &gt;<span class="st"> </span>
-<span class="st">        </span><span class="dv">0</span>)) 
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>!<span class="kw">goBtnNullOrZero</span>()) 
         if (<span class="kw">nrow</span>(<span class="kw">dat</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
             <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_vr&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
                 <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
 })
 
 output$PlotButton_sp &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
-    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>()) &amp;<span class="st"> </span>(!<span class="kw">is.null</span>(input$goButton) &amp;&amp;<span class="st"> </span>
-<span class="st">        </span>input$goButton &gt;<span class="st"> </span><span class="dv">0</span>)) 
+    if (<span class="kw">permitPlot</span>() &amp;<span class="st"> </span>!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>()) &amp;<span class="st"> </span>!<span class="kw">goBtnNullOrZero</span>()) 
         if (<span class="kw">nrow</span>(<span class="kw">dat_spatial</span>()) &gt;<span class="st"> </span><span class="dv">0</span>) 
             <span class="kw">actionButton</span>(<span class="st">&quot;plotButton_sp&quot;</span>, <span class="st">&quot;Generate Plot&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), 
                 <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)

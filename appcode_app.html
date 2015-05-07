@@ -482,7 +482,8 @@ output$PlotHeatmap &lt;-<span class="st"> </span><span class="kw">renderPlot</sp
         <span class="kw">doPlot_heatmap</span>(<span class="dt">show.logo =</span> F)
     })
 }, <span class="dt">height =</span> function() {
-    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_hm</span>()) 
+    w &lt;-<span class="st"> </span>if (<span class="kw">twoBtnNullOrZero_hm</span>() ||<span class="st"> </span>input$heatmap_x ==<span class="st"> </span>input$heatmap_y ||<span class="st"> </span>
+<span class="st">        </span>(<span class="kw">is.null</span>(<span class="kw">dat_heatmap</span>()) ||<span class="st"> </span><span class="kw">nrow</span>(<span class="kw">dat_heatmap</span>()) ==<span class="st"> </span><span class="dv">1</span>)) 
         <span class="dv">0</span> else session$clientData$output_PlotHeatmap_width
     <span class="kw">round</span>((<span class="dv">7</span>/<span class="dv">12</span>) *<span class="st"> </span>w)
 }, <span class="dt">width =</span> <span class="st">&quot;auto&quot;</span>)

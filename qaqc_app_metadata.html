@@ -10,7 +10,7 @@
 
 
 
-<title>QAQC Shiny App Metadata Finalization</title>
+<title>QA/QC Shiny App Metadata Finalization</title>
 
 <script src="libs/jquery-1.11.0/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -216,11 +216,11 @@ img {
   </div>
 
 <div id="header">
-<h1 class="title">QAQC Shiny App Metadata Finalization</h1>
+<h1 class="title">QA/QC Shiny App Metadata Finalization</h1>
 </div>
 
 
-<p>The <code>qaqc_app_metadata.R</code> script loads the <code>meta.RData</code> metadata workspace file used by the <code>cmip3_cmip5</code> QAQC app. Final preparations of region and city data file path locations are completed. This new workspace is saved over the original.</p>
+<p>The <code>qaqc_app_metadata.R</code> script loads the <code>meta.RData</code> metadata workspace file used by the <code>cmip3_cmip5</code> QA/QC app. Final preparations of region and city data file path locations are completed. This new workspace is saved over the original.</p>
 <p>This script current handles subsetting of city files as best it can, but ultimately time is needed to investigate why GCM and CRU 3.x extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.</p>
 <div id="r-code" class="section level2">
 <h2>R code</h2>
@@ -269,7 +269,7 @@ cities.meta.file &lt;-<span class="st"> &quot;/workspace/UA/mfleonawicz/leonawic
 cities.meta &lt;-<span class="st"> </span><span class="kw">subset</span>(cities.meta, Location %in%<span class="st"> </span>city.names)
 <span class="kw">save</span>(cities.meta, <span class="dt">file =</span> cities.meta.file)  <span class="co"># okay to save over original file</span>
 <span class="kw">rm</span>(cities.meta.file, topDir)</code></pre>
-<p>The <code>meta.RData</code> workspace used by the master QAQC Shiny app is loaded and re-saved.</p>
+<p>The <code>meta.RData</code> workspace used by the master QA/QC Shiny app is loaded and re-saved.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">save.image</span>(<span class="kw">file.path</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>))</code></pre>
 </div>
 
