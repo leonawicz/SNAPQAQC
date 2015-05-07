@@ -806,6 +806,145 @@ CRU2 &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 </div>
 <div id="master-gcm-distributions-data-set" class="section level4">
 <h4>Master GCM distributions data set</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Keep first climate variables only</span>
+dat_spatial &lt;-<span class="st"> </span><span class="kw">reactive</span>({
+    if (<span class="kw">goBtnNullOrZero</span>()) 
+        <span class="kw">return</span>()
+    prog_d_spatial &lt;-<span class="st"> </span>Progress$<span class="kw">new</span>(session, <span class="dt">min =</span> <span class="dv">0</span>, <span class="dt">max =</span> <span class="dv">10</span>)
+    <span class="kw">on.exit</span>(prog_d_spatial$<span class="kw">close</span>())
+    <span class="kw">isolate</span>(if (<span class="kw">is.null</span>(<span class="kw">Months_original</span>()) |<span class="st"> </span><span class="kw">is.null</span>(input$vars) |<span class="st"> </span><span class="kw">is.null</span>(<span class="kw">scenarios</span>()) |<span class="st"> </span>
+<span class="st">        </span><span class="kw">is.null</span>(<span class="kw">models_original</span>()) |<span class="st"> </span><span class="kw">locSelected</span>() ==<span class="st"> </span><span class="ot">FALSE</span>) {
+        x &lt;-<span class="st"> </span><span class="ot">NULL</span>
+    } else {
+        <span class="kw">gc</span>()
+        if (input$loctype ==<span class="st"> &quot;Cities&quot;</span> &amp;&amp;<span class="st"> </span><span class="kw">length</span>(input$locs_cities) &amp;&amp;<span class="st"> </span>input$locs_cities[<span class="dv">1</span>] !=<span class="st"> </span>
+<span class="st">            &quot;&quot;</span>) {
+            #### Deal with cities under spatial data conditions later
+            city.ind &lt;-<span class="st"> </span><span class="kw">which</span>(city.names %in%<span class="st"> </span><span class="kw">Locs</span>())
+            for (i in <span class="dv">1</span>:<span class="kw">length</span>(city.ind)) {
+                prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Loading GCM spatial distributions...&quot;</span>, 
+                  <span class="dt">value =</span> <span class="dv">1</span> +<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>i/<span class="kw">length</span>(city.ind))
+                <span class="kw">load</span>(city.gcm.files[city.ind[i]], <span class="dt">envir =</span> <span class="kw">environment</span>())
+                if (i ==<span class="st"> </span><span class="dv">1</span>) 
+                  city.dat.final &lt;-<span class="st"> </span>city.dat else city.dat.final &lt;-<span class="st"> </span><span class="kw">rbind</span>(city.dat.final, city.dat)
+            }
+            prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Subsetting GCM spatial samples...&quot;</span>, 
+                <span class="dt">value =</span> <span class="dv">4</span>)
+            x &lt;-<span class="st"> </span><span class="kw">subset</span>(city.dat.final, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
+                month.abb)] &amp;<span class="st"> </span>Year %in%<span class="st"> </span><span class="kw">currentYears</span>() &amp;<span class="st"> </span>Decade %in%<span class="st"> </span><span class="kw">substr</span>(<span class="kw">Decades_original</span>(), 
+                <span class="dv">1</span>, <span class="dv">4</span>) &amp;<span class="st"> </span>Scenario %in%<span class="st"> </span><span class="kw">scenarios</span>() &amp;<span class="st"> </span>Model %in%<span class="st"> </span><span class="kw">models_original</span>() &amp;<span class="st"> </span>
+<span class="st">                </span>Location %in%<span class="st"> </span>input$locs_cities)
+        } else if (input$loctype !=<span class="st"> &quot;Cities&quot;</span>) {
+            #### Regions: only this is under development for now
+            prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;GCM spatial samples...&quot;</span>, <span class="dt">value =</span> <span class="dv">1</span>)
+            reg.nam &lt;-<span class="st"> </span><span class="kw">sort</span>(region.names.out[[input$loctype]])
+            region.ind &lt;-<span class="st"> </span><span class="kw">which</span>(reg.nam %in%<span class="st"> </span><span class="kw">Locs</span>())
+            rsd.list &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(region.ind))
+            for (i in <span class="dv">1</span>:<span class="kw">length</span>(region.ind)) {
+                <span class="co"># by region</span>
+                locDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(region.gcm.samples.files[[input$loctype]][region.ind[i]], 
+                  <span class="st">&quot;climate&quot;</span>)
+                loc.files &lt;-<span class="st"> </span><span class="kw">list.files</span>(locDir, <span class="dt">pattern =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.RData&quot;</span>)
+                rsd.list1 &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(<span class="kw">gcm_samples_files</span>()))
+                for (z in <span class="dv">1</span>:<span class="kw">length</span>(<span class="kw">gcm_samples_files</span>())) {
+                  <span class="co"># by model</span>
+                  mod.files &lt;-<span class="st"> </span><span class="kw">gcm_samples_files</span>()[[z]]
+                  mod.files.list &lt;-<span class="st"> </span><span class="kw">split</span>(mod.files, <span class="kw">substr</span>(mod.files, <span class="kw">nchar</span>(mod.files) -<span class="st"> </span>
+<span class="st">                    </span><span class="dv">16</span>, <span class="kw">nchar</span>(mod.files) -<span class="st"> </span><span class="dv">6</span>))  <span class="co"># by variable</span>
+                  rsd.list2 &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(mod.files.list))
+                  for (zz in <span class="dv">1</span>:<span class="kw">length</span>(mod.files.list)) {
+                    var.files &lt;-<span class="st"> </span>mod.files.list[[zz]]
+                    rsd.list3 &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="kw">length</span>(var.files) -<span class="st"> </span><span class="dv">1</span>)
+                    for (zzz in <span class="dv">1</span>:<span class="kw">length</span>(var.files)) {
+                      <span class="kw">load</span>(<span class="kw">file.path</span>(locDir, var.files[zzz]), <span class="dt">envir =</span> <span class="kw">environment</span>())  <span class="co"># Historical df loaded first (*alphabetical*)</span>
+                      if (zzz ==<span class="st"> </span><span class="dv">1</span>) {
+                        rsd.h &lt;-<span class="st"> </span><span class="kw">subset</span>(rsd.h, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
+                          month.abb)] &amp;<span class="st"> </span>Year %in%<span class="st"> </span><span class="kw">currentYears</span>() &amp;<span class="st"> </span>Decade %in%<span class="st"> </span>
+<span class="st">                          </span><span class="kw">substr</span>(<span class="kw">Decades_original</span>(), <span class="dv">1</span>, <span class="dv">4</span>))
+                        if (<span class="kw">nrow</span>(rsd.h) &gt;<span class="st"> </span><span class="dv">0</span>) {
+                          rsd.h[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Val, Val/samples.multipliers[<span class="dv">1</span>])]
+                          rsd.h[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Prob, Prob/samples.multipliers[<span class="dv">2</span>])]  <span class="co"># &lt;- rsd.h[,samples.columns]/rep(samples.multipliers, each=nrow(rsd.h))</span>
+                        }
+                      }
+                      if (zzz &gt;<span class="st"> </span><span class="dv">1</span>) {
+                        if (<span class="kw">nrow</span>(rsd.h) &gt;<span class="st"> </span><span class="dv">0</span>) {
+                          rsd.h[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, rsd$Phase[<span class="dv">1</span>])]
+                          rsd.h[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, rsd$Scenario[<span class="dv">1</span>])]
+                          rsd.h[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, rsd$Model[<span class="dv">1</span>])]
+                        }
+                        rsd &lt;-<span class="st"> </span><span class="kw">subset</span>(rsd, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
+                          month.abb)] &amp;<span class="st"> </span>Year %in%<span class="st"> </span><span class="kw">currentYears</span>() &amp;<span class="st"> </span>Decade %in%<span class="st"> </span>
+<span class="st">                          </span><span class="kw">substr</span>(<span class="kw">Decades_original</span>(), <span class="dv">1</span>, <span class="dv">4</span>))
+                        if (<span class="kw">nrow</span>(rsd) &gt;<span class="st"> </span><span class="dv">0</span>) {
+                          rsd[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Val, Val/samples.multipliers[<span class="dv">1</span>])]
+                          rsd[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Prob, Prob/samples.multipliers[<span class="dv">2</span>])]
+                          if (<span class="kw">nrow</span>(rsd.h) &gt;<span class="st"> </span><span class="dv">0</span>) 
+                            rsd.list3[[zzz -<span class="st"> </span><span class="dv">1</span>]] &lt;-<span class="st"> </span><span class="kw">rbind</span>(rsd.h, rsd) else rsd.list3[[zzz -<span class="st"> </span><span class="dv">1</span>]] &lt;-<span class="st"> </span>rsd
+                        } else if (<span class="kw">nrow</span>(rsd.h) &gt;<span class="st"> </span><span class="dv">0</span>) {
+                          rsd.list3[[zzz -<span class="st"> </span><span class="dv">1</span>]] &lt;-<span class="st"> </span>rsd.h
+                        } else <span class="kw">return</span>(<span class="ot">NULL</span>)
+                      }
+                    }
+                    rsd.list2[[zz]] &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(rsd.list3)
+                    <span class="kw">rm</span>(rsd.list3)
+                  }
+                  rsd.list1[[z]] &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(rsd.list2)
+                  <span class="kw">rm</span>(rsd.list2)
+                }
+                rsd.list[[i]] &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(rsd.list1)
+                <span class="kw">rm</span>(rsd.list1)
+            }
+            x &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(rsd.list)
+            <span class="kw">rm</span>(rsd.list, rsd, rsd.h)
+            <span class="kw">gc</span>()
+            <span class="kw">setkey</span>(x, Phase, Scenario, Model, Var, Location, Year, Month, Decade)
+        }
+        prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Bootstrap resampling...&quot;</span>, <span class="dt">value =</span> <span class="dv">5</span>)
+        rnd &lt;-<span class="st"> </span>if (input$vars[<span class="dv">1</span>] ==<span class="st"> &quot;Precipitation&quot;</span>) 
+            <span class="dv">0</span> else <span class="dv">1</span>
+        x &lt;-<span class="st"> </span>x[, <span class="kw">density2bootstrap</span>(Val, Prob, <span class="dt">n.boot =</span> <span class="kw">BootSamples</span>(), <span class="dt">digits =</span> rnd), 
+            by =<span class="st"> </span><span class="kw">list</span>(Phase, Scenario, Model, Var, Location, Year, Month, Decade)]
+        <span class="kw">setnames</span>(x, <span class="st">&quot;V1&quot;</span>, <span class="st">&quot;Val&quot;</span>)
+        <span class="kw">setcolorder</span>(x, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Val&quot;</span>, 
+            <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Decade&quot;</span>))
+        <span class="kw">gc</span>()
+        if (!<span class="kw">is.null</span>(input$months2seasons) &amp;&amp;<span class="st"> </span>input$months2seasons) {
+            prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Aggregating months...&quot;</span>, <span class="dt">value =</span> <span class="dv">6</span>)
+            x &lt;-<span class="st"> </span><span class="kw">collapseMonths</span>(x, <span class="st">&quot;Val&quot;</span>, <span class="kw">as.numeric</span>(input$n_seasons), <span class="kw">Months_original</span>(), 
+                <span class="dt">n.samples =</span> <span class="kw">BootSamples</span>())
+        }
+        if (!<span class="kw">is.null</span>(input$decades2periods) &amp;&amp;<span class="st"> </span>input$decades2periods) {
+            prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Aggregating decades...&quot;</span>, <span class="dt">value =</span> <span class="dv">7</span>)
+            x &lt;-<span class="st"> </span><span class="kw">periodsFromDecades</span>(x, <span class="kw">as.numeric</span>(input$n_periods), <span class="kw">Decades_original</span>(), 
+                <span class="dt">n.samples =</span> <span class="kw">BootSamples</span>())
+        }
+        <span class="co"># data from only one phase with multiple models in that phase selected, or</span>
+        <span class="co"># two phases with equal number &gt; 1 of models selected from each phase.</span>
+        <span class="co"># Otherwise compositing prohibited.  can assume both phases have multiple</span>
+        <span class="co"># models, so split always works nicely</span>
+        if (<span class="kw">composite</span>() &gt;<span class="st"> </span><span class="dv">0</span>) {
+            prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Averaging samples...&quot;</span>, <span class="dt">value =</span> <span class="fl">7.5</span>)
+            n &lt;-<span class="st"> </span><span class="kw">length</span>(input$cmip3models)  <span class="co"># will match length(input$cmip5models)</span>
+            x[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Index, <span class="kw">rep</span>(<span class="dv">1</span>:<span class="kw">BootSamples</span>(), <span class="dt">length =</span> <span class="kw">nrow</span>(x)))]
+            x &lt;-<span class="st"> </span>x[, <span class="kw">round</span>(<span class="kw">sum</span>(Val)/n, <span class="dv">1</span>), by =<span class="st"> </span><span class="kw">list</span>(Phase, Scenario, Var, Location, 
+                Year, Month, Decade, Index)]
+            x[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Index, <span class="ot">NULL</span>)]
+            <span class="kw">setnames</span>(x, <span class="st">&quot;V1&quot;</span>, <span class="st">&quot;Val&quot;</span>)
+            x[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">paste0</span>(Phase, <span class="st">&quot; &quot;</span>, n, <span class="st">&quot;-Model Avg&quot;</span>))]
+            <span class="kw">setcolorder</span>(x, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Location&quot;</span>, 
+                <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Decade&quot;</span>))
+            if (<span class="st">&quot;Precipitation&quot;</span> %in%<span class="st"> </span>input$vars) 
+                x[Var ==<span class="st"> &quot;Precipitation&quot;</span>, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Val, <span class="kw">round</span>(Val))]
+        }
+        if (input$convert_units) {
+            prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Unit conversion...&quot;</span>, <span class="dt">value =</span> <span class="fl">9.5</span>)
+            x[Var ==<span class="st"> &quot;Temperature&quot;</span>, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Val, <span class="kw">round</span>((<span class="dv">9</span>/<span class="dv">5</span>) *<span class="st"> </span>Val +<span class="st"> </span><span class="dv">32</span>, <span class="dv">1</span>))]
+            x[Var ==<span class="st"> &quot;Precipitation&quot;</span>, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Val, <span class="kw">round</span>(Val/<span class="fl">25.4</span>, <span class="dv">3</span>))]
+        }
+        prog_d_spatial$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;GCM distributions complete.&quot;</span>, <span class="dt">value =</span> <span class="dv">10</span>)
+    })
+    x
+})</code></pre>
 </div>
 <div id="master-cru-distributions-data-set" class="section level4">
 <h4>Master CRU distributions data set</h4>
