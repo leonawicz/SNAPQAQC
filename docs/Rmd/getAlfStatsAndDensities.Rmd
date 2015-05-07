@@ -105,7 +105,7 @@ Process vegetation age distributions.
 ```{r proc_age}
 ```
 
-Save metadata into `meta.RData`, which is used by the master QAQC Shiny app.
+Save metadata into `meta.RData`, which is used by the master QA/QC Shiny app.
 Currently, this is saved in a backup file as a specific version of metadata since the integration of ALFRESCO output statistics into the app is in an early developmental stage and not used by most repo branches.
 
 ```{r save_metadata}

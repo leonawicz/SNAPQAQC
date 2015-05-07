@@ -1,5 +1,5 @@
 ---
-title: QAQC Shiny App Metadata Finalization
+title: QA/QC Shiny App Metadata Finalization
 output:
   html_document:
     toc: false
@@ -13,7 +13,7 @@ opts_chunk$set(cache=FALSE, eval=FALSE, tidy=TRUE, message=FALSE, warning=FALSE)
 read_chunk("../../code/qaqc_app_metadata.R")
 ```
 
-The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `cmip3_cmip5` QAQC app.
+The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `cmip3_cmip5` QA/QC app.
 Final preparations of region and city data file path locations are completed.
 This new workspace is saved over the original.
 
@@ -33,7 +33,7 @@ See code comments for details regarding pending investigation of discrepancies b
 ```{r cities}
 ```
 
-The `meta.RData` workspace used by the master QAQC Shiny app is loaded and re-saved.
+The `meta.RData` workspace used by the master QA/QC Shiny app is loaded and re-saved.
 
 ```{r save_metadata}
 ```
