@@ -78,7 +78,7 @@ This script contains strict server-side reactive expressions.
 
 #### Master GCM distributions data set
 
-```{r re_50}
+```{r re_52}
 ```
 
 #### Master CRU distributions data set
