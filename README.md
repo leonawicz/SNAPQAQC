@@ -8,15 +8,15 @@
 
 ##
 
-SNAP data QAQC refers to multiple threads of collections of R code in the form of scripts and functions across various projects utilizing SNAP data sets.
+SNAP data QA/QC refers to multiple threads of collections of **R** code in the form of scripts and functions across various projects utilizing SNAP data sets.
 However, there is particular focus on SNAP's gridded climate- and fire-related data products, including:
 
 * 2-km resolution, Alaska-Western Canada extent, downscaled global climate model (GCM) temperature and precipitation outputs
 * 2-km resolution, Alaska-Western Canada extent, downscaled Climatological Research Unit (CRU) 3.x temperature and precipitation data.
 * 1-km resolution, Alaska-Western Canada extent, ALFRESCO fire and vegetation landscape transition simulation outputs.
 
-The two most prominent threads of QAQC relate to the climate data and ALFRESCO outputs noted above.
-The QAQC process involves extraction of data from geotiff layers of the above data products.
+The two most prominent threads of QA/QC relate to the climate data and ALFRESCO outputs noted above.
+The QA/QC process involves extraction of data from geotiff layers of the above data products.
 Data are extracted based on:
 
 * The full spatial extent
@@ -37,22 +37,22 @@ The process chain involves the following:
 * Calculation of statistics on extracted outputs
 * Writing extracted output statistics to new files, usually .RData workspaces
 * Compiling and organizing statistics in a series of data curation steps, which may require a series of intermediary output files depending on the type of input
-* Fully curated data files are made available to various projects, some unrelated and others which perform further QAQC analyses, such as the master QAQC Shiny app.
+* Fully curated data files are made available to various projects, some unrelated and others which perform further QA/QC analyses, such as the master QA/QC Shiny app.
 
-Currently, here you can find documentation, including **R** code, which covers most of the primary (extraction) and secondary (organization) stages pertaining to the two main threads of SNAP data QAQC.
+Currently, here you can find documentation, including **R** code, which covers most of the primary (extraction) and secondary (organization) stages pertaining to the two main threads of SNAP data QA/QC.
 Before looking at the code, it may be helpful to capture the overall picture of the process chain by looking at the code flow diagram.
 
 ## Related items
-SNAP QAQC code feeds into many other projects, including the SNAP data QAQC master R Shiny app, Community Charts apps, and ALFRESCO-related projects.
-The primary order QAQC code is most directly related to data extraction.
+SNAP QA/QC code feeds into many other projects, including the SNAP data QA/QC master **R** Shiny app, Community Charts apps, and ALFRESCO-related projects.
+The primary order QA/QC code is most directly related to data extraction.
 Secondary order code relates to organization and preparation of useful data products which are taken up by web applications and other projects to investigate the data.
-Tertiary order code relates to specific QAQC analyses.
+Tertiary order code relates to specific QA/QC analyses.
 
 ### Files and data
 This project makes use of any SNAP data, particularly gridded climate, fire, and vegetation data sets.
-Files generated as part of SNAP QAQC include fortified datasets which are more accessible, compact, easier to manipulate, understand, and analyze for specific purposes.
+Files generated as part of SNAP QA/QC include fortified datasets which are more accessible, compact, easier to manipulate, understand, and analyze for specific purposes.
 
-### SNAP QAQC code flow
+### SNAP QA/QC code flow
 
 
 
@@ -86,7 +86,7 @@ Files generated as part of SNAP QAQC include fortified datasets which are more a
   &lt;/head&gt;
   &lt;body &gt;
     
-    &lt;div id = &#039;chart1080216ad38&#039; class = &#039;rChart d3_sankey&#039;&gt;&lt;/div&gt;    
+    &lt;div id = &#039;chart16f454ef3035&#039; class = &#039;rChart d3_sankey&#039;&gt;&lt;/div&gt;    
     ï»¿&lt;!--Attribution:
 Mike Bostock https://github.com/d3/d3-plugins/tree/master/sankey
 Mike Bostock http://bost.ocks.org/mike/sankey/
@@ -95,7 +95,7 @@ Mike Bostock http://bost.ocks.org/mike/sankey/
 &lt;script&gt;
 (function(){
 var params = {
- &quot;dom&quot;: &quot;chart1080216ad38&quot;,
+ &quot;dom&quot;: &quot;chart16f454ef3035&quot;,
 &quot;width&quot;:    900,
 &quot;height&quot;:    800,
 &quot;data&quot;: {
@@ -113,7 +113,7 @@ var params = {
 &quot;top&quot;:     50 
 },
 &quot;title&quot;: &quot;Code Flow&quot;,
-&quot;id&quot;: &quot;chart1080216ad38&quot; 
+&quot;id&quot;: &quot;chart16f454ef3035&quot; 
 };
 
 params.units ? units = &quot; &quot; + params.units : units = &quot;&quot;;
@@ -185,7 +185,7 @@ var link = svg.append(&quot;g&quot;).selectAll(&quot;.link&quot;)
   .sort(function (a, b) { return b.dy - a.dy; });
 
 link.append(&quot;title&quot;)
-  .text(function (d) { return d.source.name + &quot; â†’ &quot; + d.target.name + &quot;\n&quot; + format(d.value); });
+  .text(function (d) { return d.source.name + &quot; â<U+0086><U+0092> &quot; + d.target.name + &quot;\n&quot; + format(d.value); });
 
 var node = svg.append(&quot;g&quot;).selectAll(&quot;.node&quot;)
   .data(nodes)
@@ -233,11 +233,11 @@ node.append(&quot;text&quot;)
     
     &lt;script&gt;
       var cscale = d3.scale.category20b();
-      d3.selectAll(&#039;#chart1080216ad38 svg path.link&#039;)
+      d3.selectAll(&#039;#chart16f454ef3035 svg path.link&#039;)
         .style(&#039;stroke&#039;, function(d){
           return cscale(d.source.name);
         })
-      d3.selectAll(&#039;#chart1080216ad38 svg .node rect&#039;)
+      d3.selectAll(&#039;#chart16f454ef3035 svg .node rect&#039;)
         .style(&#039;fill&#039;, function(d){
           return cscale(d.name)
         })
@@ -245,6 +245,6 @@ node.append(&quot;text&quot;)
     &lt;/script&gt;
         
   &lt;/body&gt;
-&lt;/html&gt; ' scrolling='no' frameBorder='0' seamless class='rChart  http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey  ' id='iframe-chart1080216ad38'> </iframe>
+&lt;/html&gt; ' scrolling='no' frameBorder='0' seamless class='rChart  http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey  ' id='iframe-chart16f454ef3035'> </iframe>
  <style>iframe.rChart{ width: 100%; height: 400px;}</style>
 <style>iframe.rChart{ width: 100%; height: 840px;}</style>

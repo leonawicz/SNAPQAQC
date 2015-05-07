@@ -622,6 +622,147 @@ gcm_samples_files <- reactive({
 #### Master GCM distributions data set
 
 
+```r
+# Keep first climate variables only
+dat_spatial <- reactive({
+    if (goBtnNullOrZero()) 
+        return()
+    prog_d_spatial <- Progress$new(session, min = 0, max = 10)
+    on.exit(prog_d_spatial$close())
+    isolate(if (is.null(Months_original()) | is.null(input$vars) | is.null(scenarios()) | 
+        is.null(models_original()) | locSelected() == FALSE) {
+        x <- NULL
+    } else {
+        gc()
+        if (input$loctype == "Cities" && length(input$locs_cities) && input$locs_cities[1] != 
+            "") {
+            #### Deal with cities under spatial data conditions later
+            city.ind <- which(city.names %in% Locs())
+            for (i in 1:length(city.ind)) {
+                prog_d_spatial$set(message = "Loading GCM spatial distributions...", 
+                  value = 1 + 2 * i/length(city.ind))
+                load(city.gcm.files[city.ind[i]], envir = environment())
+                if (i == 1) 
+                  city.dat.final <- city.dat else city.dat.final <- rbind(city.dat.final, city.dat)
+            }
+            prog_d_spatial$set(message = "Subsetting GCM spatial samples...", 
+                value = 4)
+            x <- subset(city.dat.final, Month %in% month.abb[match(Months_original(), 
+                month.abb)] & Year %in% currentYears() & Decade %in% substr(Decades_original(), 
+                1, 4) & Scenario %in% scenarios() & Model %in% models_original() & 
+                Location %in% input$locs_cities)
+        } else if (input$loctype != "Cities") {
+            #### Regions: only this is under development for now
+            prog_d_spatial$set(message = "GCM spatial samples...", value = 1)
+            reg.nam <- sort(region.names.out[[input$loctype]])
+            region.ind <- which(reg.nam %in% Locs())
+            rsd.list <- vector("list", length(region.ind))
+            for (i in 1:length(region.ind)) {
+                # by region
+                locDir <- file.path(region.gcm.samples.files[[input$loctype]][region.ind[i]], 
+                  "climate")
+                loc.files <- list.files(locDir, pattern = "\\.RData")
+                rsd.list1 <- vector("list", length(gcm_samples_files()))
+                for (z in 1:length(gcm_samples_files())) {
+                  # by model
+                  mod.files <- gcm_samples_files()[[z]]
+                  mod.files.list <- split(mod.files, substr(mod.files, nchar(mod.files) - 
+                    16, nchar(mod.files) - 6))  # by variable
+                  rsd.list2 <- vector("list", length(mod.files.list))
+                  for (zz in 1:length(mod.files.list)) {
+                    var.files <- mod.files.list[[zz]]
+                    rsd.list3 <- vector("list", length(var.files) - 1)
+                    for (zzz in 1:length(var.files)) {
+                      load(file.path(locDir, var.files[zzz]), envir = environment())  # Historical df loaded first (*alphabetical*)
+                      if (zzz == 1) {
+                        rsd.h <- subset(rsd.h, Month %in% month.abb[match(Months_original(), 
+                          month.abb)] & Year %in% currentYears() & Decade %in% 
+                          substr(Decades_original(), 1, 4))
+                        if (nrow(rsd.h) > 0) {
+                          rsd.h[, `:=`(Val, Val/samples.multipliers[1])]
+                          rsd.h[, `:=`(Prob, Prob/samples.multipliers[2])]  # <- rsd.h[,samples.columns]/rep(samples.multipliers, each=nrow(rsd.h))
+                        }
+                      }
+                      if (zzz > 1) {
+                        if (nrow(rsd.h) > 0) {
+                          rsd.h[, `:=`(Phase, rsd$Phase[1])]
+                          rsd.h[, `:=`(Scenario, rsd$Scenario[1])]
+                          rsd.h[, `:=`(Model, rsd$Model[1])]
+                        }
+                        rsd <- subset(rsd, Month %in% month.abb[match(Months_original(), 
+                          month.abb)] & Year %in% currentYears() & Decade %in% 
+                          substr(Decades_original(), 1, 4))
+                        if (nrow(rsd) > 0) {
+                          rsd[, `:=`(Val, Val/samples.multipliers[1])]
+                          rsd[, `:=`(Prob, Prob/samples.multipliers[2])]
+                          if (nrow(rsd.h) > 0) 
+                            rsd.list3[[zzz - 1]] <- rbind(rsd.h, rsd) else rsd.list3[[zzz - 1]] <- rsd
+                        } else if (nrow(rsd.h) > 0) {
+                          rsd.list3[[zzz - 1]] <- rsd.h
+                        } else return(NULL)
+                      }
+                    }
+                    rsd.list2[[zz]] <- rbindlist(rsd.list3)
+                    rm(rsd.list3)
+                  }
+                  rsd.list1[[z]] <- rbindlist(rsd.list2)
+                  rm(rsd.list2)
+                }
+                rsd.list[[i]] <- rbindlist(rsd.list1)
+                rm(rsd.list1)
+            }
+            x <- rbindlist(rsd.list)
+            rm(rsd.list, rsd, rsd.h)
+            gc()
+            setkey(x, Phase, Scenario, Model, Var, Location, Year, Month, Decade)
+        }
+        prog_d_spatial$set(message = "Bootstrap resampling...", value = 5)
+        rnd <- if (input$vars[1] == "Precipitation") 
+            0 else 1
+        x <- x[, density2bootstrap(Val, Prob, n.boot = BootSamples(), digits = rnd), 
+            by = list(Phase, Scenario, Model, Var, Location, Year, Month, Decade)]
+        setnames(x, "V1", "Val")
+        setcolorder(x, c("Phase", "Scenario", "Model", "Var", "Location", "Val", 
+            "Year", "Month", "Decade"))
+        gc()
+        if (!is.null(input$months2seasons) && input$months2seasons) {
+            prog_d_spatial$set(message = "Aggregating months...", value = 6)
+            x <- collapseMonths(x, "Val", as.numeric(input$n_seasons), Months_original(), 
+                n.samples = BootSamples())
+        }
+        if (!is.null(input$decades2periods) && input$decades2periods) {
+            prog_d_spatial$set(message = "Aggregating decades...", value = 7)
+            x <- periodsFromDecades(x, as.numeric(input$n_periods), Decades_original(), 
+                n.samples = BootSamples())
+        }
+        # data from only one phase with multiple models in that phase selected, or
+        # two phases with equal number > 1 of models selected from each phase.
+        # Otherwise compositing prohibited.  can assume both phases have multiple
+        # models, so split always works nicely
+        if (composite() > 0) {
+            prog_d_spatial$set(message = "Averaging samples...", value = 7.5)
+            n <- length(input$cmip3models)  # will match length(input$cmip5models)
+            x[, `:=`(Index, rep(1:BootSamples(), length = nrow(x)))]
+            x <- x[, round(sum(Val)/n, 1), by = list(Phase, Scenario, Var, Location, 
+                Year, Month, Decade, Index)]
+            x[, `:=`(Index, NULL)]
+            setnames(x, "V1", "Val")
+            x[, `:=`(Model, paste0(Phase, " ", n, "-Model Avg"))]
+            setcolorder(x, c("Phase", "Scenario", "Model", "Var", "Location", 
+                "Val", "Year", "Month", "Decade"))
+            if ("Precipitation" %in% input$vars) 
+                x[Var == "Precipitation", `:=`(Val, round(Val))]
+        }
+        if (input$convert_units) {
+            prog_d_spatial$set(message = "Unit conversion...", value = 9.5)
+            x[Var == "Temperature", `:=`(Val, round((9/5) * Val + 32, 1))]
+            x[Var == "Precipitation", `:=`(Val, round(Val/25.4, 3))]
+        }
+        prog_d_spatial$set(message = "GCM distributions complete.", value = 10)
+    })
+    x
+})
+```
 
 #### Master CRU distributions data set
 
