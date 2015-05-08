@@ -38,8 +38,8 @@ library(raster)
 library(data.table)
 library(ggplot2)
 
-setwd("C:/github/SNAPQAQC/workspaces")
-load("dt_clump_t2km.RData")
+#setwd("C:/github/SNAPQAQC/workspaces")
+load("C:/github/SNAPQAQC/workspaces/dt_clump_t2km.RData")
 
 r <- raster("C:/github/DataExtraction/data/tas_mean_C_AR5_GFDL-CM3_rcp60_01_2062.tif")
 
@@ -55,20 +55,30 @@ v <- v[!is.na(v)]
 n <- length(v)
 n.dat <- length(which(!is.na(r[])))
 
+# @knitr summarize
+d2 <- d[, sum(TotalArea), by=Area]
+setkey(d2, Area)
+d2[, RCS := cumsum(V1)/sum(V1)]
+n.cells <- sum(d2[, V1])/4
+p <- sum(d2[Area > 4, V1])/4
+
 # @knitr clump_size_plots
 # Scaled cumulative clump size frequency by clump size per temperature value
 xlb <- expression("Area ("~km^2~")")
 ylb <- "Relative cumulative sum"
-g1 <- ggplot(data=d, aes(x=Area, y=RelSum, group=Val)) + geom_step() + ggtitle("Relative cumulative clump size frequency by clump size\nper temperature value") + xlab(xlb) + ylab(ylb)
+g1 <- ggplot(data=d, aes(x=Area, y=RelSum, group=Val)) + geom_step() + ggtitle("Relative cumulative clump size frequency by clump size per temperature value") + xlab(xlb) + ylab(ylb)
 
 # Scaled cumulative clump size frequency by clump size given temperature 
-g2 <- g1 + facet_wrap(~ Binned, scales="free")
+g2 <- g1 + facet_wrap(~ Binned, scales="free") + ggtitle(expression("Relative cumulative clump area by temperature range ("~degree~C~")"))
 
 # Scaled cumulative coverage area by clump size per temperature value
-g3 <- ggplot(data=d, aes(x=Area, y=RelTotalArea, group=Val)) + geom_step() + ggtitle("Relative cumulative total area\nper temperature value (C)") + xlab(xlb) + ylab(ylb)
+g3 <- ggplot(data=d, aes(x=Area, y=RelTotalArea, group=Val)) + geom_step() + ggtitle("Relative cumulative total area per temperature value") + xlab(xlb) + ylab(ylb)
 
 # Scaled cumulative coverage area by clump size given temperature
-g4 <- g3 + facet_wrap(~ Binned, scales="free")
+g4 <- g3 + facet_wrap(~ Binned, scales="free") + ggtitle(expression("Relative cumulative total area by temperature range ("~degree~C~")"))
+
+# Cumulative coverage area by clump size < 100 km^2, integrated across all temperatures
+g5 <- ggplot(data=d2[Area <= 100,], aes(x=Area, y=RCS)) + geom_step() + ggtitle("Relative cumulative total area by temperature (C)") + xlab(xlb) + ylab(ylb)
 
 # @knitr clump_size_plot1
 g1
@@ -78,16 +88,5 @@ g2
 g3
 # @knitr clump_size_plot4
 g4
-
-# @knitr summarize
-d2 <- d[, sum(TotalArea), by=Area]
-setkey(d2, Area)
-d2[, CS := cumsum(V1)]
-
-# Cumulative coverage area by clump size < 100 km^2, integrated across all temperatures
-g5 <- ggplot(data=d2[Area <= 100,], aes(x=Area, y=CS)) + geom_step() + ggtitle("Relative cumulative total area by temperature (C)") + xlab(xlab) + ylab(ylab)
-n.cells <- sum(d2[, V1])/4
-p <- sum(d2[Area > 4, V1])/4
-
 # @knitr clump_size_plot5
 g5
