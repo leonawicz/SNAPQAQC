@@ -1,0 +1,103 @@
+---
+output:
+  html_document:
+    toc: false
+    theme: cosmo
+    highlight: zenburn
+    keep_md: true
+---
+
+```{r knitr_setup, echo=FALSE}
+opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, messages=FALSE, warnings=FALSE, dpi=300, fig.height=7, fig.width=10.5)
+read_chunk("../../code/sp_ac_clump.R")
+```
+
+##
+##
+## Spatial autocorrelation and clump size distributions
+The `sp_ac_clump.R` script investigates spatial autocorrelation and clump size distributions of climate variables (currently temperature, single example map) in raster data sets.
+
+### Motivation
+High-resolution downscaled data sets may contain high, positive spatial autocorrelation.
+In the case of SNAP's downscaled, spatially explicit data sets and other subsequently derived spatially explicit data sets like ALFRESCO output maps,
+it is important to investigate the role of spatial autocorrelation with respect to the data:information ratio.
+
+A cursory look at map layers suggests spatial autocorrelation is high virtually everywhere.
+Additional considerations include the influence of the underlying high-resolution climatology layer used in downscaling (e.g., PRISM),
+which in theory forces essentially the same spatial autocorrelation pattern on every map through time when the map time series being downscaled (e.g., CRU or a GCM)
+exists at an incredibly coarse spatial resolution by comparison.
+
+Furthermore, the combination of (1) a typical range in temperature or precipitation levels over the entire spatial extent in a map layer and (2)
+the level of precision of the data, ensures that even a map layer containing upwards of a couple million grid cells may be composed of only several hundred unique data values.
+
+Questions of interest include:
+
+*    How does the rate of increase in information content decrease with increasing spatial resolution?
+*    How does spatial autocorrelation vary through time, by subregion, and by variable?
+*    What effect does spatial autocorrelation have on the sampling distributions of statistics calculated from the data?
+*    At what scale should sampling be performed with respect to autocorrelation in the data?
+*    What is the degree of spatial clumping of unique values and how are clump sizes distributed, conditional on space and data value?
+*    How do clumping, autocorrelation, and a limited set of values relative to the size of a map inform data reduction strategies?
+
+### Initial explorations
+
+### Setup
+
+```{r setup1, eval=FALSE}
+```
+
+```{r setup2}
+```
+
+
+#### Autocorrelation and unique observations
+
+```{r autocorr}
+```
+
+```{r values}
+```
+
+Moran's *I* for this example downscaled temperature map layer is `r round(m_i, 3)` and Geary's *C*, which is inversely related but takes somewhat more into account local autocorrelation, is `r g_c`.
+Despite having `r n.dat` grid cells containing data values, there are only `r n` unique values in the entire map, making `r round(1-n/n.dat, 5)*100`% of the map redundant.
+A frequency table of just `r n` values would provide a complete description of the probability mass function for the entire unsampled map.
+
+```{r clump_size_plots}
+```
+
+Below are four plots examining spatial clump sizes by unique temperature values in the map.
+Clumping is typically reserved for discrete data, but considering the precision of the data and range of sensible values over the extent for the given variable,
+it is sensible to treat these numeric values as discrete.
+
+#### Scaled cumulative clump size frequency by clump size per temperature value
+
+```{r clump_size_plot1}
+```
+
+#### Scaled cumulative clump size frequency by clump size | temperature range
+
+```{r clump_size_plot2}
+```
+
+#### Scaled cumulative coverage area by clump size per temperature value
+
+```{r clump_size_plot3}
+```
+
+#### Scaled cumulative coverage area by clump size | temperature range
+
+```{r clump_size_plot4}
+```
+
+```{r summarize}
+```
+
+In the plot below, the marginal distribution of map coverage area by clump size is shown after integrating across all temperature values.
+The x-axis is cropped at 100 square km to provide more of a zoomed in view relative to the previous plots since the curve asymptotes fairly quickly thereafter.
+
+#### Scaled cumulative coverage area by clump size < 100 km^2
+
+```{r clump_size_plot5}
+```
+
+`r round(p/n.cells, 3)*100`% of data values in the map occur among clumps of identically valued cells while `r round(1-p/n.cells, 3)*100`% of values appear in isolation.
