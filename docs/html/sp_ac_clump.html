@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title></title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/cosmo.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+padding-top: 50px;
+padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar) */
+.section h2 {
+padding-top: 55px;
+margin-top: -55px;
+}
+.section h3 {
+padding-top: 55px;
+margin-top: -55px;
+}
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+color: black;
+}
+/* some padding for disqus */
+#disqus_thread {
+margin-top: 45px;
+}
+p {
+  text-align: justify;
+}
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46129458-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SNAP Data QA/QC</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Overview</a></li>
+
+          <li class="dropdown">
+            <a href="climate" class="dropdown-toggle" data-toggle="dropdown">Climate <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="AR4_AR5_extract.html">Downscaled GCMs</a></li>
+              <li><a href="CRU_extract.html">Downscaled CRU 3.x</a></li>
+              <li><a href="PRISM_extract.html">2-km PRISM</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">GCM organization</li>
+              <li><a href="stats_setup.html">Regions: stats</a></li>
+              <li><a href="samples_setup.html">Regions: densities</a></li>
+              <li><a href="cities_setup.html">Cities: stats</a></li>
+              <li class="dropdown-header">CRU organization</li>
+              <li><a href="stats_setup_CRU.html">Regions: stats</a></li>
+              <li><a href="samples_setup_CRU.html">Regions: densities</a></li>
+              <li><a href="cities_setup_CRU.html">Cities: stats</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="fire-&-veg" class="dropdown-toggle" data-toggle="dropdown">Fire & Veg <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Extraction</li>
+              <li><a href="alfStatsByRep_Rmpi.html">ALFRESCO: Rmpi</a></li>
+              <li><a href="alfStatsByRep.html">ALFRESCO: functions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Organization</li>
+              <li><a href="getAlfStatsAndDensities.html">ALFRESCO: stats and densities</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="analyses" class="dropdown-toggle" data-toggle="dropdown">Analyses <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Autocorrelation</li>
+              <li><a href="sp_ac_clump.html">Intro/example</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="aboutapp.html">About</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Help documents</li>
+              <li><a href="help01_start.html">Getting started</a></li>
+              <li><a href="help02_data.html">Working with data</a></li>
+              <li><a href="help03_plotOptions.html">Graphical options</a></li>
+              <li><a href="help04_updating.html">Updating settings</a></li>
+              <li><a href="help05_01_graphTS.html">Graphing: time series</a></li>
+              <li><a href="help05_02_graphScatter.html">Graphing: scatter plots</a></li>
+              <li><a href="help05_03_graphHeat.html">Graphing: heat maps</a></li>
+              <li><a href="help05_04_graphVar.html">Graphing: variability</a></li>
+              <li><a href="help05_05_graphSpatial.html">Graphing: distributions</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Prep R code</li>
+              <li><a href="qaqc_app_metadata.html">QA/QC App Metadata</a></li>
+            </ul>
+
+          <li class="dropdown">
+            <a href="app-code" class="dropdown-toggle" data-toggle="dropdown">App code <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">App R code</li>
+              <li><a href="appcode_global.html">global.R</a></li>
+              <li><a href="appcode_ui.html">ui.R</a></li>
+              <li><a href="appcode_server.html">server.R</a></li>
+              <li><a href="appcode_about.html">about.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_sidebar.html">sidebar.R</a></li>
+              <li><a href="appcode_main.html">main.R</a></li>
+              <li><a href="appcode_serverHead.html">serverHead.R</a></li>
+              <li><a href="appcode_app.html">app.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_io_sidebar.html">io_sidebar.R</a></li>
+              <li><a href="appcode_io_main.html">io_main.R</a></li>
+              <li><a href="appcode_reactives.html">reactives.R</a></li>
+              <li class="divider"></li>
+              <li><a href="appcode_plot_ts.html">plot_ts.R</a></li>
+              <li><a href="appcode_plot_scatter.html">plot_scatter.R</a></li>
+              <li><a href="appcode_plot_heatmap.html">plot_heatmap.R</a></li>
+              <li><a href="appcode_plot_variability.html">plot_variability.R</a></li>
+              <li><a href="appcode_plot_spatial.html">plot_spatial.R</a></li>
+            </ul>
+
+          <li><a href="http://leonawicz.github.io">All Projects</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-link" href="https://github.com/leonawicz/SNAPQAQC">
+            <i class="fa fa-github fa-lg"></i>
+            Github
+          </a>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+
+<div id="section" class="section level2">
+<h2></h2>
+</div>
+<div id="section-1" class="section level2">
+<h2></h2>
+</div>
+<div id="spatial-autocorrelation-and-clump-size-distributions" class="section level2">
+<h2>Spatial autocorrelation and clump size distributions</h2>
+<p>The <code>sp_ac_clump.R</code> script investigates spatial autocorrelation and clump size distributions of climate variables (currently temperature, single example map) in raster data sets.</p>
+<div id="motivation" class="section level3">
+<h3>Motivation</h3>
+<p>High-resolution downscaled data sets may contain high, positive spatial autocorrelation. In the case of SNAP’s downscaled, spatially explicit data sets and other subsequently derived spatially explicit data sets like ALFRESCO output maps, it is important to investigate the role of spatial autocorrelation with respect to the data to information ratio.</p>
+<p>A cursory look at map layers suggests spatial autocorrelation is high virtually everywhere. Additional considerations include the influence of the underlying high-resolution climatology layer used in downscaling (e.g., PRISM), which in theory forces essentially the same spatial autocorrelation pattern on every map through time when the map time series being downscaled (e.g., CRU or a GCM) exists at an incredibly coarse spatial resolution by comparison.</p>
+<p>Furthermore, the combination of (1) a typical range in temperature or precipitation levels over the entire spatial extent in a map layer and (2) the level of precision of the data, ensures that even a map layer containing upwards of a couple million grid cells may be composed of only several hundred unique data values.</p>
+<p>Questions of interest include:</p>
+<ul>
+<li>How does the rate of increase in information content decrease with increasing spatial resolution?</li>
+<li>How does spatial autocorrelation vary through time, by subregion, and by variable?</li>
+<li>What effect does spatial autocorrelation have on the sampling distributions of statistics calculated from the data?</li>
+<li>At what scale should sampling be performed with respect to autocorrelation in the data?</li>
+<li>What is the degree of spatial clumping of unique values and how are clump sizes distributed, conditional on space and data value?</li>
+<li>How do clumping, autocorrelation, and a limited set of values relative to the size of a map inform data reduction strategies?</li>
+</ul>
+</div>
+</div>
+<div id="section-2" class="section level2">
+<h2></h2>
+</div>
+<div id="section-3" class="section level2">
+<h2></h2>
+<div id="initial-explorations" class="section level3">
+<h3>Initial explorations</h3>
+<div id="autocorrelation-and-unique-observations" class="section level4">
+<h4>Autocorrelation and unique observations</h4>
+<p><img src="sp_ac_clump_files/figure-html/autocorr-1.png" /></p>
+<p>Moran’s <em>I</em> for this example downscaled temperature map layer is 0.986 and Geary’s <em>C</em>, which is inversely related but takes somewhat more into account local autocorrelation, is 8.06928910^{-4}. The map above shows the localized Moran’s <em>I</em>. Note how much of the map is near the global mean, and the geographic regions which have temperature values far from the mean in either direction nevertheless deviate in a coarse fashion with respect to the underlying spatial resolution. Despite having 1410983 grid cells containing data values, there are only 343 unique values in the entire map, making 99.976% of the map redundant. A frequency table of just 343 values would provide a complete description of the probability mass function for the entire unsampled map.</p>
+<p>Below are four plots examining spatial clump sizes by unique temperature values in the map. Clumping is typically reserved for discrete data, but considering the precision of the data and range of sensible values over the extent for the given variable, it is sensible to treat these numeric values as discrete.</p>
+</div>
+</div>
+</div>
+<div id="section-4" class="section level2">
+<h2></h2>
+</div>
+<div id="section-5" class="section level2">
+<h2></h2>
+<div id="scaled-cumulative-clump-size-frequency-by-clump-size-per-temperature-value" class="section level4">
+<h4>Scaled cumulative clump size frequency by clump size per temperature value</h4>
+<p>Unsurprisingly, most clumps are small to moderate, but outliers across a range of unique temperature values are extreme, one value (to the nearest 0.1 degrees Celsius) occurring in a clump roughly 1.210^{4} square km in size.</p>
+<p><img src="sp_ac_clump_files/figure-html/clump_size_plot1-1.png" /></p>
+</div>
+</div>
+<div id="section-6" class="section level2">
+<h2></h2>
+</div>
+<div id="section-7" class="section level2">
+<h2></h2>
+<div id="scaled-cumulative-clump-size-frequency-by-clump-size-temperature-range" class="section level4">
+<h4>Scaled cumulative clump size frequency by clump size | temperature range</h4>
+<p>When conditioned on temperature classes, there is little change. The key difference is trivial. Extreme values are relatively. Therefore, extremely large outliers in clump size are not possible. Note the shorter range on the x-axis for the coldest and hottest temperature classes. This is what makes it easier to see curves (step functions) indicating temperature values in the map which have more clumps of larger sizes - steep steps do not occur quite as early in the curve - although this happens across the full range of temperatures.</p>
+<p><img src="sp_ac_clump_files/figure-html/clump_size_plot2-1.png" /></p>
+</div>
+</div>
+<div id="section-8" class="section level2">
+<h2></h2>
+</div>
+<div id="section-9" class="section level2">
+<h2></h2>
+<div id="scaled-cumulative-coverage-area-by-clump-size-per-temperature-value" class="section level4">
+<h4>Scaled cumulative coverage area by clump size per temperature value</h4>
+<p>Looking at the cumulative coverage area by clump size for each unique temperature curve, certainly there is a fair amount of ink to the right of zero. While the extremely large clumps, though rare, are certainly demanding of further investigation, the darkened regions slightly to the right of zero are of interest for how they may inform a decision to sptailly aggregate the data prior to use in analyses.</p>
+<p><img src="sp_ac_clump_files/figure-html/clump_size_plot3-1.png" /></p>
+</div>
+</div>
+<div id="section-10" class="section level2">
+<h2></h2>
+</div>
+<div id="section-11" class="section level2">
+<h2></h2>
+<div id="scaled-cumulative-coverage-area-by-clump-size-temperature-range" class="section level4">
+<h4>Scaled cumulative coverage area by clump size | temperature range</h4>
+<p>Faceting the previous plot by temperature class, cumulative coverage area by clump size continues to be easier to parse visually, since it is not as susceptible to outliers in the form of either large frequencies of small clumps or the occasional very large clump. Coverage area represents an integration across clump size frequencies and individual clump sizes.</p>
+<p><img src="sp_ac_clump_files/figure-html/clump_size_plot4-1.png" /></p>
+</div>
+</div>
+<div id="section-12" class="section level2">
+<h2></h2>
+</div>
+<div id="section-13" class="section level2">
+<h2></h2>
+<div id="scaled-cumulative-coverage-area-by-clump-size-100-square-km" class="section level4">
+<h4>Scaled cumulative coverage area by clump size &lt; 100 square km</h4>
+<p>In the plot below, the marginal distribution of map coverage area by clump size is shown after integrating across all temperature values. The x-axis is cropped at 100 square km to provide more of a zoomed in view relative to the previous plots since the curve asymptotes fairly quickly thereafter.</p>
+<p><img src="sp_ac_clump_files/figure-html/clump_size_plot5-1.png" /></p>
+<p>Half of the map is filled in by values occurring in clumps greater than 36 square km. 83.3% of data values in the map occur among clumps of identically valued cells while 16.7% of values appear in isolation.</p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>
