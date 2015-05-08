@@ -132,6 +132,13 @@ img {
             </ul>
 
           <li class="dropdown">
+            <a href="analyses" class="dropdown-toggle" data-toggle="dropdown">Analyses <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Autocorrelation</li>
+              <li><a href="sp_ac_clump.html">Intro/example</a></li>
+            </ul>
+
+          <li class="dropdown">
             <a href="app-docs" class="dropdown-toggle" data-toggle="dropdown">App docs <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="aboutapp.html">About</a></li>
@@ -256,7 +263,7 @@ img {
   &lt;/head&gt;
   &lt;body &gt;
     
-    &lt;div id = 'chart16f454ef3035' class = 'rChart d3_sankey'&gt;&lt;/div&gt;    
+    &lt;div id = 'chart37061382154' class = 'rChart d3_sankey'&gt;&lt;/div&gt;    
     ï»¿&lt;!--Attribution:
 Mike Bostock https://github.com/d3/d3-plugins/tree/master/sankey
 Mike Bostock http://bost.ocks.org/mike/sankey/
@@ -265,7 +272,7 @@ Mike Bostock http://bost.ocks.org/mike/sankey/
 &lt;script&gt;
 (function(){
 var params = {
- &quot;dom&quot;: &quot;chart16f454ef3035&quot;,
+ &quot;dom&quot;: &quot;chart37061382154&quot;,
 &quot;width&quot;:    900,
 &quot;height&quot;:    800,
 &quot;data&quot;: {
@@ -283,7 +290,7 @@ var params = {
 &quot;top&quot;:     50 
 },
 &quot;title&quot;: &quot;Code Flow&quot;,
-&quot;id&quot;: &quot;chart16f454ef3035&quot; 
+&quot;id&quot;: &quot;chart37061382154&quot; 
 };
 
 params.units ? units = &quot; &quot; + params.units : units = &quot;&quot;;
@@ -363,18 +370,18 @@ link.append(&quot;title&quot;)
 <p>// the function for moving the nodes function dragmove(d) { d3.select(this).attr(“transform”, “translate(” + ( d.x = Math.max(0, Math.min(params.width - d.dx, d3.event.x)) ) + “,” + ( d.y = Math.max(0, Math.min(params.height - d.dy, d3.event.y)) ) + “)”); sankey.relayout(); link.attr(“d”, path); } })(); &lt;/script&gt;</p>
 <pre><code>&amp;lt;script&amp;gt;
   var cscale = d3.scale.category20b();
-  d3.selectAll(&amp;#039;#chart16f454ef3035 svg path.link&amp;#039;)
+  d3.selectAll(&amp;#039;#chart37061382154 svg path.link&amp;#039;)
     .style(&amp;#039;stroke&amp;#039;, function(d){
       return cscale(d.source.name);
     })
-  d3.selectAll(&amp;#039;#chart16f454ef3035 svg .node rect&amp;#039;)
+  d3.selectAll(&amp;#039;#chart37061382154 svg .node rect&amp;#039;)
     .style(&amp;#039;fill&amp;#039;, function(d){
       return cscale(d.name)
     })
     .style(&amp;#039;stroke&amp;#039;, &amp;#039;none&amp;#039;)
 &amp;lt;/script&amp;gt;
     </code></pre>
-&lt;/body&gt; &lt;/html&gt; ‘scrolling=’no’ frameBorder=‘0’ seamless class=‘rChart <a href="http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey" class="uri">http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey</a>’ id=‘iframe-chart16f454ef3035’&gt;
+&lt;/body&gt; &lt;/html&gt; ‘scrolling=’no’ frameBorder=‘0’ seamless class=‘rChart <a href="http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey" class="uri">http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey</a>’ id=‘iframe-chart37061382154’&gt;
 </iframe>
 <style>iframe.rChart{ width: 100%; height: 400px;}</style>
 <style>iframe.rChart{ width: 100%; height: 840px;}</style>
