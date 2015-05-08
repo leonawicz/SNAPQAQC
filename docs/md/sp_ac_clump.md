@@ -69,7 +69,7 @@ one value (to the nearest 0.1 degrees Celsius) occurring in a clump roughly 1.2\
 ##
 #### Scaled cumulative clump size frequency by clump size | temperature range
 
-When conditioned on temperature classes, there is little change. The key difference is trivial. Extreme values are relatively.
+When conditioned on temperature classes, there is little change. The key difference is trivial. Extreme values are relatively rare.
 Therefore, extremely large outliers in clump size are not possible.
 Note the shorter range on the x-axis for the coldest and hottest temperature classes.
 This is what makes it easier to see curves (step functions) indicating temperature values in the map
