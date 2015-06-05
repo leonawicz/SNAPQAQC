@@ -53,7 +53,7 @@ if(exists("years")) yr2 <- tail(years, 1) else yr2 <- 2099
 years <- yr1:yr2
 
 if(cities){
-	if(domain!="world10min") locs <- subset(locs, region!="NWT")
+	if(domain!="world10min") locs <- subset(locs, region!="Northwest Territories")
 	#locs <- locs[is.na(locs$pop) | locs$pop > 10,]
 	l <- paste(locs$region, locs$loc)
 	lu <- unique(l)
@@ -66,6 +66,10 @@ if(cities){
 		drp <- c(drp, ind)
 	}
 	cities <- locs[-drp,]
+    if(domain=="world10min"){ # hack to deal with specific NT locations
+        nt.na <- which(locs$loc %in% c("Paulatuk", "Sachs Harbour"))
+        cities$lon[nt.na] <- cities$lon[nt.na] + 0.1666667
+    }
 	if(exists("cities.batch")){
 		batch.bounds <- round(seq(1, nrow(cities) + 1, length=11))[c(cities.batch, cities.batch + 1)] - c(0,1)
 		cities <- cities[batch.bounds[1]:batch.bounds[2],]

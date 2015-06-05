@@ -15,7 +15,7 @@ s.t <- stack(list.files(file.path(mainDir, tDir), pattern=".tif$", full=TRUE))
 
 # @knitr cities
 # Select cities and extract data
-locs <- subset(locs, region!="NWT")
+locs <- subset(locs, region!="Northwest Territories")
 #locs <- locs[locs$pop > 10,]
 l <- paste(locs$region, locs$loc)
 lu <- unique(l)
