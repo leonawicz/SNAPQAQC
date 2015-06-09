@@ -51,7 +51,7 @@ if(cities){
 	}
 	cities <- locs[-drp,]
     if(domain=="world10min"){ # hack to deal with specific NT locations
-        nt.na <- which(locs$loc %in% c("Paulatuk", "Sachs Harbour"))
+        nt.na <- which(cities$loc %in% c("Paulatuk", "Sachs Harbour"))
         cities$lon[nt.na] <- cities$lon[nt.na] + 0.1666667
     }
 	if(exists("cities.batch")){
