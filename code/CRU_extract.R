@@ -220,7 +220,7 @@ for(k in 1:2){
 		samples.names <- unique(samples$Location)
 		mid <- (ncol(samples)-1)/2 + 1
 		names.hold <- names(samples)[1:mid]
-		samples <- data.frame(Location=samples$Location, rbind(as.matrix(samples[, 2:mid]), as.matrix(samples[, (mid+1):ncol(samples)])))
+		samples <- data.frame(Location=samples$Location, rbind(as.matrix(samples[, 2:mid, with=FALSE]), as.matrix(samples[, (mid+1):ncol(samples), with=FALSE])))
 		samples$Location <- rep(rep(samples.names, each=n2))
 		samples.out <- list()
 		for(i in 1:length(samples.names)){
