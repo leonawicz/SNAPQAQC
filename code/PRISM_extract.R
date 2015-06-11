@@ -38,35 +38,35 @@ prism.t <- round(extract(s.t, cities), 1)
 
 # @knitr save
 # Save results
-file1 <- "cc4lite/cc4lite_cru31_prism_akcan2km.RData"
+#file1 <- "cc4lite/cc4lite_cru31_prism_akcan2km.RData"
 file2 <- "cc4lite/cc4lite_cru32_prism_akcan2km.RData"
-file3 <- "cc4lite/cc4lite_cru3132_prism_akcan2km.RData"
-file4 <- "cc4lite/cc4lite_cru31_prism_world10min.RData"
+#file3 <- "cc4lite/cc4lite_cru3132_prism_akcan2km.RData"
+#file4 <- "cc4lite/cc4lite_cru31_prism_world10min.RData"
 file5 <- "cc4lite/cc4lite_cru32_prism_world10min.RData"
-file6 <- "cc4lite/cc4lite_cru3132_prism_world10min.RData"
+#file6 <- "cc4lite/cc4lite_cru3132_prism_world10min.RData"
 if(domain=="akcan2km"){
-	load(paste0("cc4lite/cc4lite_cru31_akcan2km.RData"))
+	#load(paste0("cc4lite/cc4lite_cru31_akcan2km.RData"))
 	load(paste0("cc4lite/cc4lite_cru32_akcan2km.RData"))
 	save(d.2km, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism_akcan2km.RData")
-	save(d.2km, d.cru31.2km, locs, prism.p, prism.t, prism.cities, file=file1)
+	#save(d.2km, d.cru31.2km, locs, prism.p, prism.t, prism.cities, file=file1)
 	save(d.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, file=file2)
-	save(d.2km, d.cru31.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, file=file3)
+	#save(d.2km, d.cru31.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, file=file3)
 } else if(domain=="world10min") {
-	load(paste0("cc4lite/cc4lite_cru31_world10min.RData"))
+	#load(paste0("cc4lite/cc4lite_cru31_world10min.RData"))
 	load(paste0("cc4lite/cc4lite_cru32_world10min.RData"))
 	save(d.10min, locs, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism_world10min.RData")
-	save(d.10min, d.cru31.10min, locs, prism.p, prism.t, prism.cities, file=file4)
+	#save(d.10min, d.cru31.10min, locs, prism.p, prism.t, prism.cities, file=file4)
 	save(d.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, file=file5)
-	save(d.10min, d.cru31.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, file=file6)
+	#save(d.10min, d.cru31.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, file=file6)
 }
 
-if(all(file.exists(file3, file6))){
-	load(file3)
+if(all(file.exists(file2, file5))){
+	load(file2)
 	locs.2km <- locs
-	load(file6)
+	load(file5)
 	locs.10min <- locs
 	save(d.2km, d.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_prism_2km10min.RData")
-	save(d.2km, d.10min, d.cru31.2km, d.cru31.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_cru31_prism_2km10min.RData")
+	#save(d.2km, d.10min, d.cru31.2km, d.cru31.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_cru31_prism_2km10min.RData")
 	save(d.2km, d.10min, d.cru32.2km, d.cru32.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_cru32_prism_2km10min.RData")
-	save(d.2km, d.10min, d.cru31.2km, d.cru31.10min, d.cru32.2km, d.cru32.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_cru3132_prism_2km10min.RData")
+	#save(d.2km, d.10min, d.cru31.2km, d.cru31.10min, d.cru32.2km, d.cru32.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, file="cc4lite/cc4lite_cru3132_prism_2km10min.RData")
 }
