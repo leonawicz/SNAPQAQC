@@ -125,7 +125,7 @@ if(doFire){
             for(j in 1:serial.iters){
                 repid.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 repid.tmp <- repid.tmp[repid.tmp <= max(repid)]
-                abfc.fsv <- mclapply(repid, getFireStats, mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp, mc.cores=n.cores)
+                abfc.fsv <- mclapply(repid.tmp, getFireStats, mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp, mc.cores=n.cores)
                 abfc.dat[[j]] <- rbindlist(lapply(abfc.fsv, "[[", 1))
                 fsv.dat[[j]] <- rbindlist(lapply(abfc.fsv, "[[", 2))
                 rm(abfc.fsv)
