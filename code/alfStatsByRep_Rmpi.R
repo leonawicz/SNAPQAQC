@@ -78,7 +78,6 @@ paste("Remaining support objects created. Now pushing objects to slaves.")
 # @knitr obj2slaves
 # Export objects to slaves
 if(Rmpi){
-	mpi.bcast.Robj2slave(veg.labels)
 	mpi.bcast.Robj2slave(cells_shp_list)
 	mpi.bcast.Robj2slave(cells_shp_list_rmNA)
 	mpi.bcast.Robj2slave(region.names.out)
@@ -105,15 +104,6 @@ if(Rmpi){
 	tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/procX")
 	rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir)
 }
-
-# @knitr not_in_use1
-#abfc.va.list <- mpi.remote.exec( getAlfStats(i=repid[id], mainDir=mainDir, denDir=repOutDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, breaks=breaks, age.lab=age.labels, veg.lab=veg.labels, n.samples=20) )
-#print("Area burned and fire frequency data frame list returned from slaves.")
-#print("Veg area data frame list returned from slaves.")
-#abfc.dat <- lapply(abfc.va.list, "[[", 1)
-#va.dat <- lapply( abfc.va.list, "[[", 2)
-#rm(abfc.va.list)
-#gc()
 
 # @knitr fire_stats
 # Compile fire statistics
@@ -174,8 +164,25 @@ if(doFire){
 # Compile vegetation class and age statistics
 if(doAgeVeg){
 	if(Rmpi) va.dat <- mpi.remote.exec( getAgeVegStats(i=repid[id], mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, veg.lab=veg.labels, n.samples=1000) )
-	if(!Rmpi) va.dat <- mclapply(repid, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
-	print("Veg area data frame list returned from slaves.")
+	if(!Rmpi){
+        len <- length(repid)
+        if(len <= n.cores){
+            va.dat <- mclapply(repid, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
+        } else {
+            serial.iters <- ceiling(len/n.cores)
+            n.cores2 <- which(len/(1:n.cores) < serial.iters)[1]
+            va.dat <- vector("list", serial.iters)
+            for(j in 1:serial.iters){
+                repid.tmp <- 1:n.cores2 + (j-1)*n.cores2
+                repid.tmp <- repid.tmp[repid.tmp <= max(repid)]
+                va.dat.tmp <- mclapply(repid.tmp, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
+                va.dat[[j]] <- rbindlist(va.dat.tmp)
+                print(paste("Replicate batch", j, "of", serial.iters, "complete."))
+            }
+            va.dat <- rbindlist(va.dat)
+        }
+    }
+    print("Veg area data frame list returned from slaves.")
 
 	va.dat <- rbindlist(va.dat)
 	va.dat[, Model := swapModelName(mod.scen[1])]
