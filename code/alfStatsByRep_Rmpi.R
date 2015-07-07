@@ -108,13 +108,36 @@ if(Rmpi){
 # @knitr fire_stats
 # Compile fire statistics
 if(doFire){
-	if(Rmpi) abfc.fsv.dat <- mpi.remote.exec( getFireStats(i=repid[id], mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp) )
-	if(!Rmpi) abfc.fsv.dat <- mclapply(repid, getFireStats, mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp, mc.cores=n.cores)
+	if(Rmpi){
+        abfc.fsv.dat <- mpi.remote.exec( getFireStats(i=repid[id], mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp) )
+        abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
+        fsv.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 2))
+    } else {
+        len <- length(repid)
+        if(len <= n.cores){
+            abfc.fsv.dat <- mclapply(repid, getFireStats, mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp, mc.cores=n.cores)
+            abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
+            fsv.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 2))
+        } else {
+            serial.iters <- ceiling(len/n.cores)
+            n.cores2 <- which(len/(1:n.cores) < serial.iters)[1]
+            abfc.dat <- fsv.dat <- vector("list", serial.iters)
+            for(j in 1:serial.iters){
+                repid.tmp <- 1:n.cores2 + (j-1)*n.cores2
+                repid.tmp <- repid.tmp[repid.tmp <= max(repid)]
+                abfc.fsv <- mclapply(repid, getFireStats, mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp, mc.cores=n.cores)
+                abfc.dat[[j]] <- rbindlist(lapply(abfc.fsv, "[[", 1))
+                fsv.dat[[j]] <- rbindlist(lapply(abfc.fsv, "[[", 2))
+                rm(abfc.fsv)
+                gc()
+                print(paste("Replicate batch", j, "of", serial.iters, "complete."))
+            }
+            abfc.dat <- rbindlist(abfc.dat)
+            fsv.dat <- rbindlist(fsv.dat)
+        }
+    }
 	print("Fire size by vegetation class completed.")
-
-	abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
-	fsv.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 2))
-
+    
 	abfc.dat[, Model := swapModelName(mod.scen[1])]
 	abfc.dat[, Scenario := swapScenarioName(mod.scen[2])]
 	abfc.dat[, Scenario := factor(Scenario, levels=scen.levels)]
@@ -163,8 +186,9 @@ if(doFire){
 # @knitr age_veg_stats
 # Compile vegetation class and age statistics
 if(doAgeVeg){
-	if(Rmpi) va.dat <- mpi.remote.exec( getAgeVegStats(i=repid[id], mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, veg.lab=veg.labels, n.samples=1000) )
-	if(!Rmpi){
+	if(Rmpi){
+        va.dat <- mpi.remote.exec( getAgeVegStats(i=repid[id], mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, veg.lab=veg.labels, n.samples=1000) )
+	} else {
         len <- length(repid)
         if(len <= n.cores){
             va.dat <- mclapply(repid, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
@@ -177,9 +201,10 @@ if(doAgeVeg){
                 repid.tmp <- repid.tmp[repid.tmp <= max(repid)]
                 va.dat.tmp <- mclapply(repid.tmp, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
                 va.dat[[j]] <- rbindlist(va.dat.tmp)
+                rm(va.dat.tmp)
+                gc()
                 print(paste("Replicate batch", j, "of", serial.iters, "complete."))
             }
-            va.dat <- rbindlist(va.dat)
         }
     }
     print("Veg area data frame list returned from slaves.")
