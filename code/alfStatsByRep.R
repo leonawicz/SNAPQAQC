@@ -22,8 +22,8 @@ getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, 
 	getABFC <- function(x, values, index){
 		#x <- intersect(index, x)
 		if(length(x)){
-			AB <- length(which(values[x] > 0))
-			FC <- length(unique(values[x]))
+			AB <- length(which(values[match(x, index)] > 0))
+			FC <- length(unique(values[match(x, index)]))
 		} else AB <- FC <- 0
 		c(AB, FC)
 	}
@@ -33,6 +33,7 @@ getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, 
 		if(!length(cells)) return(data.table())
 		dlist <- vector("list", length(i))
 		ind <- match(cells, f.ind)
+        if(!length(ind)) return(data.table())
 		if(length(ind) < length(f.ind)) v[-ind] <- NA
 		for(k in 1:length(i)){
 			x <- v
@@ -61,17 +62,19 @@ getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, 
 		vid <- 1:5
 		if(!all(is.na(v.fid))){
 			system.time( dl <- rapply(cells.rmNA, f=fsByVeg, classes="integer", how="replace", i=vid, v=v.veg.rmNA, v.fid=v.fid.rmNA, f.ind=f.ind) )
-			n.fires <- unlist(sapply(1:length(dl), function(x, l) sapply(l[[x]], nrow), l=dl))
+            #for(jj in 1:1) dl[jj][which(!sapply(dl[[jj]], is.data.table))] <- data.frame(a=1) # set NULL to empty data table
+			n.fires <- unlist(sapply(1:length(dl), function(x, l) sapply(l[[x]], function(a) if(is.data.table(a)) nrow(a) else 0), l=dl))
 			d.j <- rbindlist(lapply(dl, rbindlist))
 			dlist[[j]] <- data.table(LocGroup=rep(grp.names.vec, times=n.fires), Location=rep(loc.names.vec, times=n.fires), VegID=d.j$Vegetation, FID=d.j$FID, Val=d.j$FS, Year=as.integer(years[j]), Replicate=as.integer(i)) # end test lines
 		}
 		
 		# basic aggregate burn area and fire frequency
 		if(j==1) m <- matrix(NA,length(filesF),2*n) # create matrix for multiple subdomains
-		v <- rapply(cells.rmNA, f=getABFC, classes="integer", how="unlist", values=v.fid.rmNA, index=f.ind)
+		v <- rapply(cells.rmNA, f=getABFC, classes="integer", how="replace", values=v.fid.rmNA, index=f.ind)
+        v <- unlist(sapply(1:length(v), function(x, l) sapply(l[[x]], function(a) if(is.integer(a)) a else c(0, 0)), l=v))
 		m[j,1:(2*n)] <- v
 		
-		print(years[j])
+		print(paste0("Replicate ", i, ": " years[j]))
 	}
 	d.fs <- rbindlist(dlist)
 
@@ -121,6 +124,7 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 			dlist2 <- vector("list", length(x[[l1]]))
 			for(l2 in 1:length(x[[l1]])){
 				cells.tmp <- cells.list[[l1]][[l2]]
+                if(!length(cells.tmp)) next
 				a.tmp <- a[cells.tmp]
 				v.tmp <- v[cells.tmp]
 				v.tmp.n <- tapply(cells.tmp, v.tmp, length)
@@ -130,7 +134,7 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 			dlist1[[l1]] <- rbindlist(dlist2)
 		}
 		dlist[[j]] <- rbindlist(dlist1)
-		print(paste("Age and veg maps:", years[j]))
+		print(paste("Replicate", i, "age and veg maps:", years[j]))
 	}
 	
 	x <- rbindlist(dlist)
@@ -155,99 +159,4 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	gc()
 	print("Returning veg class areas data frame for subregions.")
 	veg.area
-}
-
-# @knitr getAlfStats
-getAlfStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names.list, n, n.samples, replace.deciduous=FALSE, ...){
-	rep.lab <- paste0("_",c(0:199),"_")[i]
-	patF <- gsub("expression","",paste(bquote(expression("^FireS.*.",.(rep.lab),".*.tif$")),collapse=""))
-	filesF <- list.files(mainDir, pattern=patF, full=T)
-	patA <- gsub("expression","",paste(bquote(expression("^A.*.",.(rep.lab),".*.tif$")),collapse=""))
-	filesA <- list.files(mainDir, pattern=patA, full=T)
-	patV <- gsub("expression","",paste(bquote(expression("^V.*.",.(rep.lab),".*.tif$")),collapse=""))
-	filesV <- list.files(mainDir, pattern=patV, full=T)
-	files.years <- as.numeric(substr(filesA,nchar(filesA)-7,nchar(filesA)-4))
-	if(is.numeric(years)) { p <- files.years %in% years; if(any(p)) { filesF <- filesF[p]; filesA <- filesA[p]; filesV <- filesV[p]; files.years <- files.years[p] } }
-	years <- unique(files.years)
-	print("Vectors of annual files obtained for fire, age, and veg.")
-	grp.names.vec <- rep(names(cells.list), times=sapply(cells.list, length))
-	loc.names.vec <- as.character(unlist(lapply(cells.list, names)))
-	f.var <- rep(c("AB", "FC"), n)
-	x <- rapply(cells.list, f=function(x) lapply(1:length(filesA), function(x) 0L), classes="integer", how="replace")
-	# Area burned and fire count function
-	getABFC <- function(x, values, index){
-		x <- intersect(index, x)
-		if(length(x)){
-			AB <- length(which(values[x] > 0))
-			FC <- length(unique(values[x]))
-		} else AB <- FC <- 0
-		c(AB, FC)
-	}
-	# Density estimation function
-	denFun <- function(x, n, adj=0.25, min.zero=TRUE, diversify=FALSE){
-		x <- x[!is.na(x)]
-		lx <- length(x)
-		if(diversify && length(unique(x))==1) x <- rnorm(max(10, lx), mean=x[1]) # diversify constant values
-		if(lx==1) x <- x + c(-1:1) #single pixel of veg type, add and subtract one age year to make procedure possible
-		dif <- diff(range(x))
-		z <- density(x, adjust=adj, n=n, from=min(x)-max(1, 0.05*dif), to=max(x)+max(1, 0.05*dif))
-		if(min.zero && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+max(1, 0.05*dif))
-		as.numeric(c(z$x, z$y))
-	}
-	print("Support functions defined and setup completed. Beginning annual processing...")
-	for(j in 1:length(years)){
-		ff <- getValues(raster(filesF[j], band=2))
-		f.ind <- which(!is.na(ff))
-		ff <- rapply(cells.list, f=getABFC, classes="integer", how="unlist", values=ff, index=f.ind)
-		if(j==1){
-			fire <- matrix(NA,length(filesF),2*n) # create an area burned and fire count matrix for multiple subdomains
-			a <- getValues(raster(filesA[1])) # use as a template
-			a.ind <- which(!is.na(a))
-			a <- a[a.ind]
-		} else {
-			a <- a + 1
-			af.ind <- intersect(a.ind, f.ind)
-			if(length(af.ind)) a[af.ind] <- 0
-		}
-		fire[j,1:(2*n)] <- ff
-		v <- getValues(raster(filesV[j]))[a.ind]
-		for(l1 in 1:length(x)){
-			for(l2 in 1:length(x[[l1]])){
-				cells.tmp <- cells.list[[l1]][[l2]]
-				a.tmp <- a[cells.tmp]
-				v.tmp <- v[cells.tmp]
-				v.tmp.n <- tapply(cells.tmp, v.tmp, length)
-				den.tmp <- tapply(a.tmp, v.tmp, denFun, n=n.samples)
-				x[[l1]][[l2]][[j]] <- data.frame(LocGroup=names(x)[l1], Location=names(x[[l1]])[l2], VegID=rep(as.numeric(names(den.tmp)), each=2*n.samples), VegArea=rep(v.tmp.n, each=2*n.samples), Val=unlist(den.tmp), Year=years[j], stringsAsFactors=FALSE)
-			}
-		}
-		print(paste("Fire, age and vegetation processed:", years[j]))
-	}
-	for(l1 in 1:length(x)) for(l2 in 1:length(x[[l1]])) x[[l1]][[l2]] <- do.call(rbind, x[[l1]][[l2]])
-	x <- do.call(rbind, lapply(x, do.call, what=rbind))
-	x$Replicate <- i
-	veg.area <- x[seq(1, nrow(x), by=2*n.samples), -5]
-	names(veg.area)[4] <- "Val"
-	veg.area$Var <- "Vegetated Area"
-	veg.area <- veg.area[,c(1,2,7,4,3,5,6)]
-	rownames(veg.area) <- NULL
-	print(paste("Veg class areas data frame compiled. Writing age density data frames to R workspaces..."))
-	locs <- unique(x$Location)
-	for(j in 1:length(locs)){
-		obj.name.tmp <- paste0("veg.age.loc", j, ".rep", i)
-		assign(obj.name.tmp, x[x$Location==locs[j], -c(4,7)])
-		save(list=c("locs", obj.name.tmp), file=paste0(denDir, "/", obj.name.tmp, ".RData"))
-		print(paste(obj.name.tmp, "object of", length(locs), "saved."))
-		rm(list=obj.name.tmp)
-		gc()
-	}
-	rm(x)
-	gc()
-	print(paste("Age densities saved for all locations. Compiling area burned and fire frequency data frame..."))
-	ab <- as.integer(fire[, which(f.var=="AB")])
-	fc <- as.integer(fire[, which(f.var=="FC")])
-	fire <- data.frame(LocGroup=rep(grp.names.vec, each=length(years)), Location=rep(loc.names.vec, each=length(years)), Var=rep(c("Burn Area", "Fire Count"), each=length(ab)), Val=c(ab, fc), Year=years, Replicate=i, stringsAsFactors=FALSE)
-	rownames(fire) <- NULL
-	print("Returning list of (1) area burned and fire frequency data frame and (2) veg class areas data frame for all regions.")
-	list(fire=fire, veg.area=veg.area)
 }
