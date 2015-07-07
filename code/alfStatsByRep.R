@@ -74,7 +74,7 @@ getFireStats <- function(i, mainDir, years=NULL, cells.list, shp.names.list, n, 
         v <- unlist(sapply(1:length(v), function(x, l) sapply(l[[x]], function(a) if(is.integer(a)) a else c(0, 0)), l=v))
 		m[j,1:(2*n)] <- v
 		
-		print(paste0("Replicate ", i, ": " years[j]))
+		print(paste0("Replicate ", i, ": ", years[j]))
 	}
 	d.fs <- rbindlist(dlist)
 
