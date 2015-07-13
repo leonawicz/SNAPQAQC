@@ -1,9 +1,12 @@
 # @knitr setup
 library(parallel)
 library(reshape2)
+library(data.table)
+library(dplyr)
 n.regions <- 53 # known, fixed
 n.cores <- 27 # of 32 available
-n.samples <- 1000 # known, based on upstream settings for vegetation age
+n.samples <- 1000 # new density estimation
+n.samples.in <- 100 # known, based on upstream settings for vegetation age
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 ageDirs <- list.files("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", full=T)
@@ -89,7 +92,7 @@ getStats <- function(x, seq.q){
 
 # @knitr get_AgeDensities
 # Primary processing functions
-get_AgeDensities <- function(j, dirs, n.samples=1000, n.samples.in, samples.index, multiplier, veg.labels, scen.levels){
+get_AgeDensities <- function(j, dirs, n.samples=100, n.samples.in, samples.index, multiplier, veg.labels, scen.levels){
 	pat <- paste0("^age__.*.rep.*.RData$")
 	pat2 <- substr(pat, 1, nchar(pat) - 9)
 	files.list <- lapply(1:length(dirs), function(i, dirs, ...) list.files(dirs[i], ...), dirs=dirs, full=T, pattern=pat)
@@ -117,7 +120,7 @@ get_AgeDensities <- function(j, dirs, n.samples=1000, n.samples.in, samples.inde
 		a <- sapply(year.veg.list, function(x) all(paste0(all.years, ".", 1:8) %in% x))
 		dl <- length(d.list)
 		for(z in 1:dl) {
-			x <- as.matrix(d.list[[z]][,3:5])
+			x <- as.matrix(d.list[[z]][, 3:5, with=FALSE])
 			x <- cbind(x[,2], x[,3] + x[,1]/10)
 			if(!a[z]){
 				x.ids <- unique(x[,2])
@@ -130,44 +133,44 @@ get_AgeDensities <- function(j, dirs, n.samples=1000, n.samples.in, samples.inde
 			d.list[[z]] <- split(x[,1], x[,2])
 			print(paste("Obtain annual vegetation samples: replicate", z, "of", dl))
 		}
-		d.list <- rapply(d.list, btfun, classes="numeric", how="replace", n.samples=n.samples.in, n.boot=10000, interp=TRUE, n.interp=1000)
+		d.list <- rapply(d.list, btfun, classes="numeric", how="replace", n.samples=n.samples.in, n.boot=1000, interp=TRUE, n.interp=1000)
 		d.list <- unlist(d.list, recursive=FALSE)
 		p <- length(d.list)
 		m <- p/length(d.names)
 		system.time( for(k in 1:m) { d.list[[k]] <- denFun(unlist(d.list[seq(1, p, by=m) + k - 1]), n=n.samples); print(paste("Empirical density estimation: sample", k, "of", m)) } )
 		d.list <- d.list[1:m]
 		gc()
-		d.tmp <- data.frame(Var="Age", Location=loc, VegID=rep(1:8, each=2*n.samples), Vals_Probs=unlist(d.list), Year=rep(all.years, each=8*2*n.samples), stringsAsFactors=FALSE)
+		d.tmp <- data.frame(Var="Age", Location=loc, Vegetation=rep(1:8, each=2*n.samples), Vals_Probs=unlist(d.list), Year=rep(all.years, each=8*2*n.samples), stringsAsFactors=FALSE)
 		rm(d.list)
 		gc()
 		ind.val <- as.numeric(mapply("+", seq(1, nrow(d.tmp), by=2*n.samples), MoreArgs=list(0:(n.samples-1))))
 		d.tmp$Vals_Probs[ind.val] <- round(d.tmp$Vals_Probs[ind.val])
 		mod.scen <- unlist(strsplit(basename(dirs[i]), "\\."))
-		d.tmp$Model <- swapModelName(mod.scen[1])
-		d.tmp$Scenario <- swapScenarioName(mod.scen[2])
-		d.tmp$Phase <- getPhase(mod.scen[2])
-		d.tmp <- d.tmp[c(8:6,1:5)]
-		rownames(d.tmp) <- NULL
-		if(i==1) d.alf.age <- d.tmp else d.alf.age <- rbind(d.alf.age, d.tmp)
+        d.tmp <- data.table(d.tmp)
+		d.tmp[, Model:=swapModelName(mod.scen[1])]
+		d.tmp[, Scenario:=swapScenarioName(mod.scen[2])]
+		d.tmp[, Phase:=getPhase(mod.scen[2])]
+		setcolorder(d.tmp, names(d.tmp)[c(8:6,1:5)])
+		if(i==1) d.alf.age <- d.tmp else d.alf.age <- rbindlist(list(d.alf.age, d.tmp))
 		print(i)
 	}
 	
 	rm(d.tmp)
-	d.alf.age$vals.ind <- rep(rep(c(T,F), each=n.samples), length=nrow(d.alf.age))
-	d.alf.age$dcastIsDumb <- rep(1:n.samples, length=nrow(d.alf.age))
-	d.alf.age <- dcast(d.alf.age, Phase + Scenario + Model + Var + Location + VegID + Year + dcastIsDumb ~ vals.ind, value.var="Vals_Probs")
-	names(d.alf.age)[10:9] <- c("Val", "Prob")
-	d.alf.age$Scenario <- factor(d.alf.age$Scenario, levels=scen.levels)
-	d.alf.age$Decade <- paste0(substr(d.alf.age$Year,1,3),0)
-	d.alf.age <- d.alf.age[order(paste(d.alf.age$Year, d.alf.age$VegID)), c(1:5,10:9, 6:7, 11)]
-	rownames(d.alf.age) <- NULL
-	for(p in 1:length(veg.labels)) d.alf.age$VegID[d.alf.age$VegID==p] <- veg.labels[p]
-	names(d.alf.age)[which(names(d.alf.age)=="VegID")] <- "Vegetation"
+	d.alf.age[, vals.ind:=rep(rep(c(T,F), each=n.samples), length=nrow(d.alf.age))]
+	d.alf.age[, dcastIsDumb:=rep(1:n.samples, length=nrow(d.alf.age))]
+	d.alf.age <- data.table(dcast(d.alf.age, Phase + Scenario + Model + Var + Location + Vegetation + Year + dcastIsDumb ~ vals.ind, value.var="Vals_Probs"))
+    d.alf.names <- names(d.alf.age)
+    d.alf.names[10:9] <- c("Val", "Prob")
+	setnames(d.alf.age, d.alf.names)
+	d.alf.age[, Scenario:=factor(Scenario, levels=scen.levels)]
+	d.alf.age[, Decade:=paste0(substr(Year,1,3),0)]
+	d.alf.age <- d.alf.age[order(paste(Year, Vegetation)), c(1:5,10:9, 6:7, 11), with=FALSE]
+    d.alf.age[, Vegetation:=veg.labels[d.alf.age[, Vegetation]]]
 	#dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	d.alf.age$Val <- round(d.alf.age$Val)
-	d.alf.age$Prob <- round(d.alf.age$Prob,8)*multiplier[2] # round to eight seems decent for now
-	r.alf.age <- unlist(d.alf.age[,samples.index])
+	d.alf.age[, Val:=as.integer(round(Val))]
+	d.alf.age[, Prob:=round(Prob,16)*multiplier[2]] # round to 16 seems decent for now
+	r.alf.age <- unlist(d.alf.age[, samples.index, with=FALSE])
 	names(r.alf.age) <- NULL
 	if(j==1) x <- d.alf.age else x <- NULL
 	#if(j==1) y <- region.dat else y <- NULL
@@ -189,50 +192,51 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples=1000, stats.index, s
 	files <- files[which(files.locs %in% loc)]
 	for(i in 1:length(files)){
 		load(files[i], envir=environment())
-		d.tmp <- f.dat
-		rm(f.dat)
+		d.tmp <- data.table(d.abfc)
+		rm(d.abfc)
 		gc()
 		loc.grp <- d.tmp$LocGroup[1]
 		loc <- d.tmp$Location[1]
 		ind <- with(d.tmp, paste(Var, Year))
 		v <- unlist(tapply(d.tmp$Val, ind, denFun, n=n.samples, fire=TRUE))
-		d.tmp <- d.tmp[d.tmp$Replicate==1, c(1:3,6,5,7,8)]
+		d.tmp <- d.tmp[Replicate==d.tmp$Replicate[1], c(1:3,6,5,7,8), with=FALSE]
 		stats.tmp <- d.tmp
-		d.tmp <- data.frame(lapply(d.tmp, rep, n.samples), stringsAsFactors=FALSE)
-		d.tmp$Val <- round(v[rep(c(T,F), each=n.samples)])
-		d.tmp$Prob <- v[rep(c(F,T), each=n.samples)]
-		d.tmp <- d.tmp[c(1:6,8,7)]
+		d.tmp <- data.table(data.frame(lapply(d.tmp, rep, n.samples), stringsAsFactors=FALSE))
+		d.tmp[, Val:=as.integer(round(v[rep(c(T,F), each=n.samples)]))]
+		d.tmp[, Prob:=v[rep(c(F,T), each=n.samples)]]
+		setcolorder(d.tmp, names(d.tmp)[c(1:6,8,7)])
 		v <- tapply(v, rep(1:(length(v)/(2*n.samples)), each=2*n.samples), btfun, n.samples=n.samples, n.boot=10000, interp=TRUE)
-		qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95)
+		qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
 		n.stats <- 2 + length(qtiles)
 		v <- do.call(rbind, lapply(v, getStats, seq.q=qtiles))
-		stats.tmp <- data.frame(stats.tmp, v)
-		stats.tmp <- stats.tmp[c(1:5,7+1:ncol(v),7)]
+		stats.tmp <- data.table(stats.tmp, v)
+        stats.tmp[, Val:=NULL]
+		setcolorder(stats.tmp, names(stats.tmp)[c(1:5,6+1:ncol(v),6)])
 		if(i==1) d.alf.fire <- d.tmp else d.alf.fire <- rbind(d.alf.fire, d.tmp)
 		if(i==1) region.dat <- stats.tmp else region.dat <- rbind(region.dat, stats.tmp)
 	}
 	rm(d.tmp, stats.tmp)
 	gc()
-	d.alf.fire$Scenario <- factor(d.alf.fire$Scenario, levels=scen.levels)
-	d.alf.fire$Decade <- paste0(substr(d.alf.fire$Year,1,3),0)
-	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
-	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
+	d.alf.fire[, Scenario:=factor(Scenario, levels=scen.levels)]
+	d.alf.fire[, Decade:=paste0(substr(Year,1,3),0)]
+	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
+	region.dat[, Decade:=paste0(substr(Year,1,3),0)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	d.alf.fire$Prob <- round(d.alf.fire$Prob,8)*multiplier[2] # round to eight seems decent for now
-	r.alf.fire <- unlist(subset(d.alf.fire, Var=="Burn Area")[,samples.index])
+	d.alf.fire[, Prob:=round(Prob,16)*multiplier[2]] # round to 16 seems decent for now
+	r.alf.fire <- unlist(d.alf.fire[Var=="Burn Area", samples.index, with=FALSE])
 	names(r.alf.fire) <- NULL
-	if(j==1) x <- subset(d.alf.fire, Var=="Burn Area") else x <- NULL
+	if(j==1) x <- d.alf.fire[Var=="Burn Area",] else x <- NULL
 	#if(j==1) y <- subset(region.dat, Var=="Burn Area") else y <- NULL
 	#if(j==1) x <- d.alf.fire else x <- NULL
 	if(j==1) y <- region.dat else y <- NULL
 	save(r.alf.fire, file=paste0(samplesDir, "/", "burnArea.RData"))
 	gc()
-	r.alf.fire <- unlist(subset(d.alf.fire, Var=="Fire Count")[,samples.index])
+	r.alf.fire <- unlist(d.alf.fire[Var=="Fire Count", samples.index, with=FALSE])
 	names(r.alf.fire) <- NULL
 	save(r.alf.fire, file=file.path(samplesDir, "fireCount.RData"))
 	gc()
-	region.dat <- unlist(region.dat[,stats.index])
+	region.dat <- unlist(region.dat[, stats.index, with=FALSE])
 	names(region.dat) <- NULL
 	save(region.dat, file=file.path(statsDir, "stats_fire.RData"))
 	return(list(alf.fireSamples.df=x, alf.fireStats.df=y))
@@ -250,50 +254,51 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples=1000, stats.index, sam
 		load(files[i], envir=environment())
 		#locs <- unique(v.dat$Location)
 		#d.tmp <- v.dat[v.dat$Location==locs[j],]
-		d.tmp <- data.frame(v.dat[1, 1:6], Val=0, VegID=1:8, Year=rep(unique(v.dat$Year), each=8), Replicate=rep(unique(v.dat$Replicate), each=8*length(unique(v.dat$Year))))
-		obs.ind <- paste(d.tmp$Year, d.tmp$VegID, d.tmp$Replicate) %in% paste(v.dat$Year, v.dat$VegID, v.dat$Replicate)
-		d.tmp$Val[obs.ind] <- v.dat$Val
-		rm(v.dat)
+		d.tmp <- data.table(d.veg[1, 1:6, with=FALSE], Val=0L, Vegetation=1:8, Year=rep(unique(d.veg$Year), each=8), Replicate=rep(unique(d.veg$Replicate), each=8*length(unique(d.veg$Year))))
+        d.tmp[, VegID:=NULL]
+		obs.ind <- paste(d.tmp$Year, d.tmp$Vegetation, d.tmp$Replicate) %in% paste(d.veg$Year, d.veg$VegID, d.veg$Replicate)
+        d.tmp <- d.tmp[obs.ind,]
+		d.tmp[, Val:=d.veg$Val[obs.ind]]
+		rm(d.veg)
 		gc()
 		loc.grp <- d.tmp$LocGroup[1]
 		loc <- d.tmp$Location[1]
-		ind <- with(d.tmp, paste(Year, VegID))
+		ind <- with(d.tmp, paste(Year, Vegetation))
 		v <- unlist(tapply(d.tmp$Val, ind, denFun, n=n.samples))
-		d.tmp <- d.tmp[d.tmp$Replicate==1, c(1:3,6,5,7,8,9)]
+		d.tmp <- d.tmp[Replicate==d.tmp$Replicate[1], c(1:3,5:8), with=FALSE]
 		stats.tmp <- d.tmp
-		d.tmp <- data.frame(lapply(d.tmp, rep, n.samples), stringsAsFactors=FALSE)
-		d.tmp <- d.tmp[order(paste(d.tmp$Year, d.tmp$VegID)),]
-		for(p in 1:length(veg.labels)) stats.tmp$VegID[stats.tmp$VegID==p] <- veg.labels[p]
-		for(p in 1:length(veg.labels)) d.tmp$VegID[d.tmp$VegID==p] <- veg.labels[p]
-		names(stats.tmp)[7] <- names(d.tmp)[7] <- "Vegetation"
-		d.tmp$Val <- round(v[rep(c(T,F), each=n.samples)])
-		d.tmp$Prob <- v[rep(c(F,T), each=n.samples)]
-		d.tmp <- d.tmp[c(1:6,9,7,8)]
+        d.tmp <- data.table(data.frame(lapply(d.tmp, rep, n.samples), stringsAsFactors=FALSE))
+		d.tmp <- d.tmp[order(paste(Year, Vegetation)),]
+        stats.tmp[, Vegetation:=veg.labels[stats.tmp[, Vegetation]]]
+        d.tmp[, Vegetation:=veg.labels[d.tmp[, Vegetation]]]
+		d.tmp[, Val:=as.integer(round(v[rep(c(T,F), each=n.samples)]))]
+		d.tmp[, Prob:=v[rep(c(F,T), each=n.samples)]]
+		setcolorder(d.tmp, names(d.tmp)[c(1:5,8,6,7)])
 		v <- tapply(v, rep(1:(length(v)/(2*n.samples)), each=2*n.samples), btfun, n.samples=n.samples, n.boot=10000, interp=TRUE)
-		qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95)
+		qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
 		n.stats <- 2 + length(qtiles)
 		v <- do.call(rbind, lapply(v, getStats, seq.q=qtiles))
-		stats.tmp <- data.frame(stats.tmp, v)
-		stats.tmp <- stats.tmp[c(1:5,8+1:ncol(v),7,8)]
+		stats.tmp <- data.table(stats.tmp, v)
+		setcolorder(stats.tmp, names(stats.tmp)[c(1:5,7+1:ncol(v),6,7)])
 		if(i==1) d.alf.veg <- d.tmp else d.alf.veg <- rbind(d.alf.veg, d.tmp)
 		if(i==1) region.dat <- stats.tmp else region.dat <- rbind(region.dat, stats.tmp)
 	}
 	rm(d.tmp, stats.tmp)
 	gc()
-	d.alf.veg$Scenario <- factor(d.alf.veg$Scenario, levels=scen.levels)
-	d.alf.veg$Decade <- paste0(substr(d.alf.veg$Year,1,3),0)
-	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
-	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
+	d.alf.veg[, Scenario:=factor(Scenario, levels=scen.levels)]
+	d.alf.veg[, Decade:=paste0(substr(Year,1,3),0)]
+	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
+	region.dat[, Decade:=paste0(substr(Year,1,3),0)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	d.alf.veg$Prob <- round(d.alf.veg$Prob,8)*multiplier[2] # round to eight seems decent for now
-	r.alf.veg <- unlist(d.alf.veg[,samples.index])
+	d.alf.veg[, Prob:=round(Prob,16)*multiplier[2]] # round to 16 seems decent for now
+	r.alf.veg <- unlist(d.alf.veg[, samples.index, with=FALSE])
 	names(r.alf.veg) <- NULL
 	if(j==1) x <- d.alf.veg else x <- NULL
 	if(j==1) y <- region.dat else y <- NULL
 	save(r.alf.veg, file=file.path(samplesDir, "vegetatedArea.RData"))
 	gc()
-	region.dat <- unlist(region.dat[,stats.index])
+	region.dat <- unlist(region.dat[, stats.index, with=FALSE])
 	names(region.dat) <- NULL
 	save(region.dat, file=file.path(statsDir, "stats_veg.RData"))
 	return(list(alf.vegSamples.df=x, alf.vegStats.df=y))
@@ -311,31 +316,30 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, stats.index, sam
 		load(files[i], envir=environment())
 		#locs <- unique(v.dat$Location)
 		#d.tmp <- v.dat[v.dat$Location==locs[j],]
-		d.tmp <- data.frame(d.fsv[1, 1:6], Val=0, VegID=1:6, Year=rep(unique(v.dat$Year), each=6), Replicate=rep(unique(v.dat$Replicate), each=6*length(unique(v.dat$Year))))
-		obs.ind <- paste(d.tmp$Year, d.tmp$VegID, d.tmp$Replicate) %in% paste(v.dat$Year, v.dat$VegID, v.dat$Replicate)
-		d.tmp$Val[obs.ind] <- v.dat$Val
-		rm(v.dat)
+		d.fsv %>% filter(VegID %in% 1:6) %>% mutate(Vegetation=VegID) %>% select(Phase, Scenario, Model, Location, Vegetation, Val, Year) -> d.tmp
+		rm(d.fsv)
 		gc()
 		loc.grp <- d.tmp$LocGroup[1]
 		loc <- d.tmp$Location[1]
-		ind <- with(d.tmp, paste(Year, VegID))
+		ind <- with(d.tmp, paste(Year, Vegetation))
 		v <- unlist(tapply(d.tmp$Val, ind, denFun, n=n.samples))
-		d.tmp <- d.tmp[d.tmp$Replicate==1, c(1:3,6,5,7,8,9)]
+		d.tmp %>% group_by(Phase, Scenario, Model, Location, Vegetation, Year) %>% summarise(Val=0L) -> d.tmp
 		stats.tmp <- d.tmp
-		d.tmp <- data.frame(lapply(d.tmp, rep, n.samples), stringsAsFactors=FALSE)
-		d.tmp <- d.tmp[order(paste(d.tmp$Year, d.tmp$VegID)),]
-		for(p in 1:length(veg.labels)) stats.tmp$VegID[stats.tmp$VegID==p] <- veg.labels[p]
-		for(p in 1:length(veg.labels)) d.tmp$VegID[d.tmp$VegID==p] <- veg.labels[p]
-		names(stats.tmp)[7] <- names(d.tmp)[7] <- "Vegetation"
-		d.tmp$Val <- round(v[rep(c(T,F), each=n.samples)])
-		d.tmp$Prob <- v[rep(c(F,T), each=n.samples)]
-		d.tmp <- d.tmp[c(1:6,9,7,8)]
+		d.tmp <- data.table(data.frame(lapply(d.tmp, rep, n.samples), stringsAsFactors=FALSE))
+		d.tmp <- d.tmp[order(paste(Year, Vegetation)),]
+        stats.tmp[, Vegetation:=veg.labels[stats.tmp[, Vegetation]]]
+        d.tmp[, Vegetation:=veg.labels[d.tmp[, Vegetation]]]
+        d.tmp[, Val:=as.integer(round(v[rep(c(T,F), each=n.samples)]))]
+		d.tmp[, Prob:=v[rep(c(F,T), each=n.samples)]]
+		setcolorder(d.tmp, names(d.tmp)[c(1:5,7,8,6)])
 		v <- tapply(v, rep(1:(length(v)/(2*n.samples)), each=2*n.samples), btfun, n.samples=n.samples, n.boot=10000, interp=TRUE)
-		qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95)
+		qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
 		n.stats <- 2 + length(qtiles)
 		v <- do.call(rbind, lapply(v, getStats, seq.q=qtiles))
-		stats.tmp <- data.frame(stats.tmp, v)
-		stats.tmp <- stats.tmp[c(1:5,8+1:ncol(v),7,8)]
+		stats.tmp <- data.table(stats.tmp, v)[, Val:=NULL]
+		setcolorder(stats.tmp, names(stats.tmp)[c(1:5,6+1:ncol(v),6)])
+        #d.fsv %>% filter(Year==2004) %>% group_by(VegID) %>% summarise(Mean=mean(Val), SD=sd(Val), Pct05=quantile(Val, 0.05), Pct25=quantile(Val, 0.25),Pct50=quantile(Val, 0.5),Pct75=quantile(Val, 0.75),Pct95=quantile(Val, 0.95), Max=max(Val))
+        #stats.tmp[Year==2004,]
 		if(i==1) d.alf.veg <- d.tmp else d.alf.veg <- rbind(d.alf.veg, d.tmp)
 		if(i==1) region.dat <- stats.tmp else region.dat <- rbind(region.dat, stats.tmp)
 	}
@@ -347,7 +351,7 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, stats.index, sam
 	region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/region_files_GCM/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	d.alf.veg$Prob <- round(d.alf.veg$Prob,8)*multiplier[2] # round to eight seems decent for now
+	d.alf.veg$Prob <- round(d.alf.veg$Prob,16)*multiplier[2] # round to 16 seems decent for now
 	r.alf.veg <- unlist(d.alf.veg[,samples.index])
 	names(r.alf.veg) <- NULL
 	if(j==1) x <- d.alf.veg else x <- NULL
@@ -362,10 +366,10 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, stats.index, sam
 
 # @knitr proc_setup
 # Processing
-agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)))
+agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)), "Max")
 stats.columns <- 5+1:length(agg.stat.colnames)
 samples.columns <- 6:7
-samples.multipliers.alf <- c(1e1, 1e8) # First not used
+samples.multipliers.alf <- c(1e1, 1e16) # First not used
 
 # @knitr proc_fire
 system.time( out.fire <- mclapply(1:n.regions, get_FireStats_FireDensities, inDir=abfcDir, n.samples=n.samples, stats.index=stats.columns, samples.index=samples.columns, multiplier=samples.multipliers.alf, mc.cores=n.cores) )
@@ -374,13 +378,17 @@ alf.fireSamples.df <- out.fire[[1]]$alf.fireSamples.df
 rm(out.fire)
 gc()
 
-alf.fireStats.df[,stats.columns] <- NA
-alf.fireStats.df$Location <- NA
-names(alf.fireStats.df)[stats.columns] <- agg.stat.colnames
+nam <- names(alf.fireStats.df)
+alf.fireStats.df[, nam[stats.columns]:=NA]
+alf.fireStats.df[, Location:=NA]
+nam[stats.columns] <- agg.stat.colnames
+setnames(alf.fireStats.df, nam)
 
-alf.fireSamples.df[,samples.columns] <- NA
-alf.fireSamples.df$Var <- NA
-alf.fireSamples.df$Location <- NA
+nam <- names(alf.fireSamples.df)
+alf.fireSamples.df[, nam[samples.columns]:=NA]
+alf.fireSamples.df[, Var:=NA]
+alf.fireSamples.df[, Location:=NA]
+rm(nam)
 
 # @knitr proc_veg
 system.time( out.veg <- mclapply(1:n.regions, get_VegStats_VegDensities, inDir=vegDir, n.samples=n.samples, stats.index=stats.columns, samples.index=samples.columns, multiplier=samples.multipliers.alf, veg.labels=veg.labels, mc.cores=n.cores) )
@@ -389,13 +397,17 @@ alf.vegSamples.df <- out.veg[[1]]$alf.vegSamples.df
 rm(out.veg)
 gc()
 
-alf.vegStats.df[,stats.columns] <- NA
-alf.vegStats.df$Location <- NA
-names(alf.vegStats.df)[stats.columns] <- agg.stat.colnames
+nam <- names(alf.vegStats.df)
+alf.vegStats.df[, nam[stats.columns]:=NA]
+alf.vegStats.df[, Location:=NA]
+nam[stats.columns] <- agg.stat.colnames
+setnames(alf.vegStats.df, nam)
 
-alf.vegSamples.df[,samples.columns] <- NA
-alf.vegSamples.df$Var <- NA
-alf.vegSamples.df$Location <- NA
+nam <- names(alf.vegSamples.df)
+alf.vegSamples.df[, nam[samples.columns]:=NA]
+alf.vegSamples.df[, Var:=NA]
+alf.vegSamples.df[, Location:=NA]
+rm(nam)
 
 # @knitr proc_fsv
 system.time( out.fsv <- mclapply(1:n.regions, get_fsvStats_fsvDensities, inDir=fsvDir, n.samples=n.samples, stats.index=stats.columns, samples.index=samples.columns, multiplier=samples.multipliers.alf, veg.labels=veg.labels, mc.cores=n.cores) )
@@ -413,7 +425,7 @@ alf.fsvSamples.df$Var <- NA
 alf.fsvSamples.df$Location <- NA
 
 # @knitr proc_age
-system.time( out.age <- mclapply(1:n.regions, get_AgeDensities, dirs=ageDirs, n.samples=n.samples, n.samples.in=1000, samples.index=samples.columns, multiplier=samples.multipliers.alf, veg.labels=veg.labels, mc.cores=n.cores) )
+system.time( out.age <- mclapply(1:n.regions, get_AgeDensities, dirs=ageDirs, n.samples=n.samples, n.samples.in=n.samples.in, samples.index=samples.columns, multiplier=samples.multipliers.alf, veg.labels=veg.labels, mc.cores=n.cores) )
 #alf.ageStats.df <- out.age[[1]]$alf.ageStats.df
 alf.ageSamples.df <- out.age[[1]]$alf.ageSamples.df
 rm(out.age)
@@ -423,9 +435,10 @@ gc()
 #alf.ageStats.df$Location <- NA
 #names(alf.ageStats.df)[stats.columns] <- agg.stat.colnames
 
-alf.ageSamples.df[,samples.columns] <- NA
-alf.ageSamples.df$Var <- NA
-alf.ageSamples.df$Location <- NA
+alf.ageSamples.df[, Val:=NA]
+alf.ageSamples.df[, Prob:=NA]
+alf.ageSamples.df[, Var:=NA]
+alf.ageSamples.df[, Location:=NA]
 
 # @knitr save_metadata
 # Remove unwanted objects, load metadata workspace, save along with age metadata
