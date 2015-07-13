@@ -4,12 +4,12 @@
 #SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --account=snap
 #SBATCH -p main
-#SBATCH --ntasks=100
+#SBATCH --ntasks=32
 ####SBATCH --nodelist=atlas03,atlas04,atlas05,atlas06,atlas11,atlas12,atlas13,atlas14,atlas15
 ####SBATCH --nodelist=atlas05
-#SBATCH --job-name=RmpiAlfStats
-#SBATCH --nodes=5
-#SBATCH --ntasks-per-node=20
+#SBATCH --job-name=parAlfStats
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=32
 
 # CL variables passed take form, e.g., model.index=1, reps=1:200, years=1900:2100;
 # locgroup=1:5 is optional;
