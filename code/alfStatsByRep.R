@@ -1,6 +1,7 @@
 # @knitr setup
-library(raster)
-library(data.table)
+suppressMessages(library(rgdal))
+suppressMessages(library(raster))
+suppressMessages(library(data.table))
 rasterOptions(chunksize=10^12,maxmemory=10^11)
 
 # @knitr getFireStats
@@ -134,10 +135,17 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 			dlist1[[l1]] <- rbindlist(dlist2)
 		}
 		dlist[[j]] <- rbindlist(dlist1)
+        if(!is.data.table(dlist[[j]])){
+            print(paste("PROBLEM WITH REPLICATE", i, "YEAR", years[j]))
+            print(dlist[[j]])
+            print(paste0("Class of dlist[[", j, "]]:", class(dlist[[j]])))
+            stop(paste("PROBLEM WITH REPLICATE", i, "YEAR", years[j]))
+        }
 		print(paste("Replicate", i, "age and veg maps:", years[j]))
 	}
 	
 	x <- rbindlist(dlist)
+    
 	x$Replicate <- as.integer(i)
 	veg.area <- x[seq(1, nrow(x), by=2*n.samples)][, Val:=NULL]
 	setnames(veg.area, "VegArea", "Val")
@@ -147,16 +155,22 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	x[, VegArea := NULL]
 	x[, Replicate := NULL]
 	setkey(x, Location)
-	for(j in 1:length(locs)){
-		obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
-		assign(obj.name.tmp, x[locs[j]])
-		save(list=c("locs", obj.name.tmp), file=paste0(denDir, "/", obj.name.tmp, ".RData"))
-		print(paste(obj.name.tmp, "object of", length(locs), "saved."))
-		rm(list=obj.name.tmp)
-		gc()
-	}
+	#for(j in 1:length(locs)){
+	#	obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
+	#	assign(obj.name.tmp, x[locs[j]])
+	#	save(list=c("locs", obj.name.tmp), file=paste0(denDir, "/", obj.name.tmp, ".RData"))
+	#	print(paste(obj.name.tmp, "object of", length(locs), "saved."))
+	#	rm(list=obj.name.tmp)
+	#	gc()
+	#}
 	rm(x)
 	gc()
 	print("Returning veg class areas data frame for subregions.")
+    if(!is.data.table(veg.area)){
+        print(paste("PROBLEM WITH REPLICATE", i))
+        print(veg.area)
+        print(paste("Class of veg.area:", class(veg.area)))
+        stop(paste("PROBLEM WITH REPLICATE", i))
+    }
 	veg.area
 }
