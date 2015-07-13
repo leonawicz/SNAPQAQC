@@ -33,6 +33,7 @@ if(Rmpi){
 load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km.RData")
 load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km_rmNA.RData")
 if(exists("locgroup")){
+    print(paste("locgroup =", locgroup))
 	cells_shp_list <- cells_shp_list[locgroup]
 	cells_shp_list_rmNA <- cells_shp_list_rmNA[locgroup]
 	region.names.out <- region.names.out[locgroup]
@@ -108,6 +109,7 @@ if(Rmpi){
 # @knitr fire_stats
 # Compile fire statistics
 if(doFire){
+    print("#### Compiling fire statistics... ####")
 	if(Rmpi){
         abfc.fsv.dat <- mpi.remote.exec( getFireStats(i=repid[id], mainDir=mainDir, years=years, cells.list=cells_shp_list, shp.names.list=region.names.out, n=n.shp) )
         abfc.dat <- rbindlist(lapply(abfc.fsv.dat, "[[", 1))
@@ -186,12 +188,13 @@ if(doFire){
 # @knitr age_veg_stats
 # Compile vegetation class and age statistics
 if(doAgeVeg){
+    print("#### Compiling vegetation class and age statistics... ####")
 	if(Rmpi){
-        va.dat <- mpi.remote.exec( getAgeVegStats(i=repid[id], mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, veg.lab=veg.labels, n.samples=1000) )
+        va.dat <- mpi.remote.exec( getAgeVegStats(i=repid[id], mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=100) )
 	} else {
         len <- length(repid)
         if(len <= n.cores){
-            va.dat <- mclapply(repid, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
+            va.dat <- mclapply(repid, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=100, mc.cores=n.cores)
         } else {
             serial.iters <- ceiling(len/n.cores)
             n.cores2 <- which(len/(1:n.cores) < serial.iters)[1]
@@ -199,7 +202,11 @@ if(doAgeVeg){
             for(j in 1:serial.iters){
                 repid.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 repid.tmp <- repid.tmp[repid.tmp <= max(repid)]
-                va.dat.tmp <- mclapply(repid.tmp, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=1000, mc.cores=n.cores)
+                va.dat.tmp <- mclapply(repid.tmp, getAgeVegStats, mainDir=mainDir, denDir=ageDenDir, years=years, cells.list=cells_shp_list_rmNA, shp.names.list=region.names.out, n=n.shp, n.samples=100, mc.cores=n.cores)
+                print(sapply(va.dat.tmp, class))
+                err.ind <- which(sapply(va.dat.tmp, class)=="try-error")
+                if(length(err.ind)) for(e in 1:length(err.ind)) print(va.dat.tmp[[e]])
+                print(va.dat.tmp[[1]])
                 va.dat[[j]] <- rbindlist(va.dat.tmp)
                 rm(va.dat.tmp)
                 gc()
