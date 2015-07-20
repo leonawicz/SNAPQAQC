@@ -113,6 +113,16 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 		if(min.zero && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+max(1, 0.05*dif))
 		as.numeric(c(z$x, z$y))
 	}
+    
+    # Bootstrapping
+    btfun <- function(p, n.samples=length(p)/2, n.boot=10000, interp=FALSE, n.interp=1000, ...){
+        if(!length(p)) return(p)
+        if(all(is.na(p))) return(rep(NA, n.boot))
+        p <- list(x=p[1:n.samples], y=p[(n.samples+1):(2*n.samples)])
+        if(interp && length(unique(p[1:n.samples])) > 1) p <- approx(p$x, p$y, n=n.interp)
+        p <- round(sample(p$x, n.boot, prob=p$y, rep=T), ...)
+        p
+    }
 	
 	print("Beginning processing loop")
 	dlist <- vector("list", length(years))
@@ -129,8 +139,9 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 				a.tmp <- a[cells.tmp]
 				v.tmp <- v[cells.tmp]
 				v.tmp.n <- tapply(cells.tmp, v.tmp, length)
-				den.tmp <- tapply(a.tmp, v.tmp, denFun, n=n.samples)
-				dlist2[[l2]] <- data.table(LocGroup=names(x)[l1], Location=names(x[[l1]])[l2], VegID=rep(as.integer(names(den.tmp)), each=2*n.samples), VegArea=rep(v.tmp.n, each=2*n.samples), Val=unlist(den.tmp), Year=as.integer(years[j]))
+				den <- unlist(tapply(a.tmp, v.tmp, denFun, n=n.samples))
+                samp <- tapply(den, rep(1:(length(den)/(2*n.samples)), each=2*n.samples), btfun, n.samples=n.samples, n.boot=n.samples, interp=TRUE)
+				dlist2[[l2]] <- data.table(LocGroup=names(x)[l1], Location=names(x[[l1]])[l2], VegID=rep(as.integer(names(samp)), each=n.samples), VegArea=rep(v.tmp.n, each=n.samples), Val=unlist(samp), Year=as.integer(years[j]))
 			}
 			dlist1[[l1]] <- rbindlist(dlist2)
 		}
@@ -155,14 +166,14 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	x[, VegArea := NULL]
 	x[, Replicate := NULL]
 	setkey(x, Location)
-	#for(j in 1:length(locs)){
-	#	obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
-	#	assign(obj.name.tmp, x[locs[j]])
-	#	save(list=c("locs", obj.name.tmp), file=paste0(denDir, "/", obj.name.tmp, ".RData"))
-	#	print(paste(obj.name.tmp, "object of", length(locs), "saved."))
-	#	rm(list=obj.name.tmp)
-	#	gc()
-	#}
+	for(j in 1:length(locs)){
+		obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
+		assign(obj.name.tmp, x[locs[j]])
+		save(list=c("locs", obj.name.tmp), file=paste0(denDir, "/", obj.name.tmp, ".RData"))
+		print(paste(obj.name.tmp, "object", j, "of", length(locs), "saved."))
+		rm(list=obj.name.tmp)
+		gc()
+	}
 	rm(x)
 	gc()
 	print("Returning veg class areas data frame for subregions.")
