@@ -1,18 +1,39 @@
+##############################################################################
+#### Stage two compilation of extracted Alfresco outputs into data tables ####
+##############################################################################
+
+#### Script author:  Matthew Leonawicz ####
+#### Maintainted by: Matthew Leonawicz ####
+#### Last updated:   07/22/2015        ####
+
 # @knitr setup
+comargs <- (commandArgs(TRUE))
+if(!length(comargs)) q("no") else for(z in 1:length(comargs)) eval(parse(text=comargs[[z]]))
+
 library(parallel)
 library(reshape2)
 library(data.table)
 library(dplyr)
-n.regions <- 12 # known, fixed
-n.cores <- 12 # of 32 available
+
+if(!exists("mainDir")) mainDir <- "/big_scratch/mfleonawicz/Rmpi/outputs"
+if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), 'abfc' (area burned and fire counts), or 'fsv' (fire sizes by vegetation class).")
+ageDirs <- list.files(file.path(mainDir, "ageDensities"), full=T)
+abfcDir <- file.path(mainDir, "fire/abfc")
+fsvDir <- file.path(mainDir, "fire/fsv")
+vegDir <- file.path(mainDir, "veg")
+
 n.samples <- 1000 # new density estimation
 n.samples.in <- 100 # known, based on upstream settings for vegetation age
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
-ageDirs <- list.files("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", full=T)
-abfcDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/abfc"
-fsvDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fire/fsv"
-vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg"
+datnames <- c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year", "Val")
+
+# All regions for which stage-1 outputs currently exist on disk.
+# Checking abfc files, which have maximum regions, but only regions common to fsv, abfc, veg, and age outputs are processed.
+# It is assumed stage one processing has been done on a common set of regions for all four variable sets.
+regions <- unique(sapply(strsplit(list.files(file.path(abfcDir)), "__"), "[", 2))
+n.regions <- length(regions)
+n.cores <- min(n.regions, 32)
 
 # @knitr functions1
 # Support functions
@@ -63,29 +84,21 @@ btfun_dt <- function(p1, p2, n.samples=length(p)/2, n.boot=10000, interp=FALSE, 
 	p
 }
 
-# additional support functions
-getSamples <- function(d, v) d[d[,2]==v, 1]
+# @knitr not_in_use
+# additional support functions, not in use
+#getSamples <- function(d, v) d[d[,2]==v, 1]
 
-getStats <- function(x, seq.q){
-	if(all(is.na(x))) return(rep(NA, 2 + length(seq.q)))
-	x1 <- round(mean(x, na.rm=TRUE))
-	x2 <- round(sd(x, na.rm=TRUE), 1)
-	x3 <- round(quantile(x, probs=seq.q, na.rm=TRUE))
-	c(x1, x2, x3)
-}
+#getStats <- function(x, seq.q){
+#	if(all(is.na(x))) return(rep(NA, 2 + length(seq.q)))
+#	x1 <- round(mean(x, na.rm=TRUE))
+#	x2 <- round(sd(x, na.rm=TRUE), 1)
+#	x3 <- round(quantile(x, probs=seq.q, na.rm=TRUE))
+#	c(x1, x2, x3)
+#}
 
-getStatsList <- function(x, seq.q){
-	if(all(is.na(x))) return(rep(NA, 2 + length(seq.q)))
-	x1 <- as.list(round(mean(x, na.rm=TRUE)))
-	x2 <- as.list(round(sd(x, na.rm=TRUE), 1))
-	x3 <- as.list(round(quantile(x, probs=seq.q, na.rm=TRUE)))
-	c(x1, x2, x3)
-}
-
-# @knitr get_AgeDensities
+# @knitr get_ageStats_ageDensities
 # Primary processing functions
-get_AgeDensities <- function(j, dirs, n.samples=100, n.samples.in, n.boot=10000, datnames, multiplier, veg.labels, scen.levels){
-    qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
+get_ageStats_ageDensities <- function(j, dirs, n.samples=100, n.samples.in, n.boot=10000, datnames, veg.labels, scen.levels){
 	pat <- paste0("^age__.*.rep.*.RData$")
 	pat2 <- substr(pat, 1, nchar(pat) - 9)
 	files.list <- lapply(1:length(dirs), function(i, dirs, ...) list.files(dirs[i], ...), dirs=dirs, full=T, pattern=pat)
@@ -135,7 +148,7 @@ get_AgeDensities <- function(j, dirs, n.samples=100, n.samples.in, n.boot=10000,
         d.tmp %>% select(Phase, Scenario, Model, Location, Var, Vegetation, Year, Val, Prob) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Val=btfun2(Val, Prob)) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
-            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1),
+            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
                 Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
                 Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) -> stats.tmp
         dat.list[[i]] <- d.tmp
@@ -147,28 +160,17 @@ get_AgeDensities <- function(j, dirs, n.samples=100, n.samples.in, n.boot=10000,
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
     d.alf.age[, Scenario:=factor(Scenario, levels=scen.levels)]
-	#d.alf.age[, Decade:=paste0(substr(Year,1,3),0)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	#region.dat[, Decade:=paste0(substr(Year,1,3),0)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	#d.alf.age[, Prob:=round(Prob,22)*multiplier[2]]
-	#r.alf.age <- unlist(d.alf.age[, samples.index, with=FALSE])
-	#if(j==1) x <- d.alf.age else x <- NULL
-	#if(j==1) y <- region.dat else y <- NULL
-	#save(r.alf.age, file=paste0(samplesDir, "/", "vegetationAge.RData"))
     save(d.alf.age, file=paste0(samplesDir, "/", "vegetationAge.RData"))
 	gc()
-	#region.dat <- unlist(region.dat[,stats.index])
-	#names(region.dat) <- NULL
 	save(region.dat, file=file.path(statsDir, "stats_age.RData"))
-	#return(list(alf.ageSamples.df=x))#, alf.fireStats.df=y))
     return(NULL)
 }
 
-# @knitr get_FireStats_FireDensities
-get_FireStats_FireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, multiplier, scen.levels){
-    qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
+# @knitr get_fireStats_fireDensities
+get_fireStats_fireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, scen.levels){
 	files <- list.files(inDir, full=T, pattern="^abfc__.*.RData$")
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
@@ -200,7 +202,7 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, 
         d.tmp %>% select(Phase, Scenario, Model, Location, Var, Vegetation, Year, Val, Prob) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Val=btfun2(Val, Prob)) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
-            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1),
+            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
                 Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
                 Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) -> stats.tmp
         dat.list[[i]] <- d.tmp
@@ -212,34 +214,21 @@ get_FireStats_FireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, 
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
 	d.alf.fire[, Scenario:=factor(Scenario, levels=scen.levels)]
-	#d.alf.fire[, Decade:=paste0(substr(Year,1,3),0)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	#region.dat[, Decade:=paste0(substr(Year,1,3),0)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	#d.alf.fire[, Prob:=round(Prob,22)*multiplier[2]]
-    #r.alf.fire <- d.alf.fire[Var=="Burn Area", c(Val, Prob)]
-	#if(j==1) x <- d.alf.fire[Var=="Burn Area",] else x <- NULL
-	#if(j==1) y <- region.dat else y <- NULL
-	#save(r.alf.fire, file=paste0(samplesDir, "/", "burnArea.RData"))
-	#gc()
-    #r.alf.fire <- d.alf.fire[Var=="Fire Count", c(Val, Prob)]
-	#save(r.alf.fire, file=file.path(samplesDir, "fireCount.RData"))
     d.alf.ba <- d.alf.fire[Var=="Burn Area",]
     d.alf.fc <- d.alf.fire[Var=="Fire Count",]
     rm(d.alf.fire)
     gc()
     save(d.alf.ba, file=paste0(samplesDir, "/", "burnArea.RData"))
     save(d.alf.fc, file=paste0(samplesDir, "/", "fireCount.RData"))
-    #region.dat <- unlist(region.dat[, which(names(region.dat) %in% statnames), with=FALSE])
 	save(region.dat, file=file.path(statsDir, "stats_fire.RData"))
-	#return(list(alf.fireSamples.df=x, alf.fireStats.df=y))
     return(NULL)
 }
 
-# @knitr get_VegStats_VegDensities
-get_VegStats_VegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, multiplier, veg.labels, scen.levels){
-    qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
+# @knitr get_vegStats_vegDensities
+get_vegStats_vegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, veg.labels, scen.levels){
 	files <- list.files(inDir, full=T, pattern="^veg__.*.RData$")
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
@@ -274,7 +263,7 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
         d.tmp %>% select(Phase, Scenario, Model, Location, Var, Vegetation, Year, Val, Prob) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Val=btfun2(Val, Prob)) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
-            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1),
+            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
                 Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
                 Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) -> stats.tmp
         dat.list[[i]] <- d.tmp
@@ -286,27 +275,17 @@ get_VegStats_VegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
 	d.alf.veg[, Scenario:=factor(Scenario, levels=scen.levels)]
-	#d.alf.veg[, Decade:=paste0(substr(Year,1,3),0)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	#region.dat[, Decade:=paste0(substr(Year,1,3),0)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	#d.alf.veg[, Prob:=round(Prob,22)*multiplier[2]]
-    #r.alf.veg <- d.alf.veg[, c(Val, Prob)]
-	#if(j==1) x <- d.alf.veg else x <- NULL
-	#if(j==1) y <- region.dat else y <- NULL
-	#save(r.alf.veg, file=file.path(samplesDir, "vegetatedArea.RData"))
     save(d.alf.veg, file=file.path(samplesDir, "vegetatedArea.RData"))
 	gc()
-	#region.dat <- unlist(region.dat[, which(names(region.dat) %in% statnames), with=FALSE])
 	save(region.dat, file=file.path(statsDir, "stats_veg.RData"))
-	#return(list(alf.vegSamples.df=x, alf.vegStats.df=y))
     return(NULL)
 }
 
 # @knitr get_fsvStats_fsvDensities
-get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, multiplier, veg.labels, scen.levels){
-    qtiles <- c(0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 1)
+get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, veg.labels, scen.levels){
 	files <- list.files(inDir, full=T, pattern="^fsv__.*.RData$")
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
@@ -341,7 +320,7 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
         d.tmp %>% select(Phase, Scenario, Model, Location, Var, Vegetation, Year, Val, Prob) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Val=btfun2(Val, Prob)) %>%
             group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
-            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1),
+            summarise(Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
                 Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
                 Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) -> stats.tmp
         dat.list[[i]] <- d.tmp
@@ -353,93 +332,21 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
 	d.alf.fs$Scenario <- factor(d.alf.fs$Scenario, levels=scen.levels)
-	#d.alf.fs$Decade <- paste0(substr(d.alf.fs$Year,1,3),0)
 	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
-	#region.dat$Decade <- paste0(substr(region.dat$Year,1,3),0)
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
-	#d.alf.fs$Prob <- round(d.alf.fs$Prob,22)*multiplier[2]
-	#r.alf.fs <- d.alf.fs[, c(Val, Prob)]
-	#if(j==1) x <- d.alf.fs else x <- NULL
-	#if(j==1) y <- region.dat else y <- NULL
-	#save(r.alf.fs, file=file.path(samplesDir, "fireSize.RData"))
     save(d.alf.fs, file=file.path(samplesDir, "fireSize.RData"))
 	gc()
-	#region.dat <- unlist(region.dat[, which(names(region.dat) %in% statnames), with=FALSE])
 	save(region.dat, file=file.path(statsDir, "stats_fsv.RData"))
-	#return(list(alf.fsvSamples.df=x, alf.fsvStats.df=y))
     return(NULL)
 }
 
-# @knitr proc_setup
 # Processing
-datnames <- c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year", "Val")
-#agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)), "Max")
-#samples.multipliers.alf <- c(1e1, 1e22) # First not used
-#sampnames <- c("Val", "Prob", "Var", "Location")
-
 # @knitr proc_fire
-system.time( out.fire <- mclapply(1:n.regions, get_FireStats_FireDensities, inDir=abfcDir, n.samples=n.samples,
-    datnames=datnames, scen.levels=scen.levels, mc.cores=n.cores) )
-#alf.fireStats.df <- out.fire[[1]]$alf.fireStats.df
-#alf.fireSamples.df <- out.fire[[1]]$alf.fireSamples.df
-#rm(out.fire)
-#gc()
-
-#nam <- names(alf.fireStats.df)
-#alf.fireStats.df[, which(nam %in% c("Location", agg.stat.colnames)):=NA]
-#nam <- names(alf.fireSamples.df)
-#alf.fireSamples.df[, which(nam %in% sampnames):=NA]
-#rm(nam)
-
+if("abfc" %in% variable) out.fire <- mclapply(1:n.regions, get_fireStats_fireDensities, inDir=abfcDir, n.samples=n.samples, datnames=datnames, scen.levels=scen.levels, mc.cores=n.cores)
 # @knitr proc_veg
-system.time( out.veg <- mclapply(1:n.regions, get_VegStats_VegDensities, inDir=vegDir, n.samples=n.samples,
-    datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores) )
-#alf.vegStats.df <- out.veg[[1]]$alf.vegStats.df
-#alf.vegSamples.df <- out.veg[[1]]$alf.vegSamples.df
-#rm(out.veg)
-#gc()
-
-#nam <- names(alf.vegStats.df)
-#alf.vegStats.df[, which(nam %in% c("Location", agg.stat.colnames)):=NA]
-#nam <- names(alf.vegSamples.df)
-#alf.vegSamples.df[, which(nam %in% sampnames):=NA]
-#rm(nam)
-
+if("veg" %in% variable) out.veg <- mclapply(1:n.regions, get_vegStats_vegDensities, inDir=vegDir, n.samples=n.samples, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
 # @knitr proc_fsv
-system.time( out.fsv <- mclapply(1:n.regions, get_fsvStats_fsvDensities, inDir=fsvDir, n.samples=n.samples,
-    datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores) )
-#alf.fsvStats.df <- out.fsv[[1]]$alf.fsvStats.df
-#alf.fsvSamples.df <- out.fsv[[1]]$alf.fsvSamples.df
-#rm(out.fsv)
-#gc()
-
-#nam <- names(alf.fsvStats.df)
-#alf.fsvStats.df[, which(nam %in% c("Location", agg.stat.colnames)):=NA]
-#nam <- names(alf.fsvSamples.df)
-#alf.fsvSamples.df[, which(nam %in% sampnames):=NA]
-#rm(nam)
-
+if("fsv" %in% variable) out.fsv <- mclapply(1:n.regions, get_fsvStats_fsvDensities, inDir=fsvDir, n.samples=n.samples, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
 # @knitr proc_age
-system.time( out.age <- mclapply(1:n.regions, get_AgeDensities, dirs=ageDirs, n.samples=n.samples, n.samples.in=n.samples.in,
-    datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores) )
-#alf.ageStats.df <- out.age[[1]]$alf.ageStats.df
-#alf.ageSamples.df <- out.age[[1]]$alf.ageSamples.df
-#rm(out.age)
-#gc()
-
-#nam <- names(alf.ageSamples.df)
-#alf.ageSamples.df[, which(nam %in% sampnames):=NA]
-#rm(nam)
-
-# @knitr save_metadata
-# Remove unwanted objects, load metadata workspace, save along with age metadata
-#rm(ageDirs, agg.stat.colnames, btfun, denFun, abfcDir, fsvDir, get_AgeDensities, get_FireStats_FireDensities, get_fsvStats_fsvDensities, get_VegStats_VegDensities, getPhase,
-#getSamples, getStats, n.cores, n.regions, n.samples, samples.columns, scen.levels, stats.columns, swapModelName, swapScenarioName, vegDir)
-# Create a backup of the meta.RData file, load and save over that.
-# Inclusion of ALFRESCO output in QAQC R Shiny app is under early development.
-# All but one shiny-apps development repo branch should not include this version of meta.RData in the cmip3_cmip5 app
-#load("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta_backup.RData")
-#obj.keep <- c("alf.fireStats", "alf.fireSamples.df", "alf.vegStats.df", "alf.vegSamples", "alf.fsvStats.df", "alf.fsvSamples.df", "alf.ageSamples.df",
-#    "datnames", "agg.stat.colnames", "samples.multipliers", "veg.labels", "scen.levels")
-#save(list=obj.keep, file="/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alf_meta.RData")
+if("age" %in% variable) out.age <- mclapply(1:n.regions, get_ageStats_ageDensities, dirs=ageDirs, n.samples=n.samples, n.samples.in=n.samples.in, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
