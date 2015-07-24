@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   07/22/2015        ####
+#### Last updated:   07/24/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -18,6 +18,8 @@ library(dplyr)
 if(!exists("mainDir")) mainDir <- "/big_scratch/mfleonawicz/Rmpi/outputs"
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), 'abfc' (area burned and fire counts), or 'fsv' (fire sizes by vegetation class).")
 ageDirs <- list.files(file.path(mainDir, "ageDensities"), full=T)
+empty <- which(lapply(ageDirs, function(x) length(list.files(x)))==0)
+if(length(empty)) ageDirs <- ageDirs[-empty]
 abfcDir <- file.path(mainDir, "fire/abfc")
 fsvDir <- file.path(mainDir, "fire/fsv")
 vegDir <- file.path(mainDir, "veg")
