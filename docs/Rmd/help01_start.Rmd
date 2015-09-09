@@ -36,7 +36,7 @@ This will also give you a sense for how relatively complex this particular app i
 
 This app is quite complex. There are two ways to learn how to use it properly and successfully.
 One is the brute force method. You can click on every button in every conceivable permutation until you figure out what is going on.
-This preferred method is to read the documentation. You are here. Good. Continue.
+The preferred method is to read the documentation. You are here. Good. Continue.
 
 ### Audience
 The primary audience for this app is myself.
