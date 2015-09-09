@@ -1321,7 +1321,7 @@ plotTypeChoicesSpatial &lt;-<span class="st"> </span><span class="kw">reactive</
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Data aggregation</span>
 datCollapseGroups &lt;-<span class="st"> </span><span class="kw">reactive</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat</span>()) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$group)) {
-        d &lt;-<span class="st"> </span><span class="kw">dat</span>()
+        d &lt;-<span class="st"> </span><span class="kw">copy</span>(<span class="kw">dat</span>())
         d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(input$group), <span class="st">&quot;Average&quot;</span>)]
         d
     } else <span class="kw">return</span>()
@@ -1329,7 +1329,7 @@ datCollapseGroups &lt;-<span class="st"> </span><span class="kw">reactive</span>
 
 datCollapsePooled &lt;-<span class="st"> </span><span class="kw">reactive</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) {
-        d &lt;-<span class="st"> </span><span class="kw">dat</span>()
+        d &lt;-<span class="st"> </span><span class="kw">copy</span>(<span class="kw">dat</span>())
         if (!<span class="kw">is.null</span>(<span class="kw">pooled.var</span>())) 
             d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(<span class="kw">pooled.var</span>()), <span class="st">&quot;Average&quot;</span>)]
         d
@@ -1338,7 +1338,7 @@ datCollapsePooled &lt;-<span class="st"> </span><span class="kw">reactive</span>
 
 datCollapseGroups2 &lt;-<span class="st"> </span><span class="kw">reactive</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat2</span>()) &amp;<span class="st"> </span>!<span class="kw">is.null</span>(input$group)) {
-        d &lt;-<span class="st"> </span><span class="kw">dat2</span>()
+        d &lt;-<span class="st"> </span><span class="kw">copy</span>(<span class="kw">dat2</span>())
         d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(input$group), <span class="st">&quot;Average&quot;</span>)]
         d
     } else <span class="kw">return</span>()
@@ -1346,7 +1346,7 @@ datCollapseGroups2 &lt;-<span class="st"> </span><span class="kw">reactive</span
 
 datCollapsePooled2 &lt;-<span class="st"> </span><span class="kw">reactive</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat2</span>())) {
-        d &lt;-<span class="st"> </span><span class="kw">dat2</span>()
+        d &lt;-<span class="st"> </span><span class="kw">copy</span>(<span class="kw">dat2</span>())
         if (!<span class="kw">is.null</span>(<span class="kw">pooled.var</span>())) 
             d[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(<span class="kw">c</span>(<span class="kw">pooled.var</span>()), <span class="st">&quot;Average&quot;</span>)]
         d
