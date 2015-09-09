@@ -56,7 +56,7 @@ This is more obvious with the plot options panels, which clearly differ among th
 Each plot type, selected via the navbar menu, will conditionally display its own plot options panel.
 Even options which repeat from panel to panel such as the option to display a plot title, may be labeled the same but underneath they are plot type-specific reactive inputs.
 
-### plot_heatmap.R
+### sidebar.R
 
 ```{r sidebar}
 ```
