@@ -2,12 +2,9 @@
 
 
 
-The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `cmip3_cmip5` QA/QC app.
+The `qaqc_app_metadata.R` script loads the `meta.RData` metadata workspace file used by the `ar4ar5` QA/QC app.
 Final preparations of region and city data file path locations are completed.
 This new workspace is saved over the original.
-
-This script current handles subsetting of city files as best it can,
-but ultimately time is needed to investigate why GCM and CRU 3.x extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.
 
 ## R code
 
@@ -38,8 +35,7 @@ region.cru.samples.files <- lapply(region.cru.samples.path, list.files, full = T
 names(region.cru.stats.files) <- names(region.gcm.stats.files) <- names(region.cru.samples.files) <- names(region.gcm.samples.files) <- basename(region.gcm.stats.path)
 ```
 
-File path information for GCM and CRU 3.x cities, and associated metadata, are fortified as best as currently possible.
-See code comments for details regarding pending investigation of discrepancies between data sets.
+File path information for GCM and CRU 3.x cities, and associated metadata, are finalized.
 
 
 ```r

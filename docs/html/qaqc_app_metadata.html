@@ -227,8 +227,7 @@ img {
 </div>
 
 
-<p>The <code>qaqc_app_metadata.R</code> script loads the <code>meta.RData</code> metadata workspace file used by the <code>cmip3_cmip5</code> QA/QC app. Final preparations of region and city data file path locations are completed. This new workspace is saved over the original.</p>
-<p>This script current handles subsetting of city files as best it can, but ultimately time is needed to investigate why GCM and CRU 3.x extractions of the same set of cities (specific grid cells) are yielding different, overlapping sets of cities.</p>
+<p>The <code>qaqc_app_metadata.R</code> script loads the <code>meta.RData</code> metadata workspace file used by the <code>ar4ar5</code> QA/QC app. Final preparations of region and city data file path locations are completed. This new workspace is saved over the original.</p>
 <div id="r-code" class="section level2">
 <h2>R code</h2>
 <p>File path information for GCM and CRU 3.x files are finalized.</p>
@@ -253,7 +252,7 @@ region.cru.samples.path &lt;-<span class="st"> </span><span class="kw">list.file
     <span class="dt">full =</span> T)
 region.cru.samples.files &lt;-<span class="st"> </span><span class="kw">lapply</span>(region.cru.samples.path, list.files, <span class="dt">full =</span> T)
 <span class="kw">names</span>(region.cru.stats.files) &lt;-<span class="st"> </span><span class="kw">names</span>(region.gcm.stats.files) &lt;-<span class="st"> </span><span class="kw">names</span>(region.cru.samples.files) &lt;-<span class="st"> </span><span class="kw">names</span>(region.gcm.samples.files) &lt;-<span class="st"> </span><span class="kw">basename</span>(region.gcm.stats.path)</code></pre>
-<p>File path information for GCM and CRU 3.x cities, and associated metadata, are fortified as best as currently possible. See code comments for details regarding pending investigation of discrepancies between data sets.</p>
+<p>File path information for GCM and CRU 3.x cities, and associated metadata, are finalized.</p>
 <pre class="sourceCode r"><code class="sourceCode r">city.gcm.files.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(topDir, <span class="st">&quot;city_files_GCM&quot;</span>)
 city.gcm.files.2km &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.gcm.files.path, <span class="st">&quot;akcan2km&quot;</span>), 
     <span class="dt">full =</span> T)
