@@ -5,7 +5,7 @@
 Variability plot options are somewhat more complex than those for other plots.
 
 ##
-<img class="centered" src="img/plotVR_example_1_black.png" width="900"/>
+<img class="centered" src="img/plotVR_example_1_black.png" width="100%"/>
 
 ##
 

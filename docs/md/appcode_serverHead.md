@@ -169,9 +169,6 @@ collapseMonths <- function(d, variable, n.s, mos, n.samples = 1, f = function(x)
         round(p * get(variable[i])))]  # multiply by p to sum precip, assumes mean() passed to f
     d
 }
-
-z1 <- collapseMonths(d = x, variable = "Val", n.s = 2, mos = c("Jan", "Feb", 
-    "May", "Jun"), n.samples = 50, f = function(x) round(mean(x), 1), f.args = list())
 ```
 
 #### periodsFromDecades

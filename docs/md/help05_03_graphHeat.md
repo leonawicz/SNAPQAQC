@@ -7,7 +7,7 @@ You can think of them as univariate like the time series plots in that you can p
 and as opposed to the bivariate scatter plot which plots two numeric variables against one another.
 
 ##
-<img class="centered" src="img/plotHM_example_1_black.png" width="900"/>
+<img class="centered" src="img/plotHM_example_1_black.png" width="100%"/>
 
 ##
 

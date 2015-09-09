@@ -5,7 +5,7 @@
 The scatter plot is the only bivariate plot in the app. Currently it plots temperature vs. precipitation.
 
 ##
-<img class="centered" src="img/plotSC_example_1_black.png" width="900"/>
+<img class="centered" src="img/plotSC_example_1_black.png" width="100%"/>
 
 ##
 

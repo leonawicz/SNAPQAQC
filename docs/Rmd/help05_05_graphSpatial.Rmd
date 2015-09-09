@@ -16,7 +16,7 @@ Similar to the variability plots, several options change dynamically based on th
 The two main categories of plots are histograms/density curves and stripcharts.
 
 ##
-<img class="centered" src="img/plotSP_example_1_black.png" width="900"/>
+<img class="centered" src="img/plotSP_example_1_black.png" width="100%"/>
 
 ##
 

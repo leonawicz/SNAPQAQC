@@ -368,10 +368,7 @@ nullOrZero &lt;-<span class="st"> </span>function(x) <span class="kw">is.null</s
     for (i in <span class="dv">1</span>:<span class="kw">length</span>(variable)) d[Var ==<span class="st"> &quot;Precipitation&quot;</span>, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(variable[i], 
         <span class="kw">round</span>(p *<span class="st"> </span><span class="kw">get</span>(variable[i])))]  <span class="co"># multiply by p to sum precip, assumes mean() passed to f</span>
     d
-}
-
-z1 &lt;-<span class="st"> </span><span class="kw">collapseMonths</span>(<span class="dt">d =</span> x, <span class="dt">variable =</span> <span class="st">&quot;Val&quot;</span>, <span class="dt">n.s =</span> <span class="dv">2</span>, <span class="dt">mos =</span> <span class="kw">c</span>(<span class="st">&quot;Jan&quot;</span>, <span class="st">&quot;Feb&quot;</span>, 
-    <span class="st">&quot;May&quot;</span>, <span class="st">&quot;Jun&quot;</span>), <span class="dt">n.samples =</span> <span class="dv">50</span>, <span class="dt">f =</span> function(x) <span class="kw">round</span>(<span class="kw">mean</span>(x), <span class="dv">1</span>), <span class="dt">f.args =</span> <span class="kw">list</span>())</code></pre>
+}</code></pre>
 </div>
 <div id="periodsfromdecades" class="section level4">
 <h4>periodsFromDecades</h4>

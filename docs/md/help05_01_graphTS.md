@@ -7,7 +7,7 @@ These classes are not mutually exclusive. For instance, it is easy enough on the
 that specifically highlights variability through time, in ways not fully available on the general `Time Series` plot tab.
 
 ##
-<img class="centered" src="img/plotTS_example_1_black.png" width="900"/>
+<img class="centered" src="img/plotTS_example_1_black.png" width="100%"/>
 
 ##
 
