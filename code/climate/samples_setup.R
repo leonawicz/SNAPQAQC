@@ -1,5 +1,5 @@
 # @knitr setup
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/samples")
 
 library(parallel)
 library(reshape2)

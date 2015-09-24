@@ -5,6 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
 ####SBATCH --nodelist=atlas09
+####SBATCH --exclude=atlas01,atlas03,atlas04,atlas05,atlas06
 #SBATCH --account=snap
 #SBATCH -p main
 #SBATCH --job-name=CRU_clim_extract
@@ -15,4 +16,4 @@
 #### $3/$4 are regions=TRUE and/or cities=TRUE, defaults to FALSE, at least one must be specified TRUE;
 #### $5, optional, is years=1870:2099, or similar;
 #### $6 optional, not generally needed for CRU (see GCM slurm script), cities.batch is an integer 1 through 10;
-Rscript /workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/CRU_extract.R $1 $2 $3 $4 $5 $6
+Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/climate/CRU_extract.R $1 $2 $3 $4 $5 $6

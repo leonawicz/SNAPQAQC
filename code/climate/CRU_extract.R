@@ -2,11 +2,11 @@
 comArgs <- commandArgs(TRUE)
 if(length(comArgs)) for(i in 1:length(comArgs)) eval(parse(text=comArgs[[i]]))
 
-if(!exists("batch")) stop("Model pair batch integer not supplied.")
 if(!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
 if(!exists("regions")) regions <- FALSE
 if(!exists("cities")) cities <- FALSE
 if(!(regions | cities)) stop("regions and cities both FALSE. Nothing to process.")
+if(!exists("cru")) cru <- "32"
 
 # @knitr packages
 library(raster)
@@ -17,40 +17,24 @@ library(data.table)
 
 # @knitr source
 if(domain=="akcan2km"){ # For regions and/or cities
-	topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",c("historical","projected")) # files are not read, but metadata parsed from filenames list
+	if(as.numeric(cru)==31) topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",paste0("historical/singleBand/CRU/cru_TS", cru, "/historical"))
+	if(as.numeric(cru)==32) topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km",paste0("historical/CRU/CRU_TS", cru))
 	if(regions){
-		load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
+		load("/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
 	} else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 } else if(domain=="world10min") { # Currently for cities only
-	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",c("historical","projected")) # files are not read, but metadata parsed from filenames list
+	topDir <- file.path("/Data/Base_Data/Climate/World/World_10min",paste0("historical/CRU/CRU_TS", cru)) # files are not read, but metadata parsed from filenames list
 	cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 	#### Need to insert a load() command analogous to that above for regions
 }
 
-locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
+locs <- read.csv("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/locs.csv")
 
 # @knitr setup
-varid <- rep(c("tas","pr"),each=6)
-scenid <- if(length(topDir)==2){
-			c(rep("",12), rep(c("sresb1","sresa1b","sresa2","rcp45","rcp60","rcp85"),2))
-		} else if(basename(topDir)=="projected") {
-			rep(c("sresb1","sresa1b","sresa2","rcp45","rcp60","rcp85"),2)
-		} else if(basename(topDir)=="historical") {
-			rep("",12)
-		}
-arid <- rep(rep(c("AR4_CMIP3_models","AR5_CMIP5_models"),each=3),2)
-
-model.pairs <- list(
-	c("cccma-cgcm3-1-t47","CCSM4"),
-	c("gfdl-cm2-1","GFDL-CM3"),
-	c("miroc3-2-medres","GISS-E2-R"),
-	c("mpi-echam5","IPSL-CM5A-LR"),
-	c("ukmo-hadcm3","MRI-CGCM3")
-)
-
-if(exists("years")) yr1 <- years[1] else yr1 <- 1870
-if(exists("years")) yr2 <- tail(years, 1) else yr2 <- 2099
+if(exists("years")) yr1 <- years[1] else yr1 <- 1901
+if(exists("years")) yr2 <- tail(years, 1) else if(as.numeric(cru)==32) yr2 <- 2013 else yr2 <- 2009
 years <- yr1:yr2
+varid <- c("tas","pr")
 
 if(cities){
 	if(domain!="world10min") locs <- subset(locs, region!="Northwest Territories")
@@ -78,6 +62,7 @@ if(cities){
 	cities <- if(domain=="akcan2km") cbind(cities$lon_albers, cities$lat_albers) else if(domain=="world10min") cbind(cities$lon+360, cities$lat) # +360 for PC lat lon rasters
 } else cities <- NULL
 
+seasons <- "annual"
 n.samples <- 100
 n2 <- 2*n.samples
 agg.stat.colnames <- c("Mean", "SD", paste0("Pct_", c("05", 10, 25, 50, 75, 90, 95)))
@@ -96,33 +81,30 @@ denFun <- function(x, n, adj=0.25, variable){
 
 # @knitr functions2
 # Processing function
-getData <- function(i, model, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=232, regions=TRUE, n.samples=512, cities=NULL, start.year=NULL, end.year=NULL){
+getData <- function(i, varid, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=232, regions=TRUE, n.samples=512, cities=NULL, start.year=NULL, end.year=NULL){
 	print(i)
-	if(length(model)==1) model <- rep(model, i)
-	for(p in 1:length(topDir)){
-		if(p==2) print(paste("Process",i,"beginning projected data extraction."))
-		if(p==1) scenid.tmp <- scenid[1:12] else if(p==2) scenid.tmp <- scenid[13:24]
-		path <- gsub("/remove","",gsub("//","/",file.path(topDir[p],arid[i],scenid.tmp[i],model[i],varid[i])))
+	for(p in 1:length(varid)){
+		path <- file.path(topDir, varid[p])
 		files <- list.files(path,pattern=".tif$",full=T)
 		if(!is.null(start.year)) files <- files[substr(files, nchar(files)-7, nchar(files)-4) >= start.year]
 		if(!is.null(end.year)) files <- files[substr(files, nchar(files)-7, nchar(files)-4) <= end.year]
-		
+
 		if(!is.null(cities)){
 			r <- readAll(raster(files[1])) # template done
 			cells_cities <- extract(r, cities, cellnumbers=T)[,1]
 			print("Raster cell indices for point locations obtained.")
 		}
-		
+
 		mo.tmp <- substr(files,nchar(files)-10,nchar(files)-9)
 		yr.tmp <- substr(files,nchar(files)-7,nchar(files)-4)
 		yr.mo.tmp <- paste0(yr.tmp,mo.tmp)
 		files <- files[order(yr.mo.tmp)]
 		yr.tmp <- substr(files,nchar(files)-7,nchar(files)-4)
-		yr.tmp <- substr(files,nchar(files)-7,nchar(files)-4)
+		
 		if(regions){
-			seq.q <- c(0.05, 0.10, 0.25, 0.5, 0.75, 0.9, 0.95) #seq(0, 1, by=0.05) #Hard coded
+			seq.q <- c(0.05, 0.10, 0.25, 0.5, 0.75, 0.9, 0.95) #seq(0, 1, by=0.05) # Hard coded
 			m <- matrix(NA, nrow=length(files), ncol=length(seq.q) + 2) # +2 for mean and SD below
-
+		
 			mden <- matrix(NA, nrow=2*n.samples, ncol=length(files))
 			samples.list <- rapply(cells.list, f=function(x, m) m, classes="integer", how="replace", m=mden)
 			names(samples.list) <- names(shp.names)
@@ -133,31 +115,29 @@ getData <- function(i, model, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=
 		if(regions) rm(m)
 		gc()
 		if(!is.null(cities)) m.cities <- matrix(NA, nrow=length(cells_cities), ncol=length(files))
-		if((i %in% c(1,4,7,10)) | p==2){ # no need to read historical files more than once for each CMIP phase, scenario, and variable.
-			for(b in 1:length(unique(yr.tmp))){
-				pat <- gsub("expression","",paste(bquote(expression(".",.(unique(yr.tmp)[b]),".tif$")),collapse=""))
-				files.sub <- list.files(path, pattern=pat, full=T)
-				mat <- getValues(stack(files.sub))
-				n <- ncol(mat)
-				if(regions){
-					for(l1 in 1:length(shp.names)){
-						for(l2 in 1:length(shp.names[[l1]])){
-							cells.tmp <- cells.list[[ names(shp.names)[l1] ]][[ shp.names[[l1]][l2] ]]
-							m.tmp <- get(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], sep="__"))
-							m.tmp[(1:n)+(12*(b-1)), 1] <- as.numeric(colMeans(mat[cells.tmp,], na.rm=T))
-							m.tmp[(1:n)+(12*(b-1)), 2] <- as.numeric(apply(mat[cells.tmp,], 2, sd, na.rm=T))
-							m.tmp[(1:n)+(12*(b-1)), 2+(1:length(seq.q))] <- t(apply(mat[cells.tmp,], 2, quantile, probs=seq.q, na.rm=T))
-							assign(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], sep="__"), m.tmp)
-							samples.tmp <- apply(mat[cells.tmp,], 2, denFun, n=n.samples, variable=varid[i]) # Time across columns
-							samples.list[[ names(shp.names)[l1] ]][[ shp.names[[l1]][l2] ]][, (1:n)+(12*(b-1))] <- samples.tmp
-						}
+		for(b in 1:length(unique(yr.tmp))){
+			pat <- gsub("expression","",paste(bquote(expression(".",.(unique(yr.tmp)[b]),".tif$")),collapse=""))
+			files.sub <- list.files(path, pattern=pat, full=T)
+			mat <- getValues(stack(files.sub, quick=T))
+			n <- ncol(mat)
+			if(regions){
+				for(l1 in 1:length(shp.names)){
+					for(l2 in 1:length(shp.names[[l1]])){
+						cells.tmp <- cells.list[[ names(shp.names)[l1] ]][[ shp.names[[l1]][l2] ]]
+						m.tmp <- get(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], sep="__"))
+						m.tmp[(1:n)+(12*(b-1)), 1] <- as.numeric(colMeans(mat[cells.tmp,], na.rm=T))
+						m.tmp[(1:n)+(12*(b-1)), 2] <- as.numeric(apply(mat[cells.tmp,], 2, sd, na.rm=T))
+						m.tmp[(1:n)+(12*(b-1)), 2+(1:length(seq.q))] <- t(apply(mat[cells.tmp,], 2, quantile, probs=seq.q, na.rm=T))
+						assign(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], sep="__"), m.tmp)
+						samples.tmp <- apply(mat[cells.tmp,], 2, denFun, n=n.samples, variable=varid[p]) # Time across columns
+						samples.list[[ names(shp.names)[l1] ]][[ shp.names[[l1]][l2] ]][, (1:n)+(12*(b-1))] <- samples.tmp
 					}
-					gc()
 				}
-				if(!is.null(cities)) m.cities[,(1:n)+(12*(b-1))] <- mat[cells_cities,]
-				print(paste0("Process",i,": ",unique(yr.tmp)[b]))
+				gc()
 			}
-		} else print(paste("Process",i,"skipping historical files to avoid redundancy."))
+			if(!is.null(cities)) m.cities[,(1:n)+(12*(b-1))] <- mat[cells_cities,]
+			print(paste0("Process",i,": ",unique(yr.tmp)[b]))
+		}
 		if(p==1){
 			if(regions){
 				for(l1 in 1:length(shp.names)) for(l2 in 1:length(shp.names[[l1]])) assign(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], "hold", sep="__"), get(paste("m", names(shp.names)[l1], shp.names[[l1]][l2], sep="__")))
@@ -197,16 +177,15 @@ getData <- function(i, model, cells.list=NULL, shp.names=NULL, n.shp=NULL, seed=
 }
 
 # @knitr run
-models <- rep(rep(model.pairs[[batch]],each=3),2)
-results <- mclapply(X=1:12, FUN=getData, model=models, cells.list=cells_shp_list_5pct, shp.names=region.names.out, n.shp=n.shp,
-	regions=regions, n.samples=n.samples, cities=cities, start.year=yr1, end.year=yr2, mc.cores=12)
+results <- mclapply(X=1, FUN=getData, varid=varid, cells.list=cells_shp_list_5pct, shp.names=region.names.out, n.shp=n.shp,
+	regions=regions, n.samples=n.samples, cities=cities, start.year=yr1, end.year=yr2, mc.cores=1)
 
 # @knitr save
 # Organize and save results
 for(k in 1:2){
 	if(!regions & k==1) next
 	stats <- lapply(results, "[[", k)
-	if(is.character(stats[[1]])) next
+	if(is.character(stats[[1]][[1]])) next
 	len <- ifelse(k==1, 2, 0)
 	if(k==1){
 		#regional stats
@@ -219,58 +198,47 @@ for(k in 1:2){
 		stats.out <- list()
 		for(i in 1:length(stats.out.names)) stats.out[[i]] <- do.call(rbind, lapply(stats, "[[", i))
 		names(stats.out) <- stats.out.names
-		time.seq <- rep(seq(years[1],length.out=nrow(stats.out[[1]])/(12*12)), each=12)
+		time.seq <- rep(seq(years[1],length.out=nrow(stats.out[[1]])/(2*12)), each=12)
 		for(i in 1:length(stats.out)){
-			colnames(stats.out[[i]]) <- agg.stat.colnames
-			rownames(stats.out[[i]]) <- rep(time.seq, 12)
-			for(block in c(2,5,8,11)){
-				block.rows <- 1:length(time.seq) + length(time.seq)*(block-1)
-				na.rows <- which(is.na(stats.out[[i]][block.rows, 1]))
-				stats.out[[i]][block.rows[na.rows],] <- stats.out[[i]][block.rows[na.rows]+length(time.seq),] <- stats.out[[i]][block.rows[na.rows]-length(time.seq),]
-			}
+			colnames(stats.out[[i]]) <- agg.stat.names
+			rownames(stats.out[[i]]) <- rep(time.seq, 2)
 		print(length(stats.out)-i)
 		}
 		save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames,
-			file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/",models[1],"_",models[4],"_annual_regions_stats.RData"))
+			file=paste0("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/stats/","CRU", cru, "_annual_regions_stats.RData"))
 		
 		# regional samples
 		samples <- lapply(results, function(x) x[[1]][["samples"]])
+		samples <- samples[[1]]
 		list2df <- function(x, yr_mo){
 			x <- ldply(x, data.frame)
 			names(x) <- c("Location", yr_mo)
 			x
 		}
-		for(z in 1:length(arid)){ # 12 combinations
-			lab <- paste(substr(arid[z], 1, 3), scenid[scenid!=""][z], models[z], varid[z], sep="_")
-			samples.sub <- samples[[z]]
-			for(l1 in 1:length(samples.sub)) samples.sub[[l1]] <- list2df(samples.sub[[l1]], yr_mo=paste(results.years, month.abb, sep="_"))
-			samples.sub <- rbindlist(samples.sub)
-			samples.names <- unique(samples.sub$Location)
-			samples.out <- list()
-			for(i in 1:length(samples.names)){
-				samples.out[[i]] <- subset(samples.sub, Location==samples.names[i])
-				rownames(samples.out[[i]]) <- NULL
-			}
-			names(samples.out) <- samples.names
-			save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/",lab,"_annual_regions_samples.RData"))
+		for(l1 in 1:length(samples)) samples[[l1]] <- list2df(samples[[l1]], yr_mo=paste(results.years, month.abb, sep="_"))
+		samples <- rbindlist(samples)
+		samples.names <- unique(samples$Location)
+		mid <- (ncol(samples)-1)/2 + 1
+		names.hold <- names(samples)[1:mid]
+		samples <- data.frame(Location=samples$Location, rbind(as.matrix(samples[, 2:mid, with=FALSE]), as.matrix(samples[, (mid+1):ncol(samples), with=FALSE])))
+		samples$Location <- rep(rep(samples.names, each=n2))
+		samples.out <- list()
+		for(i in 1:length(samples.names)){
+			samples.out[[i]] <- subset(samples, Location==samples.names[i])
+			rownames(samples.out[[i]]) <- NULL
 		}
+		names(samples.out) <- samples.names
+		save(samples.out, samples.names, region.names.out, n.samples, file=paste0("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/samples/","CRU", cru, "_annual_regions_samples.RData"))
+	
 	}
-	if(k==2 & !is.null(cities)){
+	if(k==2 & is.matrix(cities)){
 		for(i in 1:length(stats)){
 			results.years <- results[[i]][[1]][[length(results[[i]][[1]])-1]]
 			for(j in 1:(length(stats[[i]])-len)) stats[[i]][[j]] <- stats[[i]][[j]][, which(results.years %in% years) ] # matrix (multiple cities)
 		}
 		stats.out <- list(cities=sapply(stats, function(x) t(x[[1]])))
-		for(i in 1:length(stats.out)){
-			rownames(stats.out[[i]]) <- rep( rep(seq(yr1, yr2), each=12), nrow(cities) )
-			na.rows1 <- which(is.na(stats.out[[i]][,2]))
-			na.rows2 <- which(is.na(stats.out[[i]][,5]))
-			stats.out[[i]][na.rows1,2] <- stats.out[[i]][na.rows1,3] <- stats.out[[i]][na.rows1,1]
-			stats.out[[i]][na.rows2,5] <- stats.out[[i]][na.rows2,6] <- stats.out[[i]][na.rows2,4]
-			stats.out[[i]][na.rows1,8] <- stats.out[[i]][na.rows1,9] <- stats.out[[i]][na.rows1,7]
-			stats.out[[i]][na.rows2,11] <- stats.out[[i]][na.rows2,12] <- stats.out[[i]][na.rows2,10]
-		}
+		for(i in 1:length(stats.out)) rownames(stats.out[[i]]) <- rep( rep( rep(seq(yr1, yr2), each=12), nrow(cities) ), length(varid) )
 		d <- stats.out[[1]]
-		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/",models[1],"_",models[4],"_annual_cities_batch", cities.batch, "_", domain, ".RData"))
+		save(d, d.cities, results.years, file=paste0("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/cities/","CRU", cru, "_annual_cities_batch", cities.batch, "_", domain, ".RData"))
 	}
 }

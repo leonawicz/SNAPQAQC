@@ -9,7 +9,7 @@ output:
 
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=FALSE, tidy=FALSE, message=FALSE, warning=FALSE)
-read_chunk("../../code/appcode_ui.R")
+read_chunk("../../code/climate/ar4ar5_appcode/appcode_ui.R")
 ```
 
 ##

@@ -30,8 +30,8 @@ if(Rmpi){
 }
 
 # Load nested list of cell indices defining groups of shapefile polygons
-load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km.RData")
-load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km_rmNA.RData")
+load("/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km.RData")
+load("/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km_rmNA.RData")
 if(exists("locgroup")){
     print(paste("locgroup =", locgroup))
 	cells_shp_list <- cells_shp_list[locgroup]
@@ -40,7 +40,7 @@ if(exists("locgroup")){
 	n.shp <- sum(sapply(region.names.out, length))
 }
 
-dirs <- list.files("/big_scratch/apbennett/Calibration/FinalCalib", pattern=".*.sres.*.", full=T)
+dirs <- list.files("/big_scratch/apbennett/Calibration/FinalCalib/b1_rerun", pattern=".*.sres.*.", full=T)
 mainDirs <- rep(paste0(dirs,"/Maps")[model.index], each=length(reps))
 modnames <- basename(dirname(mainDirs)) # Should only be one name at a time due to $ScenMod column naming below
 dir.create(ageDenDir <- file.path("/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities", modnames[1]), recursive=T, showWarnings=F) # also assumes one model at a time
@@ -95,13 +95,13 @@ if(Rmpi){
 # Issue commands to slaves
 if(Rmpi){
 	mpi.bcast.cmd( mainDir <- mainDirs[id] )
-	mpi.bcast.cmd( source("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/alfStatsByRep.R") )
+	mpi.bcast.cmd( source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfStatsByRep.R") )
 	mpi.bcast.cmd( dir.create(tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/proc",id), showWarnings=F) )
 	mpi.bcast.cmd( rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir) )
 	print("mpi.bcast.cmd calls completed. Now running mpi.remote.exec...")
 } else {
 	mainDir <- mainDirs[1]
-	source("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/alfStatsByRep.R")
+	source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfStatsByRep.R")
 	tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/procX")
 	rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir)
 }

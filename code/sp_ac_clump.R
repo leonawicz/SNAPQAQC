@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   05/08/2015        ####
+#### Last updated:   09/24/2015        ####
 
 # @knitr setup1
 # server
@@ -12,7 +12,7 @@ library(raster)
 library(parallel)
 library(data.table)
 
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/workspaces")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/workspaces")
 r <- readAll(raster("../../DataExtraction/data/tas_mean_C_AR5_GFDL-CM3_rcp60_01_2062.tif"))
 
 f <- function(i, r, v){

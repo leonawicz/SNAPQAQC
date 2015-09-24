@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   07/24/2015        ####
+#### Last updated:   09/24/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -163,8 +163,8 @@ get_ageStats_ageDensities <- function(j, dirs, n.samples=100, n.samples.in, n.bo
     gc()
     d.alf.age[, Scenario:=factor(Scenario, levels=scen.levels)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.age, file=paste0(samplesDir, "/", "vegetationAge.RData"))
 	gc()
 	save(region.dat, file=file.path(statsDir, "stats_age.RData"))
@@ -217,8 +217,8 @@ get_fireStats_fireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, 
     gc()
 	d.alf.fire[, Scenario:=factor(Scenario, levels=scen.levels)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
     d.alf.ba <- d.alf.fire[Var=="Burn Area",]
     d.alf.fc <- d.alf.fire[Var=="Fire Count",]
     rm(d.alf.fire)
@@ -278,8 +278,8 @@ get_vegStats_vegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
     gc()
 	d.alf.veg[, Scenario:=factor(Scenario, levels=scen.levels)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.veg, file=file.path(samplesDir, "vegetatedArea.RData"))
 	gc()
 	save(region.dat, file=file.path(statsDir, "stats_veg.RData"))
@@ -335,8 +335,8 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
     gc()
 	d.alf.fs$Scenario <- factor(d.alf.fs$Scenario, levels=scen.levels)
 	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.fs, file=file.path(samplesDir, "fireSize.RData"))
 	gc()
 	save(region.dat, file=file.path(statsDir, "stats_fsv.RData"))

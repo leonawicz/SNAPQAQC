@@ -1,5 +1,5 @@
 # @knitr setup
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final")
 library(raster)
 # At this time, no buffered 10-minute resolution WGS84 mean value version extracted for domain='world10min'
 domain <- "akcan2km"
@@ -9,7 +9,7 @@ mainDir <- "/Data/Base_Data/Climate/AK_CAN_2km/historical/singleBand/prism/AK_CA
 pDir <- if(domain=="akcan2km") "pr/ak83albers" else "pr/wgs84"
 tDir <- if(domain=="akcan2km") "tas/ak83albers" else "tas/wgs84"
 
-locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
+locs <- read.csv("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/locs.csv")
 s.p <- stack(list.files(file.path(mainDir, pDir), pattern=".tif$", full=TRUE))
 s.t <- stack(list.files(file.path(mainDir, tDir), pattern=".tif$", full=TRUE))
 
