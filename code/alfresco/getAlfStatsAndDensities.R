@@ -215,8 +215,6 @@ get_fireStats_fireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, 
     region.dat <- rbindlist(stat.list)
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
-	d.alf.fire[, Scenario:=factor(Scenario, levels=scen.levels)]
-	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
     d.alf.ba <- d.alf.fire[Var=="Burn Area",]
@@ -276,8 +274,6 @@ get_vegStats_vegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
     region.dat <- rbindlist(stat.list)
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
-	d.alf.veg[, Scenario:=factor(Scenario, levels=scen.levels)]
-	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.veg, file=file.path(samplesDir, "vegetatedArea.RData"))
