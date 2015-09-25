@@ -295,18 +295,36 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
 	loc <- locs[j]
     if(loc %in% c("Manitoba", "Saskatchewan")) return(NULL)
 	files <- files[which(files.locs %in% loc)]
-    dat.list <- stat.list <- vector("list", length(files))
+    dat <- stat <- vector("list", length(files))
 	for(i in 1:length(files)){
 		load(files[i], envir=environment())
         loc.grp <- d.fsv$LocGroup[1]
 		loc <- d.fsv$Location[1]
-		d.fsv %>% filter(VegID %in% 1:6) %>% mutate(Var="Fire Size", Vegetation=VegID) -> d.tmp
-		rm(d.fsv)
+        d.fsv[, LocGroup:=NULL]
+		d.fsv %>% filter(VegID %in% 1:6) %>% mutate(Var="Fire Size") -> d.tmp.fs
+        rm(d.fsv)
 		gc()
-        veg.id <- sort(unique(d.tmp$Vegetation))
+        veg.id <- sort(unique(d.tmp.fs$VegID))
+        d.tmp.fs[, Vegetation:=veg.labels[veg.id][d.tmp.fs[, VegID]]]
+        d.tmp.fs[, VegID:=NULL]
+        
+        d.tmp.fs %>% group_by(Phase, Scenario, Model, Location, Var, Year, Replicate, FID) %>% summarise(Val=sum(Val)) %>% mutate(Vegetation="All") -> d.tmp2 # agg-veg FS
+        d.tmp.fs <- data.table(bind_rows(d.tmp.fs, d.tmp2)) # individual and aggregate-veg fire sizes
+        rm(d.tmp2)
+        d.tmp.fs %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year, Replicate) %>% summarise(BA=sum(Val), FC=length(Val)) -> d.tmp.bafc # burn area and fire frequency
+        
         denFun2 <- function(..., n=n.samples, isfire=TRUE) denFun(..., n=n, fire=isfire)
-		d.tmp %>% select(which(names(d.tmp) %in% datnames)) %>%
-            group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Vals_Probs=denFun2(Val)) -> d.tmp
+        d.tmp.fs %>% select(which(names(d.tmp.fs) %in% datnames)) %>%
+            group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Vals_Probs=denFun2(Val)) -> d.tmp.fs
+        d.tmp.bafc %>% select(which(names(d.tmp.bafc) %in% c(datnames, "BA"))) %>%
+            group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Vals_Probs=denFun2(BA)) %>% mutate(Var="Burn Area") -> d.tmp.ba
+		d.tmp.bafc %>% select(which(names(d.tmp.bafc) %in% c(datnames, "FC"))) %>%
+            group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Vals_Probs=denFun2(FC)) %>% mutate(Var="Fire Count") -> d.tmp.fc
+        rm(d.tmp.bafc)
+        d.tmp <- data.table(bind_rows(d.tmp.fs, d.tmp.ba, d.tmp.fc))
+        rm(d.tmp.fs, d.tmp.ba, d.tmp.fc)
+        gc()
+        setorder(d.tmp, Phase, Scenario, Model, Location, Var, Vegetation, Year)
         d.tmp[, vals.ind:=rep(rep(c(T,F), each=n.samples), length=nrow(d.tmp))]
         d.tmp[, dcastIsDumb:=rep(1:n.samples, length=nrow(d.tmp))]
         d.tmp <- data.table(dcast(d.tmp, Phase + Scenario + Model + Location + Var + Vegetation + Year + dcastIsDumb ~ vals.ind, value.var="Vals_Probs"))
@@ -315,31 +333,34 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
         d.tmp.names[match(c("TRUE", "FALSE"), d.tmp.names)] <- c("Val", "Prob")
         setnames(d.tmp, d.tmp.names)
         setcolorder(d.tmp, c(datnames, "Prob"))
-        d.tmp[, Vegetation:=veg.labels[veg.id][d.tmp[, Vegetation]]]
+        
 		d.tmp[, Val:=as.integer(round(Val))]
-        setorder(d.tmp, Var, Year)
+        setorder(d.tmp, Phase, Scenario, Model, Location, Var, Vegetation, Year)
         btfun2 <- function(..., n=n.samples, n.b=n.boot) btfun_dt(..., n.samples=n, n.boot=n.b)
-        d.tmp %>% select(Phase, Scenario, Model, Location, Var, Vegetation, Year, Val, Prob) %>%
-            group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Val=btfun2(Val, Prob)) %>%
-            group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
+        d.tmp %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% summarise(Val=btfun2(Val, Prob)) %>% group_by(Year, add=T) %>%
             summarise(Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
                 Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
                 Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) -> stats.tmp
-        dat.list[[i]] <- d.tmp
-        stat.list[[i]] <- stats.tmp
+        dat[[i]] <- d.tmp
+        stat[[i]] <- stats.tmp
         print(i)
 	}
-	d.alf.fs <- rbindlist(dat.list)
-    region.dat <- rbindlist(stat.list)
-	rm(dat.list, stat.list, d.tmp, stats.tmp)
+    rm(d.tmp, stats.tmp)
     gc()
-	d.alf.fs$Scenario <- factor(d.alf.fs$Scenario, levels=scen.levels)
-	region.dat$Scenario <- factor(region.dat$Scenario, levels=scen.levels)
+	dat <- rbindlist(dat)
+    d.alf.fs <- filter(dat, Var=="Fire Size")
+    d.alf.ba <- filter(dat, Var=="Burn Area")
+    d.alf.fc <- filter(dat, Var=="Fire Count")
+    region.dat <- rbindlist(stat)
+	rm(dat, stat)
+    gc()
 	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
-    save(d.alf.fs, file=file.path(samplesDir, "fireSize.RData"))
+    save(d.alf.fs, file=file.path(samplesDir, "fsByVeg.RData"))
+    save(d.alf.ba, file=file.path(samplesDir, "baByVeg.RData"))
+    save(d.alf.fc, file=file.path(samplesDir, "fcByVeg.RData"))
 	gc()
-	save(region.dat, file=file.path(statsDir, "stats_fsv.RData"))
+	save(region.dat, file=file.path(statsDir, "stats_fsbafcByVeg.RData"))
     return(NULL)
 }
 
