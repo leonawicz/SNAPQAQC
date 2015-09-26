@@ -129,7 +129,7 @@ getAgeVegStats <- function(i, mainDir, denDir, years=NULL, cells.list, shp.names
 	for(j in 1:length(years)){
 		a <- getValues(raster(filesA[j]))[data.ind]
 		v <- getValues(raster(filesV[j]))[data.ind]
-		#a[a<0] <- a[a<0] + 2147483647 # temporary hack
+		a[a<0] <- a[a<0] + 2147483647 # temporary hack
 		dlist1 <- vector("list", length(x))
 		for(l1 in 1:length(x)){
 			dlist2 <- vector("list", length(x[[l1]]))
