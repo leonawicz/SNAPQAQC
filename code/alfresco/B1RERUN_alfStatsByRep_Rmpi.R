@@ -95,13 +95,13 @@ if(Rmpi){
 # Issue commands to slaves
 if(Rmpi){
 	mpi.bcast.cmd( mainDir <- mainDirs[id] )
-	mpi.bcast.cmd( source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfStatsByRep.R") )
+	mpi.bcast.cmd( source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfStatsByRep.R") )
 	mpi.bcast.cmd( dir.create(tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/proc",id), showWarnings=F) )
 	mpi.bcast.cmd( rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir) )
 	print("mpi.bcast.cmd calls completed. Now running mpi.remote.exec...")
 } else {
 	mainDir <- mainDirs[1]
-	source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfStatsByRep.R")
+	source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfStatsByRep.R")
 	tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/procX")
 	rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir)
 }
