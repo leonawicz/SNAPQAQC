@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   09/26/2015        ####
+#### Last updated:   09/24/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -31,8 +31,9 @@ veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Gr
 datnames <- c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year", "Val")
 
 # All regions for which stage-1 outputs currently exist on disk.
-# Checking fsv files. It is assumed stage one processing has been done on a common set of regions for all four variable sets.
-regions <- unique(sapply(strsplit(list.files(file.path(fsvDir)), "__"), "[", 2))
+# Checking abfc files, which have maximum regions, but only regions common to fsv, abfc, veg, and age outputs are processed.
+# It is assumed stage one processing has been done on a common set of regions for all four variable sets.
+regions <- unique(sapply(strsplit(list.files(file.path(abfcDir)), "__"), "[", 2))
 n.regions <- length(regions)
 n.cores <- min(n.regions, 32)
 
