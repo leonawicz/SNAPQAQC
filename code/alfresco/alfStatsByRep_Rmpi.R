@@ -42,7 +42,7 @@ if(exists("locgroup")){
 
 dirs <- list.files("/big_scratch/apbennett/Calibration/FinalCalib", pattern=".*.sres.*.", full=T)
 mainDirs <- rep(paste0(dirs,"/Maps")[model.index], each=length(reps))
-modname <- basename(dirname(mainDirs))
+modname <- unique(basename(dirname(mainDirs)))
 dir.create(vegDir <- file.path("/big_scratch/mfleonawicz/Rmpi/outputs/veg", modname), recursive=T, showWarnings=F)
 repid <- rep(reps,length(model.index))
 #veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")

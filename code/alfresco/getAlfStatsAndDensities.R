@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   09/24/2015        ####
+#### Last updated:   09/27/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -17,15 +17,13 @@ library(dplyr)
 
 if(!exists("mainDir")) mainDir <- "/big_scratch/mfleonawicz/Rmpi/outputs"
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), 'abfc' (area burned and fire counts), or 'fsv' (fire sizes by vegetation class).")
-ageDirs <- list.files(file.path(mainDir, "ageDensities"), full=T)
-empty <- which(lapply(ageDirs, function(x) length(list.files(x)))==0)
-if(length(empty)) ageDirs <- ageDirs[-empty]
-abfcDir <- file.path(mainDir, "fire/abfc")
-fsvDir <- file.path(mainDir, "fire/fsv")
-vegDir <- file.path(mainDir, "veg")
+vegDirs <- list.files(file.path(mainDir, "vegDir"), full=T)
+empty <- which(lapply(vegDirs, function(x) length(list.files(x)))==0)
+if(length(empty)) vegDirs <- vegDirs[-empty]
+fsvDir <- file.path(mainDir, "fsv")
 
 n.samples <- 1000 # new density estimation
-n.samples.in <- 100 # known, based on upstream settings for vegetation age
+n.samples.in <- 1000 # known, based on upstream settings for vegetation age
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 datnames <- c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year", "Val")
@@ -62,7 +60,7 @@ getPhase <- function(x){
 
 # @knitr functions2
 # Density estimation
-denFun <- function(x, n=1000, adj=0.25, min.zero=TRUE, diversify=FALSE, missing.veg.NA=TRUE, fire=FALSE){
+denFun <- function(x, n=1000, adj=0.1, min.zero=TRUE, diversify=FALSE, missing.veg.NA=TRUE, fire=FALSE){
 	if(all(is.na(x))) return(rep(NA, 2*n))
 	x <- x[!is.na(x)]
 	lx <- length(x)
