@@ -243,6 +243,6 @@ if(doAgeVeg){
 
 # All done
 if(Rmpi){
-	mpi.close.Rslaves(dellog = TRUE)
+	mpi.close.Rslaves(dellog = FALSE)
 	mpi.exit()
 }
