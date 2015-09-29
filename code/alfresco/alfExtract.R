@@ -43,7 +43,7 @@ getFireStats <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
         d <- filter(cells, Cell %in% which(!is.na(v$FID))) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell]], levels=veg.labels), FID=v$FID[Cell]) %>%
             group_by(LocGroup, Location, Vegetation, FID) %>% summarise(Val=length(Cell), Var="Fire Size")
         d.fs[[j]] <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
-        print(paste0(loopBy, " ", i, ": ", x$iter[j]))
+        print(switch(loopBy, "rep"=paste0("Year ", years[i], ": Replicate ", x$iter[j]), "year"=paste0("Replicate ", i, ": Year ", years[x$iter[j]])))
     }
     d.fs <- if(loopBy=="rep") rbindlist(d.fs)[, Year:=as.integer(years[i])] else if(loopBy=="year") rbindlist(d.fs)[, Replicate:=as.integer(i)]
     d.fs <- setcolorder(d.fs, c("LocGroup", "Location", "Var", "Vegetation", "Year", "Val", "FID", "Replicate")) %>%
@@ -70,7 +70,7 @@ getAgeVegStats <- function(i, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NUL
         d <- filter(cells, Cell_rmNA %in% idx.rmNA) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell_rmNA]], levels=veg.labels), Age=v$Age[Cell_rmNA]) %>%
             group_by(LocGroup, Location, Vegetation, Age) %>% summarise(Freq=length(Cell_rmNA))
         d.age[[j]] <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
-        print(paste0(loopBy, " ", i, ": ", x$iter[j]))
+        print(switch(loopBy, "rep"=paste0("Year ", years[i], ": Replicate ", x$iter[j]), "year"=paste0("Replicate ", i, ": Year ", years[x$iter[j]])))
     }
     d.age <- if(loopBy=="rep") rbindlist(d.age)[, Year:=as.integer(years[i])] else if(loopBy=="year") rbindlist(d.age)[, Replicate:=as.integer(i)]
     d.age <- group_by(d.age, LocGroup, Location, Year, Vegetation) %>% setorder(Replicate, LocGroup, Location, Year, Vegetation, Age, Freq)

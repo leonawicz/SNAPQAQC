@@ -28,7 +28,7 @@ library(dplyr)
 # Rmpi setup
 if(Rmpi){
 	library(Rmpi)
-	mpi.spawn.Rslaves(needlog = TRUE)
+	mpi.spawn.Rslaves(needlog = FALSE)
 	mpi.bcast.cmd( id <- mpi.comm.rank() )
 	mpi.bcast.cmd( np <- mpi.comm.size() )
 	mpi.bcast.cmd( host <- mpi.get.processor.name() )
@@ -168,13 +168,13 @@ if(doAgeVeg){
 	if(Rmpi){
         va.dat <- mpi.remote.exec( getAgeVegStats(i=itervar[id], loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell)) )
         d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
-        if(mpiBy=="rep") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
+        if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
 	} else {
         len <- length(itervar)
         if(len <= n.cores){
             va.dat <- mclapply(itervar, getAgeVegStats, loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
             d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
-            if(mpiBy=="rep") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
+            if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
         } else {
             serial.iters <- ceiling(len/n.cores)
             n.cores2 <- which(len/(1:n.cores) < serial.iters)[1]
@@ -184,13 +184,13 @@ if(doAgeVeg){
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
                 va.dat <- mclapply(itervar.tmp, getAgeVegStats, loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
                 d.area[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.area))
-                if(mpiBy=="rep") d.age[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.age))
+                if(mpiBy=="year") d.age[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.age))
                 rm(va.dat)
                 gc()
                 print(paste("Replicate batch", j, "of", serial.iters, "complete."))
             }
             d.area <- rbindlist(d.area)
-            if(mpiBy=="rep") d.age <- rbindlist(d.age)
+            if(mpiBy=="year") d.age <- rbindlist(d.age)
         }
     }
 
@@ -243,6 +243,6 @@ if(doAgeVeg){
 
 # All done
 if(Rmpi){
-	mpi.close.Rslaves(dellog = FALSE)
+	mpi.close.Rslaves(dellog = TRUE)
 	mpi.exit()
 }
