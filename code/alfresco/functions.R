@@ -108,15 +108,12 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
         stopifnot(all(sapply(dots, function(x) class(x)[1]=="uc_table")))
         stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$lb)))==0)
         stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$ub)))==0)
-        #att <- lapply(dots, function(x) attributes(x)$Passive_ID_columns)
-        #for(i in 2:length(att)) stopifnot(all(att[[1]] %in% att[[i]]) && all(att[[i]] %in% att[[1]]))
         data <- rbindlist(dots, fill=T)
         cl <- class(data)
         cl <- unique(c("uc_table", cl[cl!="disttable"]))
         class(data) <- cl
         attr(data, "lb") <- lb
         attr(data, "ub") <- ub
-        #attr(data, "Passive_ID_columns") <- names(data)[!(names(data) %in% c("Scenario", "Model", "LB", "Mean", "UB", "Magnitude", "Type"))]
         return(data)
     }
     stopifnot(is.null(condition.on.mean) || is.character(condition.on.mean))
@@ -152,22 +149,21 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
     label.mar <- paste0(marginalized.vars, collapse=" + ")
     label.con <- if(conditional.vars[1]=="") "" else paste("|", paste0(conditional.vars, collapse=", "))
     label <- paste(label.mar, label.con) 
-    
     dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
     sample_densities(data) %>% group_by_(.dots=dots) %>% summarise(LB=quantile(Val, lb), Mean=mean(Val), UB=quantile(Val, ub)) %>%
         mutate(Magnitude=UB-LB, Type=label) %>% group_by_(.dots=dots) -> data
-        print(data)
     if(!is.null(condition.on.mean)){
-        dots2 <- lapply(id[!(id %in% c("Val", "Prob", condition.on.mean))], as.symbol)
-        group_by_(data, .dots=dots2) %>% summarise(LB=mean(LB), Mean=mean(Mean), UB=mean(UB)) %>%
-            mutate(Magnitude=UB-LB) %>% group_by_(.dots=dots2) -> data
+        id <- names(data)
+        dots2 <- lapply(id[!(id %in% c("LB", "Mean", "UB", "Magnitude", condition.on.mean))], as.symbol)
+        group_by_(data, .dots=dots2) %>% summarise(LB=mean(LB), Mean=mean(Mean), UB=mean(UB), Magnitude=mean(Magnitude)) %>% group_by_(.dots=dots2) -> data
+        #%>% mutate(Magnitude=UB-LB) %>% group_by_(.dots=dots2)
+        data <- setcolorder(data, id[id %in% names(data)])
     }
     cl <- class(data) 
     cl <- unique(c("uc_table", cl[cl!="disttable"]))
     class(data) <- cl
     attr(data, "lb") <- lb
     attr(data, "ub") <- ub
-    #attr(data, "Passive_ID_columns") <- names(data)[!(names(data) %in% c("Scenario", "Model", "LB", "Mean", "UB", "Magnitude", "Type"))]
     data
 }
 
