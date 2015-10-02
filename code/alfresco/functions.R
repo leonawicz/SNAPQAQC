@@ -8,7 +8,7 @@ disttable <- function(x, check.values=TRUE){
         stopifnot(!any(is.na(x$Val)) && !any(is.na(x$Prob)))
         stopifnot(min(x$Prob) >= 0)
     }
-    class(x) <- c("disttable", class(x))
+    class(x) <- unique(c("disttable", class(data)))
     x
 }
 
@@ -50,7 +50,7 @@ ms_uc_table <- function(..., lb=0.025, ub=0.975, input="density", drop=NULL, lab
         return(data)
     }
     data <- dots[[1]]
-    if(check.class && class(data)[1]!="disttable") class(data) <- unique(c("disttable", class(data)))
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     stopifnot(input %in% c("sample", "density"))
     id <- names(data)
     stopifnot(all(drop %in% id))
@@ -99,6 +99,78 @@ ms_uc_table <- function(..., lb=0.025, ub=0.975, input="density", drop=NULL, lab
     data
 }
 
+# summarize distributions of a RV with specified uncertainty bounds around mean, conditioned on or marginalized over other variables
+# constructs a uc_table class object from specifically disttable class objects or row binds multiple uc_table objects
+uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, label=NULL, check.class=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE){
+    dots <- list(...)
+    if(!length(dots)) stop("No data provided.")
+    if(length(dots) > 1){
+        stopifnot(all(sapply(dots, function(x) class(x)[1]=="uc_table")))
+        stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$lb)))==0)
+        stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$ub)))==0)
+        #att <- lapply(dots, function(x) attributes(x)$Passive_ID_columns)
+        #for(i in 2:length(att)) stopifnot(all(att[[1]] %in% att[[i]]) && all(att[[i]] %in% att[[1]]))
+        data <- rbindlist(dots, fill=T)
+        cl <- class(data)
+        cl <- unique(c("uc_table", cl[cl!="disttable"]))
+        class(data) <- cl
+        attr(data, "lb") <- lb
+        attr(data, "ub") <- ub
+        #attr(data, "Passive_ID_columns") <- names(data)[!(names(data) %in% c("Scenario", "Model", "LB", "Mean", "UB", "Magnitude", "Type"))]
+        return(data)
+    }
+    stopifnot(is.null(condition.on.mean) || is.character(condition.on.mean))
+    if(any(margin %in% c("Val", "Prob"))) stop("Invalid marginalization.")
+    if(any(var.set %in% c("Val", "Prob"))) stop("Invalid variable set.")
+    data <- dots[[1]]
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
+    id <- names(data)
+    stopifnot(all(margin %in% id))
+    
+    get_conditioning_vars <- function(x, vars, ignore.constants){
+        if(!(ignore.constants && length(vars))) return(vars)
+        idx <- c()
+        for(i in 1:length(vars)) if(nrow(unique(x[, vars[i], with=F]))==1) idx <- c(idx, i)
+        if(length(idx)) vars <- vars[-idx]
+        if(!length(vars)) vars <- ""
+        vars
+    }
+    
+    get_marginalized_vars <- function(x, vars, var.set, use.var.set){
+        if(!use.var.set) return(c("Sim", vars))
+        stopifnot(length(var.set) > 0)
+        idx <- which(!(var.set %in% names(x)))
+        if(length(idx)) vars <- c(var.set[idx], vars)
+        return(c("Sim", vars))
+    }
+    
+    conditional.vars <- get_conditioning_vars(x=data, vars=id[!(id %in% c("Val", "Prob", margin))], ignore.constants=ignore.constants)
+    stopifnot(all(condition.on.mean %in% conditional.vars))
+    marginalized.vars <- get_marginalized_vars(x=data, vars=margin, var.set=var.set, use.var.set=use.var.set)
+    if(length(margin)) data <- marginalize(data, margin=margin)
+    id <- names(data)
+    label.mar <- paste0(marginalized.vars, collapse=" + ")
+    label.con <- if(conditional.vars[1]=="") "" else paste("|", paste0(conditional.vars, collapse=", "))
+    label <- paste(label.mar, label.con) 
+    
+    dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
+    sample_densities(data) %>% group_by_(.dots=dots) %>% summarise(LB=quantile(Val, lb), Mean=mean(Val), UB=quantile(Val, ub)) %>%
+        mutate(Magnitude=UB-LB, Type=label) %>% group_by_(.dots=dots) -> data
+        print(data)
+    if(!is.null(condition.on.mean)){
+        dots2 <- lapply(id[!(id %in% c("Val", "Prob", condition.on.mean))], as.symbol)
+        group_by_(data, .dots=dots2) %>% summarise(LB=mean(LB), Mean=mean(Mean), UB=mean(UB)) %>%
+            mutate(Magnitude=UB-LB) %>% group_by_(.dots=dots2) -> data
+    }
+    cl <- class(data) 
+    cl <- unique(c("uc_table", cl[cl!="disttable"]))
+    class(data) <- cl
+    attr(data, "lb") <- lb
+    attr(data, "ub") <- ub
+    #attr(data, "Passive_ID_columns") <- names(data)[!(names(data) %in% c("Scenario", "Model", "LB", "Mean", "UB", "Magnitude", "Type"))]
+    data
+}
+
 # estimated pdf from bootstrap sample
 dtDen <- function(x, n=1000, adj=0.1, out="vector", min.zero=TRUE, diversify=FALSE){
     b <- max(1, 0.05*diff(range(x)))
@@ -109,7 +181,7 @@ dtDen <- function(x, n=1000, adj=0.1, out="vector", min.zero=TRUE, diversify=FAL
 
 # reclass Vegetation column to aggregate Forest and Tundra entries
 toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
-    if(check.class && class(data)[1]!="disttable") class(data) <- unique(c("disttable", class(data)))
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     nam <- names(data)
     tundra <- c("Graminoid Tundra", "Shrub Tundra", "Wetland Tundra")
     f1 <- function(x) summarise(x, Val=dtBoot(Val))
@@ -128,7 +200,7 @@ toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
 
 # merge distributions using a cycle of bootstrap resampling followed by density re-estimation
 merge_densities <- function(data, keep.prob.col=TRUE, check.class=TRUE){
-    if(check.class && class(data)[1]!="disttable") class(data) <- unique(c("disttable", class(data)))
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     g <- as.character(groups(data))
     if("Prob" %in% names(data)){
         if(keep.prob.col){
@@ -142,7 +214,7 @@ merge_densities <- function(data, keep.prob.col=TRUE, check.class=TRUE){
 
 # Repeat cycle of bootstrap resampling followed by density re-estimation n-1 times, assumes Prob column present
 bootDenCycle <- function(data, n, start=NULL, group.vars=as.character(groups(data)), check.class=TRUE){
-    if(check.class && class(data)[1]!="disttable") class(data) <- unique(c("disttable", class(data)))
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     if(!("Cycle" %in% names(data))) data$Cycle <- 1
     if(is.null(start)) start <- max(data$Cycle)
     stopifnot(is.null(group.vars) || all(group.vars %in% names(data)))
@@ -156,11 +228,11 @@ bootDenCycle <- function(data, n, start=NULL, group.vars=as.character(groups(dat
 
 # marginalize distribution of RV (Val column) over selected categorical variables (Scenario, Model)
 marginalize <- function(data, margin, keep.prob.col=TRUE, check.class=TRUE){
-    if(check.class && class(data)[1]!="disttable") class(data) <- unique(c("disttable", class(data)))
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     id <- names(data)
     if(length(margin) && any(!(margin %in% id))) stop("Marginalizing variable(s) not found.")
     dots <- lapply(id[!(id %in% c("Val", "Prob", margin))], as.symbol)
-    group_by_(data, .dots=dots) %>% merge_densities(keep.prob.col) %>% group_by_(.dots=dots) -> data
+    group_by_(data, .dots=dots) %>% merge_densities(keep.prob.col, check.class) %>% group_by_(.dots=dots) -> data
     class(data) <- unique(c("disttable", class(data)))
     data
 }
