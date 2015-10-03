@@ -260,6 +260,45 @@ ms_uc_components <- function(sim, simScen, simMod, simScenMod, totals.col=FALSE)
     d
 }
 
+# make data table of uncertainty components contributed to a total uncertainty by various factors
+# constructs a uc_com_table class object from specifically uc_table class objects
+#
+# average individual uncertainty components
+# average simulation uncertainty: d.mean.uc or d.RgM.mean.uc + d.RgS.mean.uc - d.R.mean.uc
+# average scenario uncertainty: d.RgM.mean.uc - d.mean.uc or d.R.mean.uc - d.RgS.mean.uc
+# average model uncertainty: d.RgS.mean.uc - d.mean.uc or d.R.mean.uc - d.RgM.mean.uc
+# average total uncertainty: d.R.mean.uc or d.RgM.mean.uc + d.RgS.mean.uc - d.mean.uc
+uc_components <- function(data, variable.order=NULL, totals.col=FALSE){
+    stopifnot(class(data)[1]=="uc_table")
+    require(reshape2)
+    if(!is.null(variable.order)){
+        stopifnot(length(variable.order) > 1)
+        stepwise.vars <- variable.order
+        for(i in 2:length(variable.order)) stepwise.vars[i] <- paste(stepwise.vars[i-1], variable.order[i], sep=" + ")
+    }
+    data <- mutate(data, Type2=sapply(strsplit(data[, Type], " \\| "), "[", 1), LB=NULL, Mean=NULL, UB=NULL)
+    #x.vars <- strsplit(x, " \\+ ")
+    x.len <- sapply(strsplit(data[, Type2], " \\+ "), length)
+    stepwise.vars <- data[, Type2][match(unique(x.len), x.len)]
+    variable.order <- strsplit(tail(stepwise.vars, 1), " \\+ ")[[1]]
+    stopifnot(all(stepwise.vars %in% data[, Type2]))
+    data <- filter(data, Type2 %in% stepwise.vars) %>% mutate(Type2=factor(Type2, levels=stepwise.vars))
+    string <- paste(paste(names(data)[-which(names(data) %in% c("Magnitude", "Type", "Type2"))], collapse=" + "), "~ Type2")
+    data <- data.table(dcast(data, as.formula(string), value.var="Magnitude"))
+    for(i in 2:length(stepwise.vars)){
+        expr <- lazyeval::interp(~x-y, x=as.name(stepwise.vars[i]), y=as.name(stepwise.vars[i-1]))
+        data <- mutate_(data, .dots=setNames(list(expr), variable.order[i]))
+    }
+    for(i in 2:length(stepwise.vars)){
+        expr <- lazyeval::interp(~list(NULL), x=as.name(stepwise.vars[i]))
+        data <- mutate_(data, .dots=setNames(list(expr), stepwise.vars[i]))
+    }
+    data.table(melt(data, measure.vars=variable.order, variable.name="Type", value.name="Magnitude")) %>% 
+        mutate(Type=factor(Type, levels=variable.order)) -> data
+    class(data) <- unique(c("uc_comp_table", class(data)))
+    data
+}
+
 # make stepwise GCM data table of uncertainty components (simulation, scenario, and model)
 uc_stepwise_gcm <- function(data, models=NULL){
     uc.mar <- c("Sim", "Sim + Scenario", "Sim + Model", "Sim + Scenario + Model")
