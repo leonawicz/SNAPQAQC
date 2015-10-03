@@ -262,22 +262,11 @@ ms_uc_components <- function(sim, simScen, simMod, simScenMod, totals.col=FALSE)
 
 # make data table of uncertainty components contributed to a total uncertainty by various factors
 # constructs a uc_com_table class object from specifically uc_table class objects
-#
-# average individual uncertainty components
-# average simulation uncertainty: d.mean.uc or d.RgM.mean.uc + d.RgS.mean.uc - d.R.mean.uc
-# average scenario uncertainty: d.RgM.mean.uc - d.mean.uc or d.R.mean.uc - d.RgS.mean.uc
-# average model uncertainty: d.RgS.mean.uc - d.mean.uc or d.R.mean.uc - d.RgM.mean.uc
-# average total uncertainty: d.R.mean.uc or d.RgM.mean.uc + d.RgS.mean.uc - d.mean.uc
-uc_components <- function(data, variable.order=NULL, totals.col=FALSE){
+# stepwise individual uncertainty components, given uncertainty from variables already marginalized over
+uc_components <- function(data){
     stopifnot(class(data)[1]=="uc_table")
     require(reshape2)
-    if(!is.null(variable.order)){
-        stopifnot(length(variable.order) > 1)
-        stepwise.vars <- variable.order
-        for(i in 2:length(variable.order)) stepwise.vars[i] <- paste(stepwise.vars[i-1], variable.order[i], sep=" + ")
-    }
     data <- mutate(data, Type2=sapply(strsplit(data[, Type], " \\| "), "[", 1), LB=NULL, Mean=NULL, UB=NULL)
-    #x.vars <- strsplit(x, " \\+ ")
     x.len <- sapply(strsplit(data[, Type2], " \\+ "), length)
     stepwise.vars <- data[, Type2][match(unique(x.len), x.len)]
     variable.order <- strsplit(tail(stepwise.vars, 1), " \\+ ")[[1]]
