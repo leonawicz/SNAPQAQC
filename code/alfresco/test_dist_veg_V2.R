@@ -80,8 +80,8 @@ d.RgS.mean.uc <- uc_table(d.RgS, condition.on.mean="Scenario")
 d.R.mean.uc <- uc_table(d.R)
 # compound average marginal uncertainty levels
 d.uc.mar.compound <- uc_table(d.mean.uc, d.RgM.mean.uc, d.RgS.mean.uc, d.R.mean.uc) # smart bind
-# average individual marginal uncertainty components
-d.uc.mar.component <- ms_uc_components(sim=d.mean.uc, simScen=d.RgM.mean.uc, simMod=d.RgS.mean.uc, simScenMod=d.R.mean.uc) # a bit more than a smart bind
+# stepwise individual marginal uncertainty components
+d.uc.mar.component <- uc_components(d.uc.mar.compound)
 }) # about 230 seconds on Atlas CPU
 
 # Skip this for now
