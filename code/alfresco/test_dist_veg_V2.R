@@ -22,7 +22,7 @@ dir.create(plotDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/plo
 setwd(wDir <- file.path(baseDir, topDir, dtype, reg.grp, reg))
 lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
 
-system.time( load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegetatedArea.RData", age="vegetationAge.RData")) )# about 30 seconds on Atlas CPU
+system.time( load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegarea.RData", age="vegage.RData")) )# about 30 seconds on Atlas CPU
 dataname <- switch(dataset, ba="Burn area", fc="Fire frequency", fs="Fire size", veg="Vegetated area", age="Vegetation age")
 dataname2 <- tolower(dataname)
 d <- get(ls(pattern="^d\\."))
@@ -64,7 +64,7 @@ d.R <- marginalize(d, c("Scenario", "Model")) # f(x(R))
 d.RgS <- marginalize(d, "Model") # f(x(R)|S=s)
 d.RgM <- marginalize(d, "Scenario") # f(x(R)|M=m)
 d.msdist <- msdisttable(d, d.RgS, d.RgM, d.R) # smart bind
-}) # about 520 seconds on Atlas CPU
+}) # about 360 seconds on Atlas CPU
 
 # tertiary data tables (summarizing uncertainty bounds for conditional and marginal distributions of the RV)
 # conditional uncertainty

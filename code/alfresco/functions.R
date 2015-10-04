@@ -157,7 +157,6 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
         id <- names(data)
         dots2 <- lapply(id[!(id %in% c("LB", "Mean", "UB", "Magnitude", condition.on.mean))], as.symbol)
         group_by_(data, .dots=dots2) %>% summarise(LB=mean(LB), Mean=mean(Mean), UB=mean(UB), Magnitude=mean(Magnitude)) %>% group_by_(.dots=dots2) -> data
-        #%>% mutate(Magnitude=UB-LB) %>% group_by_(.dots=dots2)
         data <- setcolorder(data, id[id %in% names(data)])
     }
     cl <- class(data) 
@@ -177,7 +176,7 @@ dtDen <- function(x, n=1000, adj=0.1, out="vector", min.zero=TRUE, diversify=FAL
 }
 
 # reclass Vegetation column to aggregate Forest and Tundra entries
-toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
+toForestTundra <- function(data, group.vars=as.character(groups(data)), keep.prob.col=TRUE, check.class=TRUE){
     if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     nam <- names(data)
     tundra <- c("Graminoid Tundra", "Shrub Tundra", "Wetland Tundra")
@@ -189,8 +188,8 @@ toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
     }
     f1(data) %>% mutate(Vegetation2=ifelse(as.character(Vegetation) %in% tundra, "Tundra", "Forest"), Obs=1:nboot) %>%
         select(-Vegetation) %>% mutate(Vegetation=Vegetation2) %>% select(-Vegetation2) %>%
-        group_by(Var, Vegetation, Year, Obs, add=T) %>% summarise(Val=sum(Val)) %>%
-        f2 %>% group_by(Year, add=T) %>% setcolorder(nam) %>% setkey -> data
+        group_by_(.dots=lapply(c(group.vars, "Obs"), as.symbol)) %>% summarise(Val=sum(Val)) %>%
+        f2 %>% group_by_(.dots=lapply(group.vars, as.symbol)) %>% setcolorder(nam) %>% setkey -> data
     class(data) <- unique(c("disttable", class(data)))
     data
 }
@@ -283,8 +282,9 @@ uc_components <- function(data){
         expr <- lazyeval::interp(~list(NULL), x=as.name(stepwise.vars[i]))
         data <- mutate_(data, .dots=setNames(list(expr), stepwise.vars[i]))
     }
-    data.table(melt(data, measure.vars=variable.order, variable.name="Type", value.name="Magnitude")) %>% 
-        mutate(Type=factor(Type, levels=variable.order)) -> data
+    data <- data.table(melt(data, measure.vars=variable.order, variable.name="Type", value.name="Magnitude")) %>% 
+        mutate(Type=factor(Type, levels=variable.order))
+    data[Magnitude < 0, Magnitude:=0]
     class(data) <- unique(c("uc_comp_table", class(data)))
     data
 }
@@ -535,7 +535,7 @@ distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scal
         if(type=="total") suffix <- "with uncertainty" else if(type=="compound") suffix <- "compound uncertainty" else suffix <- ""
         title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
         if(type=="total"){
-            g <- ggplot(data=data %>% filter(Type==label.total), aes_string(x="Year", y="Mean", colour=colour)) +
+            g <- ggplot(data=data %>% filter(Type==label.total), aes_string(x="Year", y="Mean", colour=colour), environment=environment()) +
                 geom_ribbon(aes(ymin=LB, ymax=UB, fill=paste("Combined uncertainty:", label.total))) +
                 geom_line(size=1) + geom_point(size=2)
         } else if(type=="compound"){
