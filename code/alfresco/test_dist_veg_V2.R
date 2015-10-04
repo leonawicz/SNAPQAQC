@@ -30,13 +30,6 @@ rm(list=ls(pattern="^d\\."))
 gc()
 
 # @knitr data_prep
-if(agg.veg & dataset=="veg"){
-    veg.levels <- c("Forest", "Tundra", "All")
-    agg.veg.lab <- "FT"
-} else {
-    veg.levels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "All")
-    agg.veg.lab <- ""
-}
 
 # primary data table (can subset rows in accordance with conditional distributions of the RV)
 # For random variable X:
@@ -48,10 +41,9 @@ if(agg.veg & dataset=="veg"){
 # conditional on values of the random variable of interest, X (derived from "Val" and "Prob" columns),
 # can also be examined, but this is not done here.
 
-system.time(d %>% filter(Vegetation!="Wetland Tundra" & Year >= yrs.lim[1] & Year <= yrs.lim[2]) %>%
-    mutate(Vegetation=factor(Vegetation, levels=veg.levels)) %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% disttable -> d) # about five seconds on Atlas CPU
+system.time(d <- filter(d, Vegetation!="Wetland Tundra" & Year >= yrs.lim[1] & Year <= yrs.lim[2]) %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% disttabl) # about five seconds on Atlas CPU
 
-if(agg.veg & dataset=="veg") d <- toForestTundra(d)
+if(agg.veg & dataset=="veg") { d <- toForestTundra(d); agg.veg.lab <- "FT" } else agg.veg.lab <- ""
 if(dataset %in% c("veg", "ba")){
     unit.scale <- 1000
     d[, Val:=Val/unit.scale]
@@ -82,7 +74,7 @@ d.R.mean.uc <- uc_table(d.R)
 d.uc.mar.compound <- uc_table(d.mean.uc, d.RgM.mean.uc, d.RgS.mean.uc, d.R.mean.uc) # smart bind
 # stepwise individual marginal uncertainty components
 d.uc.mar.component <- uc_components(d.uc.mar.compound)
-}) # about 230 seconds on Atlas CPU
+}) # about 380 seconds on Atlas CPU
 
 # Skip this for now
 do.stepwise <- FALSE
