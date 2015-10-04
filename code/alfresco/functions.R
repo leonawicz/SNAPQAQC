@@ -1,15 +1,15 @@
 # @knitr functions
 # Distribution data table class constructor
-disttable <- function(x, check.values=TRUE){
-    stopifnot(any(class(x) %in% c("grouped_dt", "tbl_dt", "tbl", "data.table", "data.frame")))
-    stopifnot(all(c("Val", "Prob") %in% names(x)))
+disttable <- function(data, check.values=TRUE){
+    stopifnot(any(class(data) %in% c("grouped_dt", "tbl_dt", "tbl", "data.table", "data.frame")))
+    stopifnot(all(c("Val", "Prob") %in% names(data)))
     if(check.values){
-        stopifnot(is.numeric(x$Val) && is.numeric(x$Prob))
-        stopifnot(!any(is.na(x$Val)) && !any(is.na(x$Prob)))
-        stopifnot(min(x$Prob) >= 0)
+        stopifnot(is.numeric(data$Val) && is.numeric(data$Prob))
+        stopifnot(!any(is.na(data$Val)) && !any(is.na(data$Prob)))
+        stopifnot(min(data$Prob) >= 0)
     }
-    class(x) <- unique(c("disttable", class(data)))
-    x
+    class(data) <- unique(c("disttable", class(data)))
+    data
 }
 
 # bootstrap sample from estimated pdf
@@ -101,7 +101,7 @@ ms_uc_table <- function(..., lb=0.025, ub=0.975, input="density", drop=NULL, lab
 
 # summarize distributions of a RV with specified uncertainty bounds around mean, conditioned on or marginalized over other variables
 # constructs a uc_table class object from specifically disttable class objects or row binds multiple uc_table objects
-uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, label=NULL, check.class=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE){
+uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, bindType.as.factor=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE, check.class=TRUE){
     dots <- list(...)
     if(!length(dots)) stop("No data provided.")
     if(length(dots) > 1){
@@ -109,6 +109,7 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
         stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$lb)))==0)
         stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$ub)))==0)
         data <- rbindlist(dots, fill=T)
+        if(bindType.as.factor) data <- mutate(data, Type=factor(Type, levels=unique(Type)))
         cl <- class(data)
         cl <- unique(c("uc_table", cl[cl!="disttable"]))
         class(data) <- cl
@@ -266,7 +267,7 @@ ms_uc_components <- function(sim, simScen, simMod, simScenMod, totals.col=FALSE)
 uc_components <- function(data){
     stopifnot(class(data)[1]=="uc_table")
     require(reshape2)
-    data <- mutate(data, Type2=sapply(strsplit(data[, Type], " \\| "), "[", 1), LB=NULL, Mean=NULL, UB=NULL)
+    data <- mutate(data, Type2=sapply(strsplit(data[, as.character(Type)], " \\| "), "[", 1), LB=NULL, Mean=NULL, UB=NULL)
     x.len <- sapply(strsplit(data[, Type2], " \\+ "), length)
     stepwise.vars <- data[, Type2][match(unique(x.len), x.len)]
     variable.order <- strsplit(tail(stepwise.vars, 1), " \\+ ")[[1]]
@@ -311,11 +312,11 @@ uc_stepwise_gcm <- function(data, models=NULL){
 }
 
 # add Decade column based on Year column and optionally filter decades using vector of decade leading years
-byDecade <- function(data, decade.start.years=NULL, ...) {
+byDecade <- function(data, decade.start.years=NULL) {
     g <- as.character(groups(data))
     data <- mutate(data, Decade=paste0(10*Year%/%10, "s"))
     if(!is.null(decade.start.years)) data <- filter(data, Decade %in% paste0(decade.start.years, "s"))
-    data %>% group_by_(.dots=lapply(c(g, "Decade"), as.symbol)) %>% marginalize("Year", ...)
+    data %>% group_by_(.dots=lapply(c(g, "Decade"), as.symbol)) %>% marginalize("Year")
 }
 
 # compare marginal and conditional distributions of a RV with respect to models and scenarios
@@ -502,6 +503,71 @@ distplot.ms_uc_comp_table <- function(data, type="stack", facet.formula=NULL, fa
         } else if(type=="proportion"){
             g <- ggplot(data=data, aes(x=Year, y=Magnitude, fill=Type)) + geom_bar(stat="identity", position="fill")
         }
+        g <- g + scale_fill_manual(name="",values=clrs) + scale_x_continuous(breaks=yrs.brks) +
+            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
+            guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
+        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
+        print(g)
+    }
+    if(return.data) return(data)
+}
+
+
+# Plot total or compound (by component) average marginal uncertainty in a RV over time with respect to underlying simulation uncertainty and other stepwise added variables
+# optionally condition (filter) on factor levels of associated with other variables not marginalized over
+distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
+    dots <- list(...)
+    data <- .filter_plot_data(data, dots)
+    x <- as.character(unique(data$Type))
+    idx <- which.max(sapply(strsplit(x, " \\+ "), length))
+    label.total <- x[idx]
+    stopifnot(length(idx)==1)
+    if(show.plot){
+        if(!(type %in% c("total", "compound", "conditional"))) stop("type must be 'total', 'compound', or 'conditional'.")
+        yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
+        clrs2 <- c("#00000030", "#00000030")
+        names(clrs2) <- c("Uncertainty", paste("Combined uncertainty:", label.total))
+        colour <- if(!is.null(dots$colour)) dots$colour else NULL
+        clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
+        xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
+        ylb <- if(!is.null(dots$ylab)) dots$ylab else "Y"
+        prefix <- if(type=="conditional") "Conditional uncertainty in projected annual" else ""
+        if(type=="total") suffix <- "with uncertainty" else if(type=="compound") suffix <- "compound uncertainty" else suffix <- ""
+        title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
+        if(type=="total"){
+            g <- ggplot(data=data %>% filter(Type==label.total), aes_string(x="Year", y="Mean", colour=colour)) +
+                geom_ribbon(aes(ymin=LB, ymax=UB, fill=paste("Combined uncertainty:", label.total))) +
+                geom_line(size=1) + geom_point(size=2)
+        } else if(type=="compound"){
+            g <- ggplot(data=data, aes(x=Year, y=Magnitude, colour=Type)) + geom_line(size=1) + expand_limits(y=0)
+        } else if(type=="conditional"){
+            g <- ggplot(data=data, aes_string(x="Year", y="Magnitude", colour="Type")) + geom_point() + expand_limits(y=0)
+        }
+        g <- g + scale_colour_manual(name="", values=clrs) + scale_fill_manual(name="",values=clrs2) + scale_x_continuous(breaks=yrs.brks) +
+            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
+            guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
+        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
+        print(g)
+    }
+    if(return.data) return(data)
+}
+
+# Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
+# optionally condition (filter) on other (not model or scenario) factor levels of associated variables
+distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
+    dots <- list(...)
+    data <- .filter_plot_data(data, dots)
+    if(show.plot){
+        if(!(type %in% c("stack", "proportion"))) stop("type must be 'stack' or 'proportion'.")
+        yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
+        clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
+        xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
+        if(!is.null(dots$ylab)) ylb <- dots$ylab else if(type=="stack") ylb <- "Combined uncertainty by source" else ylb <- "Proportion of combined uncertainty"
+        prefix <- if(type=="stack") "Combined uncertainty in projected annual " else "Proportional uncertainty in projected annual "
+        suffix <- "\nEstimated uncertainty component by source"
+        title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
+        g <- ggplot(data=data, aes(x=Year, y=Magnitude, fill=Type))
+        g <- if(type=="stack") g + geom_bar(stat="identity") else if(type=="proportion") g + geom_bar(stat="identity", position="fill")
         g <- g + scale_fill_manual(name="",values=clrs) + scale_x_continuous(breaks=yrs.brks) +
             theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
