@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   09/27/2015        ####
+#### Last updated:   10/04/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -17,9 +17,9 @@ library(dplyr)
 
 if(!exists("mainDir")) mainDir <- "/big_scratch/mfleonawicz/Rmpi/outputs"
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), 'abfc' (area burned and fire counts), or 'fsv' (fire sizes by vegetation class).")
-vegDirs <- list.files(file.path(mainDir, "vegDir"), full=T)
-empty <- which(lapply(vegDirs, function(x) length(list.files(x)))==0)
-if(length(empty)) vegDirs <- vegDirs[-empty]
+ageDirs <- list.files(file.path(mainDir, "vegDir"), full=T)
+empty <- which(lapply(ageDirs, function(x) length(list.files(x)))==0)
+if(length(empty)) ageDirs <- ageDirs[-empty]
 fsvDir <- file.path(mainDir, "fsv")
 
 n.samples <- 1000 # new density estimation
@@ -31,7 +31,7 @@ datnames <- c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Ye
 # All regions for which stage-1 outputs currently exist on disk.
 # Checking abfc files, which have maximum regions, but only regions common to fsv, abfc, veg, and age outputs are processed.
 # It is assumed stage one processing has been done on a common set of regions for all four variable sets.
-regions <- unique(sapply(strsplit(list.files(file.path(abfcDir)), "__"), "[", 2))
+regions <- unique(sapply(strsplit(list.files(file.path(fsvDir)), "__"), "[", 2))
 n.regions <- length(regions)
 n.cores <- min(n.regions, 32)
 
@@ -98,7 +98,7 @@ btfun_dt <- function(p1, p2, n.samples=length(p)/2, n.boot=10000, interp=FALSE, 
 
 # @knitr get_ageStats_ageDensities
 # Primary processing functions
-get_ageStats_ageDensities <- function(j, dirs, n.samples=100, n.samples.in, n.boot=10000, datnames, veg.labels, scen.levels){
+get_ageStats_ageDensities <- function(j, dirs, n.samples=1000, n.samples.in, n.boot=10000, datnames, veg.labels, scen.levels){
 	pat <- paste0("^age__.*.rep.*.RData$")
 	pat2 <- substr(pat, 1, nchar(pat) - 9)
 	files.list <- lapply(1:length(dirs), function(i, dirs, ...) list.files(dirs[i], ...), dirs=dirs, full=T, pattern=pat)

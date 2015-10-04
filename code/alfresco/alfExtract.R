@@ -5,7 +5,7 @@ suppressMessages(library(data.table))
 suppressMessages(library(dplyr))
 rasterOptions(chunksize=10^12,maxmemory=10^11)
 
-prep_alf_data <- function(i, loopBy, mainDir, reps, years){
+prep_alf_files <- function(i, loopBy, mainDir, reps, years){
     if(is.null(years)) years <- 2008:2100
     if(loopBy=="rep"){
         iter <- reps
@@ -30,12 +30,18 @@ prep_alf_data <- function(i, loopBy, mainDir, reps, years){
     files
 }
 
-# @knitr getFireStats
-getFireStats <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
+# @knitr extract_fsv
+extract_data <- function(i, type, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, ...){
+    stopifnot(length(type) > 0 && type %in% c("av", "fsv"))
+    if(type=="av") return(extract_av(i, loopBy, mainDir, ageDir, reps, years, cells, ...))
+    if(type=="fsv") return(extract_fsv(i, loopBy, mainDir, reps, years, cells, ...))
+}
+
+extract_fsv <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
     if(is.null(list(...)$veg.labels)) {
         veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
     } else veg.labels <- list(...)$veg.labels
-    x <- prep_alf_data(i=i, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years)
+    x <- prep_alf_files(i=i, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years)
     cells <- group_by(cells, LocGroup, Location)
     d.fs <- vector("list", length(x$iter))
     for(j in 1:length(x$iter)){ # fire size by vegetation class
@@ -52,13 +58,13 @@ getFireStats <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
     d.fs
 }
 
-# @knitr getAgeVegStats
-getAgeVegStats <- function(i, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, ...){
+# @knitr extract_av
+extract_av <- function(i, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, ...){
     if(is.null(list(...)$veg.labels)) {
         veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
     } else veg.labels <- list(...)$veg.labels
     if(!is.numeric(list(...)$n.samples)) n.samples <- 1000 else n.samples <- list(...)$n.samples
-    x <- prep_alf_data(i=i, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years)
+    x <- prep_alf_files(i=i, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years)
     cells <- group_by(cells, LocGroup, Location)
     r <- getValues(raster(x$Age[1])) # use as a template
     idx <- which(!is.na(r))

@@ -28,7 +28,7 @@ library(dplyr)
 # Rmpi setup
 if(Rmpi){
 	library(Rmpi)
-	mpi.spawn.Rslaves(needlog = FALSE)
+	mpi.spawn.Rslaves(needlog = TRUE)
 	mpi.bcast.cmd( id <- mpi.comm.rank() )
 	mpi.bcast.cmd( np <- mpi.comm.size() )
 	mpi.bcast.cmd( host <- mpi.get.processor.name() )
@@ -114,12 +114,12 @@ if(Rmpi){
 if(doFire){
     print("#### Compiling fire statistics... ####")
 	if(Rmpi){
-        fsv.dat <- mpi.remote.exec( getFireStats(i=itervar[id], loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA)) )
+        fsv.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA)) )
         fsv.dat <- rbindlist(fsv.dat)
     } else {
         len <- length(itervar)
         if(len <= n.cores){
-            fsv.dat <- mclapply(itervar, getFireStats, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), mc.cores=n.cores)
+            fsv.dat <- mclapply(itervar, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), mc.cores=n.cores)
             fsv.dat <- rbindlist(fsv.dat)
         } else {
             serial.iters <- ceiling(len/n.cores)
@@ -128,7 +128,7 @@ if(doFire){
             for(j in 1:serial.iters){
                 itervar.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
-                fsv.tmp <- mclapply(itervar.tmp, getFireStats, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), mc.cores=n.cores)
+                fsv.tmp <- mclapply(itervar.tmp, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), mc.cores=n.cores)
                 fsv.dat[[j]] <- rbindlist(fsv.tmp)
                 rm(fsv.tmp)
                 gc()
@@ -166,13 +166,13 @@ if(doFire){
 if(doAgeVeg){
     print("#### Compiling vegetation class and age statistics... ####")
 	if(Rmpi){
-        va.dat <- mpi.remote.exec( getAgeVegStats(i=itervar[id], loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell)) )
+        va.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell)) )
         d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
         if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
 	} else {
         len <- length(itervar)
         if(len <= n.cores){
-            va.dat <- mclapply(itervar, getAgeVegStats, loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
+            va.dat <- mclapply(itervar, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
             d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
             if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
         } else {
@@ -182,7 +182,7 @@ if(doAgeVeg){
             for(j in 1:serial.iters){
                 itervar.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
-                va.dat <- mclapply(itervar.tmp, getAgeVegStats, loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
+                va.dat <- mclapply(itervar.tmp, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
                 d.area[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.area))
                 if(mpiBy=="year") d.age[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.age))
                 rm(va.dat)
