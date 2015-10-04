@@ -64,7 +64,7 @@ d.R <- marginalize(d, c("Scenario", "Model")) # f(x(R))
 d.RgS <- marginalize(d, "Model") # f(x(R)|S=s)
 d.RgM <- marginalize(d, "Scenario") # f(x(R)|M=m)
 d.msdist <- msdisttable(d, d.RgS, d.RgM, d.R) # smart bind
-}) # about 250 seconds on Atlas CPU
+}) # about 520 seconds on Atlas CPU
 
 # tertiary data tables (summarizing uncertainty bounds for conditional and marginal distributions of the RV)
 # conditional uncertainty
@@ -72,7 +72,7 @@ system.time({
 d.uc <- uc_table(d)
 d.RgS.uc <- uc_table(d.RgS)
 d.RgM.uc <- uc_table(d.RgM)
-d.uc.cond <- uc_table(d.uc, d.RgS.uc, d.RgM.uc)
+d.uc.cond <- uc_table(d.uc, d.RgS.uc, d.RgM.uc)  # smart bind
 # average marginal uncertainty
 d.mean.uc <- uc_table(d, condition.on.mean=c("Scenario", "Model"))
 d.RgM.mean.uc <- uc_table(d.RgM, condition.on.mean="Model")
@@ -137,11 +137,11 @@ distplot(d.uc.mar.compound, type="compound", facet.formula="~ Vegetation", facet
 dev.off()
 # individual components: total
 png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentStack.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.component, type="stack", facet.formula="~ Vegetation", facet.ncol=3)
+distplot(d.uc.mar.component, type="stack", facet.formula="~ Vegetation", facet.ncol=3, xlab="")
 dev.off()
 # individual components: proportions
 png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentProp.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.component, type="proportion", facet.formula="~ Vegetation", facet.ncol=3)
+distplot(d.uc.mar.component, type="proportion", facet.formula="~ Vegetation", facet.ncol=3, xlab="")
 dev.off()
 # conditional uncertainty
 png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucConditional.png"), height=h, width=w, res=res)
