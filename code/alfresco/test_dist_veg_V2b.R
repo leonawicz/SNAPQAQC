@@ -1,7 +1,7 @@
 # @knitr setup
 set.seed(47)
-source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/functions.R")
-baseDir <- "/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final"
+source("C:/github/SNAPQAQC/code/alfresco/functions.R")
+baseDir <- "C:/github/SNAPQAQC/data"
 topDir <- "alfresco"
 dataset <- "veg"
 reg.grp <- "LCC Regions"
@@ -18,8 +18,8 @@ year.given <- 2050
 if(!exists("agg.veg")) agg.veg <- FALSE # aggregate to forest and tundra
 if(!exists("lb") | !exists("ub")) { lb <- 0.025; ub <- 0.975 } # confidence limits
 
-dir.create(plotDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/plots/AlfTest", dataset), recur=T, showWarnings=F) # improve pathing specificity
-setwd(wDir <- file.path(baseDir, topDir, dtype, reg.grp, reg))
+dir.create(plotDir <- file.path("C:/github/SNAPQAQC/plots/AlfTest", dataset), recur=T, showWarnings=F) # improve pathing specificity
+setwd(wDir <- baseDir)
 lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
 
 system.time( load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegarea.RData", age="vegage.RData")) )# about 15 seconds on Atlas CPU
@@ -86,15 +86,20 @@ class(d.uc.mar.component2) <- c("uc_comp_table", class(d.uc.mar.component2))
 # Skip this for now
 do.stepwise <- FALSE
 if(do.stepwise){
-library(combinat)
 library(parallel)
-mod.seq <- permn(unique(d$Model))
-system.time( d.step <- mclapply(1:length(mod.seq), function(i, data, models) uc_stepwise_gcm(data=data, models=models[[i]]), data=d, models=mod.seq, mc.cores=32) ) # 1.75 to 2 hours on one Atlas node, about 180 GB peak RAM
+library(purrr)
+id <- expand.grid(1:5, 1:5)
+id <- id[id[,1]!=id[,2],]
+mod.seq <- unique(lapply(strsplit(paste(id[,1], id[,2]), " "), function(x,m) m[as.numeric(sort(x))], m=unique(d$Model)))
+system.time( d.step <- mclapply(1:length(mod.seq), function(i, data, models) uc_stepwise(data=data, models=models[[i]]), data=d, models=mod.seq, mc.cores=16) )
 d.step <- rbindlist(d.step)
-d.step %>% select(-Phase, -Location, -Var) %>% filter(Type=="GCM", Vegetation=="Black Spruce", nchar(GCMset)==3) %>%
-    mutate(GCMset=sapply(lapply(strsplit(GCMset, " "), sort), paste, collapse="")) %>%
-    group_by(GCMset) %>% summarise(Magnitude=mean(Magnitude)) %>% setorder(-Magnitude) %>% print
-save(d.step, file="/workspace/UA/mfleonawicz/projects/SNAPQAQC/workspaces/test_dt_stepwise_uncertainty.RData")
+class(d.step) <- unique(c("ucsteptable", "uccomptable", class(d.step)))
+#d.step %>% select(-Phase, -Location, -Var) %>% filter(Type=="Model", Vegetation=="Black Spruce", nchar(GCMset)==3) %>%
+d.step %>% select(-Phase, -Location, -Var) %>% filter(Type=="Model" & Vegetation=="Black Spruce") -> d.step.tmp
+d.step.tmp <- d.step.tmp[grep("\n", d.step.tmp$GCMset),]
+d.step.tmp %>% #mutate(GCMset=sapply(lapply(strsplit(GCMset, " "), sort), paste, collapse="")) %>%
+    group_by(GCMset) %>% summarise(Magnitude=mean(Magnitude)) %>% setorder(-Magnitude) %>% mutate(GCMset=factor(GCMset, levels=rev(GCMset))) -> d.step2 #%>% print
+class(d.step2) <- unique(c("ucsteptable", "uccomptable", class(d.step2)))
 }
 
 tables()
@@ -122,6 +127,11 @@ if(dataset %in% c("veg", "ba", "fs")){
     lb_comp_stack <- paste(dataname, "uncertainty")
     lb_comp_prop <- paste(dataname, "proportional uncertainty")
 }
+
+# example of RV uncertainty by model pairs
+png(paste0(dataset, "_ucModelPairs", agg.veg.lab, ".png"), height=h, width=w, res=res)
+distplot(d.step2, facet.formula=NULL, facet.scales="free_y", Scenario=scen.given, Vegetation=veg.given, ylab=lb_tsu)
+dev.off()
 
 # example histograms of probability distributions of a RV
 png(paste0(dataset, "_hist", agg.veg.lab, ".png"), height=h, width=w, res=res)
