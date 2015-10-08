@@ -1,13 +1,14 @@
 #!/bin/bash
-#SBATCH --exclusive
+##SBATCH --exclusive
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --account=snap
 #SBATCH -p main
 #SBATCH --ntasks=93
 #SBATCH --job-name=alfExtractMain
-#SBATCH --nodes=3
-#SBATCH --ntasks-per-node=31
+#SBATCH --nodes=4
+#SBATCH --nodelist=atlas01,atlas13,atlas14,atlas15
+#SBATCH --ntasks-per-node=24
 
 # CL variables passed take form, e.g., model.index=1, reps=1:200, years=1900:2100;
 # currently, years defaults to 2008:2100, this will change;
