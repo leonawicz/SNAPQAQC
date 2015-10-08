@@ -269,7 +269,11 @@ uc_components <- function(data){
     data <- mutate(data, Type2=sapply(strsplit(data[, as.character(Type)], " \\| "), "[", 1), LB=NULL, Mean=NULL, UB=NULL)
     x.len <- sapply(strsplit(data[, Type2], " \\+ "), length)
     stepwise.vars <- data[, Type2][match(unique(x.len), x.len)]
-    variable.order <- strsplit(tail(stepwise.vars, 1), " \\+ ")[[1]]
+    variable.order <- c()
+    for(i in 1:length(stepwise.vars)){
+        v <- strsplit(stepwise.vars[i], " \\+ ")[[1]]
+        variable.order[i] <- v[!(v %in% variable.order)][1]
+    }
     stopifnot(all(stepwise.vars %in% data[, Type2]))
     data <- filter(data, Type2 %in% stepwise.vars) %>% mutate(Type2=factor(Type2, levels=stepwise.vars))
     string <- paste(paste(names(data)[-which(names(data) %in% c("Magnitude", "Type", "Type2"))], collapse=" + "), "~ Type2")
@@ -308,6 +312,34 @@ uc_stepwise_gcm <- function(data, models=NULL){
         if(i==1) d <- d.tmp else d <- bind_rows(d, d.tmp)
     }
     class(d) <- unique(c("ucsteptable", "uccomptable", "disttable", class(d)))
+    d
+}
+
+# make stepwise GCM data table of uncertainty components (simulation, scenario, and model)
+uc_stepwise <- function(data, models=NULL, use.abb=FALSE){
+    if(is.null(models)) models <- unique(data$Model)
+    stopifnot(length(models) > 1)
+    for(i in 1:length(models)){
+        gcmset <- models[1:i]
+        abb <- sapply(gcmset, function(x) switch(x, "CCCMAcgcm31"="C", "GFDLcm21"="G", "MIROC32m"="M", "MPIecham5"="E", "ukmoHADcm3"="H", "unknown"))
+        abb.collapse <- " "
+        if(!use.abb) {abb <- gcmset; abb.collapse <- "\n"}
+        data %>% filter(Model %in% gcmset) %>%
+        (function(d) {
+            d %>% uc_table(condition.on.mean=c("Scenario", "Model"), ignore.constants=FALSE) -> d.sim
+            print(1)
+            d %>% uc_table(condition.on.mean="Model", margin="Scenario", ignore.constants=FALSE) -> d.simScen
+            print(2)
+            d %>% uc_table(condition.on.mean="Scenario", margin="Model", ignore.constants=FALSE) -> d.simMod
+            print(3)
+            d %>% uc_table(margin=c("Scenario", "Model"), ignore.constants=FALSE) -> d.simScenMod
+            print(4)
+            uc_components(uc_table(d.sim, d.simScen, d.simMod, d.simScenMod))
+        }) %>% mutate(GCMset=paste(abb, collapse=abb.collapse)) -> d.tmp
+        if(i==1) d <- d.tmp else d <- bind_rows(d, d.tmp)
+    }
+    d <- data.table(d)
+    class(d) <- unique(c("ucsteptable", "uccomptable", class(d)))
     d
 }
 
@@ -569,6 +601,28 @@ distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet
         g <- ggplot(data=data, aes(x=Year, y=Magnitude, fill=Type))
         g <- if(type=="stack") g + geom_bar(stat="identity") else if(type=="proportion") g + geom_bar(stat="identity", position="fill")
         g <- g + scale_fill_manual(name="",values=clrs) + scale_x_continuous(breaks=yrs.brks) +
+            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
+            guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
+        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
+        print(g)
+    }
+    if(return.data) return(data)
+}
+
+# Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
+# optionally condition (filter) on other (not model or scenario) factor levels of associated variables
+distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
+    dots <- list(...)
+    data <- .filter_plot_data(data, dots)
+    if(show.plot){
+        clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
+        xlb <- if(!is.null(dots$xlab)) dots$xlab else "Model pairs"
+        if(!is.null(dots$ylab)) ylb <- dots$ylab else ylb <- "Model pair uncertainty"
+        prefix <- "Average uncertainty by model pair "
+        title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location")))
+        g <- ggplot(data=data, aes(x=GCMset, y=Magnitude))
+        g <- g + geom_bar(stat="identity") + coord_flip()
+        g <- g + scale_fill_manual(name="",values=clrs) +
             theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
         if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
