@@ -262,7 +262,8 @@ img {
 args =<span class="st"> </span>(<span class="kw">commandArgs</span>(<span class="ot">TRUE</span>))
 if (!<span class="kw">length</span>(args)) <span class="kw">q</span>(<span class="st">&quot;no&quot;</span>) else for (i in <span class="dv">1</span>:<span class="kw">length</span>(args)) <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> args[[i]]))
 
-if (!<span class="kw">exists</span>(<span class="st">&quot;model.index&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;Must provide model(s) as integer(s) 1:15, e.g., model.index=1:2&quot;</span>)
+if (!<span class="kw">exists</span>(<span class="st">&quot;model.index&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;Must provide a model.index 1 to 15, e.g., model.index=1&quot;</span>)
+<span class="kw">stopifnot</span>(<span class="kw">length</span>(model.index) ==<span class="st"> </span><span class="dv">1</span>)
 if (!<span class="kw">exists</span>(<span class="st">&quot;reps&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;Must provide replicates as integer(s) 1:200, e.g., reps=1:25&quot;</span>)
 if (!<span class="kw">exists</span>(<span class="st">&quot;years&quot;</span>)) years &lt;-<span class="st"> </span><span class="ot">NULL</span>  <span class="co"># Assume all years if none specified</span>
 if (!<span class="kw">exists</span>(<span class="st">&quot;Rmpi&quot;</span>)) Rmpi &lt;-<span class="st"> </span><span class="ot">TRUE</span>
@@ -274,7 +275,9 @@ if (<span class="kw">exists</span>(<span class="st">&quot;repSample&quot;</span>
     <span class="kw">cat</span>(<span class="st">&quot;Sampled replicates:</span><span class="ch">\n</span><span class="st">&quot;</span>, reps, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)
 }
 
+<span class="kw">library</span>(raster)
 <span class="kw">library</span>(data.table)
+<span class="kw">library</span>(dplyr)
 
 <span class="co"># Rmpi setup</span>
 if (Rmpi) {
@@ -288,31 +291,29 @@ if (Rmpi) {
     n.cores &lt;-<span class="st"> </span><span class="dv">32</span>
 }
 
-<span class="co"># Load nested list of cell indices defining groups of shapefile polygons</span>
-<span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km.RData&quot;</span>)
-<span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN1km_rmNA.RData&quot;</span>)
+<span class="co"># Load data table of cell indices defining groups of shapefile polygons</span>
+<span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_akcan1km2km.RData&quot;</span>)
+cells &lt;-<span class="st"> </span><span class="kw">filter</span>(cells, Source ==<span class="st"> &quot;akcan1km&quot;</span>) %&gt;%<span class="st"> </span>group_by %&gt;%<span class="st"> </span><span class="kw">select</span>(-Source) %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw">group_by</span>(LocGroup, Location)
 if (<span class="kw">exists</span>(<span class="st">&quot;locgroup&quot;</span>)) {
-    cells_shp_list &lt;-<span class="st"> </span>cells_shp_list[locgroup]
-    cells_shp_list_rmNA &lt;-<span class="st"> </span>cells_shp_list_rmNA[locgroup]
-    region.names.out &lt;-<span class="st"> </span>region.names.out[locgroup]
-    n.shp &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">sapply</span>(region.names.out, length))
+    <span class="kw">cat</span>(<span class="st">&quot;locgroup = &quot;</span>)
+    <span class="kw">cat</span>(locgroup)
+    <span class="kw">cat</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)
+    cells &lt;-<span class="st"> </span><span class="kw">filter</span>(cells, LocGroup %in%<span class="st"> </span>locgroup)
 }
 
 dirs &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="st">&quot;/big_scratch/apbennett/Calibration/FinalCalib&quot;</span>, <span class="dt">pattern =</span> <span class="st">&quot;.*.sres.*.&quot;</span>, 
     <span class="dt">full =</span> T)
 mainDirs &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">paste0</span>(dirs, <span class="st">&quot;/Maps&quot;</span>)[model.index], <span class="dt">each =</span> <span class="kw">length</span>(reps))
-modnames &lt;-<span class="st"> </span><span class="kw">basename</span>(<span class="kw">dirname</span>(mainDirs))  <span class="co"># Should only be one name at a time due to $ScenMod column naming below</span>
-<span class="kw">dir.create</span>(ageDenDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/big_scratch/mfleonawicz/Rmpi/outputs/ageDensities&quot;</span>, 
-    modnames[<span class="dv">1</span>]), <span class="dt">recursive =</span> T, <span class="dt">showWarnings =</span> F)  <span class="co"># also assumes one model at a time</span>
+modname &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">basename</span>(<span class="kw">dirname</span>(mainDirs)))
+<span class="kw">dir.create</span>(vegDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/big_scratch/mfleonawicz/Rmpi/outputs/veg&quot;</span>, 
+    modname), <span class="dt">recursive =</span> T, <span class="dt">showWarnings =</span> F)
 repid &lt;-<span class="st"> </span><span class="kw">rep</span>(reps, <span class="kw">length</span>(model.index))
-<span class="co"># breaks &lt;- c(-1,5,25,50,100,200,10000) # Age class breaks # -1 inclusive of</span>
-<span class="co"># zero, not using cut(), using .bincode() n.brks &lt;- length(breaks)</span>
-<span class="co"># age.labels &lt;- c(paste(breaks[-c(n.brks-1, n.brks)] + 1, breaks[-c(1,</span>
-<span class="co"># n.brks)], sep=&#39;-&#39;), paste0(breaks[n.brks-1], &#39;+&#39;)) veg.labels &lt;- c(&#39;Black</span>
-<span class="co"># Spruce&#39;, &#39;White Spruce&#39;, &#39;Deciduous&#39;, &#39;Shrub Tundra&#39;, &#39;Graminoid Tundra&#39;,</span>
-<span class="co"># &#39;Wetland Tundra&#39;, &#39;Barren lichen-moss&#39;, &#39;Temperate Rainforest&#39;)</span>
+<span class="co"># veg.labels &lt;- c(&#39;Black Spruce&#39;, &#39;White Spruce&#39;, &#39;Deciduous&#39;, &#39;Shrub</span>
+<span class="co"># Tundra&#39;, &#39;Graminoid Tundra&#39;, &#39;Wetland Tundra&#39;, &#39;Barren lichen-moss&#39;,</span>
+<span class="co"># &#39;Temperate Rainforest&#39;)</span>
 scen.levels &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SRES B1&quot;</span>, <span class="st">&quot;SRES A1B&quot;</span>, <span class="st">&quot;SRES A2&quot;</span>, <span class="st">&quot;RCP 4.5&quot;</span>, <span class="st">&quot;RCP 6.0&quot;</span>, <span class="st">&quot;RCP 8.5&quot;</span>)
-mod.scen &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">strsplit</span>(modnames[<span class="dv">1</span>], <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>))  <span class="co"># assume one model at a time</span></code></pre>
+mod.scen &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">strsplit</span>(modname, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>))</code></pre>
 </div>
 <div id="functions" class="section level3">
 <h3>Functions</h3>
@@ -340,15 +341,11 @@ getPhase &lt;-<span class="st"> </span>function(x) {
 <p>Send <strong>R</strong> objects from master to slaves.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Export objects to slaves</span>
 if (Rmpi) {
-    <span class="kw">mpi.bcast.Robj2slave</span>(veg.labels)
-    <span class="kw">mpi.bcast.Robj2slave</span>(cells_shp_list)
-    <span class="kw">mpi.bcast.Robj2slave</span>(cells_shp_list_rmNA)
-    <span class="kw">mpi.bcast.Robj2slave</span>(region.names.out)
-    <span class="kw">mpi.bcast.Robj2slave</span>(n.shp)
+    <span class="kw">mpi.bcast.Robj2slave</span>(cells)
     <span class="kw">mpi.bcast.Robj2slave</span>(years)
     <span class="kw">mpi.bcast.Robj2slave</span>(mainDirs)
-    <span class="kw">mpi.bcast.Robj2slave</span>(modnames)
-    <span class="kw">mpi.bcast.Robj2slave</span>(ageDenDir)
+    <span class="kw">mpi.bcast.Robj2slave</span>(modname)
+    <span class="kw">mpi.bcast.Robj2slave</span>(vegDir)
     <span class="kw">mpi.bcast.Robj2slave</span>(repid)
     <span class="kw">print</span>(<span class="st">&quot;mpi.bcast.Robj2slave calls completed.&quot;</span>)
 }</code></pre>
@@ -356,14 +353,14 @@ if (Rmpi) {
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Issue commands to slaves</span>
 if (Rmpi) {
     <span class="kw">mpi.bcast.cmd</span>(mainDir &lt;-<span class="st"> </span>mainDirs[id])
-    <span class="kw">mpi.bcast.cmd</span>(<span class="kw">source</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/alfStatsByRep.R&quot;</span>))
+    <span class="kw">mpi.bcast.cmd</span>(<span class="kw">source</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfStatsByRep.R&quot;</span>))
     <span class="kw">mpi.bcast.cmd</span>(<span class="kw">dir.create</span>(tmpDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/big_scratch/mfleonawicz/tmp/proc&quot;</span>, 
         id), <span class="dt">showWarnings =</span> F))
     <span class="kw">mpi.bcast.cmd</span>(<span class="kw">rasterOptions</span>(<span class="dt">chunksize =</span> <span class="fl">1e+11</span>, <span class="dt">maxmemory =</span> <span class="fl">1e+12</span>, <span class="dt">tmpdir =</span> tmpDir))
     <span class="kw">print</span>(<span class="st">&quot;mpi.bcast.cmd calls completed. Now running mpi.remote.exec...&quot;</span>)
 } else {
     mainDir &lt;-<span class="st"> </span>mainDirs[<span class="dv">1</span>]
-    <span class="kw">source</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/code/alfStatsByRep.R&quot;</span>)
+    <span class="kw">source</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfStatsByRep.R&quot;</span>)
     tmpDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/big_scratch/mfleonawicz/tmp/procX&quot;</span>)
     <span class="kw">rasterOptions</span>(<span class="dt">chunksize =</span> <span class="fl">1e+11</span>, <span class="dt">maxmemory =</span> <span class="fl">1e+12</span>, <span class="dt">tmpdir =</span> tmpDir)
 }</code></pre>
@@ -373,60 +370,50 @@ if (Rmpi) {
 <p>Extract and compile fire statistics.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Compile fire statistics</span>
 if (doFire) {
-    if (Rmpi) 
-        abfc.fsv.dat &lt;-<span class="st"> </span><span class="kw">mpi.remote.exec</span>(<span class="kw">getFireStats</span>(<span class="dt">i =</span> repid[id], <span class="dt">mainDir =</span> mainDir, 
-            <span class="dt">years =</span> years, <span class="dt">cells.list =</span> cells_shp_list, <span class="dt">shp.names.list =</span> region.names.out, 
-            <span class="dt">n =</span> n.shp))
-    if (!Rmpi) 
-        abfc.fsv.dat &lt;-<span class="st"> </span><span class="kw">mclapply</span>(repid, getFireStats, <span class="dt">mainDir =</span> mainDir, <span class="dt">years =</span> years, 
-            <span class="dt">cells.list =</span> cells_shp_list, <span class="dt">shp.names.list =</span> region.names.out, 
-            <span class="dt">n =</span> n.shp, <span class="dt">mc.cores =</span> n.cores)
-    <span class="kw">print</span>(<span class="st">&quot;Fire size by vegetation class completed.&quot;</span>)
-    
-    abfc.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(<span class="kw">lapply</span>(abfc.fsv.dat, <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))
-    fsv.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(<span class="kw">lapply</span>(abfc.fsv.dat, <span class="st">&quot;[[&quot;</span>, <span class="dv">2</span>))
-    
-    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>]))]
-    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>]))]
-    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">factor</span>(Scenario, <span class="dt">levels =</span> scen.levels))]
-    abfc.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, <span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>]))]
-    abfc.dat &lt;-<span class="st"> </span><span class="kw">setcolorder</span>(abfc.dat, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;LocGroup&quot;</span>, 
-        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
-    <span class="kw">setkey</span>(abfc.dat, Location)
+    <span class="kw">print</span>(<span class="st">&quot;#### Compiling fire statistics... ####&quot;</span>)
+    if (Rmpi) {
+        fsv.dat &lt;-<span class="st"> </span><span class="kw">mpi.remote.exec</span>(<span class="kw">getFireStats</span>(<span class="dt">i =</span> repid[id], <span class="dt">mainDir =</span> mainDir, 
+            <span class="dt">years =</span> years, <span class="dt">cells =</span> <span class="kw">select</span>(cells, -Cell_rmNA)))
+        fsv.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(fsv.dat)
+    } else {
+        len &lt;-<span class="st"> </span><span class="kw">length</span>(repid)
+        if (len &lt;=<span class="st"> </span>n.cores) {
+            fsv.dat &lt;-<span class="st"> </span><span class="kw">mclapply</span>(repid, getFireStats, <span class="dt">mainDir =</span> mainDir, <span class="dt">years =</span> years, 
+                <span class="dt">cells =</span> <span class="kw">select</span>(cells, -Cell_rmNA), <span class="dt">mc.cores =</span> n.cores)
+            fsv.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(fsv.dat)
+        } else {
+            serial.iters &lt;-<span class="st"> </span><span class="kw">ceiling</span>(len/n.cores)
+            n.cores2 &lt;-<span class="st"> </span><span class="kw">which</span>(len/(<span class="dv">1</span>:n.cores) &lt;<span class="st"> </span>serial.iters)[<span class="dv">1</span>]
+            fsv.dat &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, serial.iters)
+            for (j in <span class="dv">1</span>:serial.iters) {
+                repid.tmp &lt;-<span class="st"> </span><span class="dv">1</span>:n.cores2 +<span class="st"> </span>(j -<span class="st"> </span><span class="dv">1</span>) *<span class="st"> </span>n.cores2
+                repid.tmp &lt;-<span class="st"> </span>repid.tmp[repid.tmp &lt;=<span class="st"> </span><span class="kw">max</span>(repid)]
+                fsv.tmp &lt;-<span class="st"> </span><span class="kw">mclapply</span>(repid.tmp, getFireStats, <span class="dt">mainDir =</span> mainDir, 
+                  <span class="dt">years =</span> years, <span class="dt">cells =</span> <span class="kw">select</span>(cells, -Cell_rmNA), <span class="dt">mc.cores =</span> n.cores)
+                fsv.dat[[j]] &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(fsv.tmp)
+                <span class="kw">rm</span>(fsv.tmp)
+                <span class="kw">gc</span>()
+                <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Replicate batch&quot;</span>, j, <span class="st">&quot;of&quot;</span>, serial.iters, <span class="st">&quot;complete.&quot;</span>))
+            }
+            fsv.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(fsv.dat)
+        }
+    }
     
     fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>]))]
     fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>]))]
     fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">factor</span>(Scenario, <span class="dt">levels =</span> scen.levels))]
     fsv.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, <span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>]))]
     fsv.dat &lt;-<span class="st"> </span><span class="kw">setcolorder</span>(fsv.dat, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;LocGroup&quot;</span>, 
-        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;VegID&quot;</span>, <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;FID&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
+        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Vegetation&quot;</span>, <span class="st">&quot;FS&quot;</span>, <span class="st">&quot;FID&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
     <span class="kw">setkey</span>(fsv.dat, Location)
     
-    <span class="kw">print</span>(<span class="st">&quot;Converted list to area burned and fire frequency data table and fire size by vegetation class data table.&quot;</span>)
-    <span class="kw">print</span>(<span class="st">&quot;Saving area burned and fire frequency data tables by location to .RData files.&quot;</span>)
-    
-    locs &lt;-<span class="st"> </span><span class="kw">unique</span>(abfc.dat$Location)
-    <span class="kw">dir.create</span>(abfcDir &lt;-<span class="st"> &quot;/big_scratch/mfleonawicz/Rmpi/outputs/fire/abfc&quot;</span>, 
-        <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
-    
-    for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
-        filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;abfc__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modnames[<span class="dv">1</span>])  <span class="co"># assume one model</span>
-        d.abfc &lt;-<span class="st"> </span>abfc.dat[locs[j]]
-        <span class="kw">save</span>(d.abfc, locs, <span class="dt">file =</span> <span class="kw">paste0</span>(abfcDir, <span class="st">&quot;/&quot;</span>, filename.tmp, <span class="st">&quot;.RData&quot;</span>))
-        <span class="kw">print</span>(<span class="kw">paste</span>(filename.tmp, <span class="st">&quot;object&quot;</span>, j, <span class="st">&quot;of&quot;</span>, <span class="kw">length</span>(locs), <span class="st">&quot;saved.&quot;</span>))
-    }
-    <span class="kw">print</span>(<span class="kw">tables</span>())
-    <span class="kw">rm</span>(abfc.dat, d.abfc)
-    <span class="kw">gc</span>()
-    
+    <span class="kw">print</span>(<span class="st">&quot;Fire size by vegetation class completed.&quot;</span>)
     <span class="kw">print</span>(<span class="st">&quot;Saving fire size by vegetation class data frames by location to .RData file.&quot;</span>)
-    
     locs &lt;-<span class="st"> </span><span class="kw">unique</span>(fsv.dat$Location)
-    <span class="kw">dir.create</span>(fsvDir &lt;-<span class="st"> &quot;/big_scratch/mfleonawicz/Rmpi/outputs/fire/fsv&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, 
+    <span class="kw">dir.create</span>(fsvDir &lt;-<span class="st"> &quot;/big_scratch/mfleonawicz/Rmpi/outputs/fsv&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, 
         <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
-    
     for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
-        filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;fsv__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modnames[<span class="dv">1</span>])  <span class="co"># assume one model</span>
+        filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;fsv__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modname)
         d.fsv &lt;-<span class="st"> </span>fsv.dat[locs[j]]
         <span class="kw">save</span>(d.fsv, locs, <span class="dt">file =</span> <span class="kw">paste0</span>(fsvDir, <span class="st">&quot;/&quot;</span>, filename.tmp, <span class="st">&quot;.RData&quot;</span>))
         <span class="kw">print</span>(<span class="kw">paste</span>(filename.tmp, <span class="st">&quot;object&quot;</span>, j, <span class="st">&quot;of&quot;</span>, <span class="kw">length</span>(locs), <span class="st">&quot;saved.&quot;</span>))
@@ -437,40 +424,52 @@ if (doFire) {
 <p>Extract and compile vegetation class and age statistics.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Compile vegetation class and age statistics</span>
 if (doAgeVeg) {
-    if (Rmpi) 
+    <span class="kw">print</span>(<span class="st">&quot;#### Compiling vegetation class and age statistics... ####&quot;</span>)
+    if (Rmpi) {
         va.dat &lt;-<span class="st"> </span><span class="kw">mpi.remote.exec</span>(<span class="kw">getAgeVegStats</span>(<span class="dt">i =</span> repid[id], <span class="dt">mainDir =</span> mainDir, 
-            <span class="dt">denDir =</span> ageDenDir, <span class="dt">years =</span> years, <span class="dt">cells.list =</span> cells_shp_list_rmNA, 
-            <span class="dt">shp.names.list =</span> region.names.out, <span class="dt">n =</span> n.shp, <span class="dt">veg.lab =</span> veg.labels, 
-            <span class="dt">n.samples =</span> <span class="dv">1000</span>))
-    if (!Rmpi) 
-        va.dat &lt;-<span class="st"> </span><span class="kw">mclapply</span>(repid, getAgeVegStats, <span class="dt">mainDir =</span> mainDir, <span class="dt">denDir =</span> ageDenDir, 
-            <span class="dt">years =</span> years, <span class="dt">cells.list =</span> cells_shp_list_rmNA, <span class="dt">shp.names.list =</span> region.names.out, 
-            <span class="dt">n =</span> n.shp, <span class="dt">n.samples =</span> <span class="dv">1000</span>, <span class="dt">mc.cores =</span> n.cores)
-    <span class="kw">print</span>(<span class="st">&quot;Veg area data frame list returned from slaves.&quot;</span>)
-    
-    va.dat &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(va.dat)
-    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Model, <span class="kw">swapModelName</span>(mod.scen[<span class="dv">1</span>]))]
-    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">swapScenarioName</span>(mod.scen[<span class="dv">2</span>]))]
-    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Scenario, <span class="kw">factor</span>(Scenario, <span class="dt">levels =</span> scen.levels))]
-    va.dat[, <span class="st">`</span><span class="dt">:=</span><span class="st">`</span>(Phase, <span class="kw">getPhase</span>(mod.scen[<span class="dv">2</span>]))]
-    va.dat &lt;-<span class="st"> </span><span class="kw">setcolorder</span>(va.dat, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;LocGroup&quot;</span>, 
-        <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;VegID&quot;</span>, <span class="st">&quot;Var&quot;</span>, <span class="st">&quot;Val&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Replicate&quot;</span>))
-    <span class="kw">setkey</span>(va.dat, Location)
-    <span class="kw">print</span>(<span class="st">&quot;Converted list to single veg area data table.&quot;</span>)
-    <span class="kw">print</span>(<span class="st">&quot;Saving veg area data tables by location to .RData files.&quot;</span>)
-    
-    locs &lt;-<span class="st"> </span><span class="kw">unique</span>(va.dat$Location)
-    <span class="kw">dir.create</span>(vegDir &lt;-<span class="st"> &quot;/big_scratch/mfleonawicz/Rmpi/outputs/veg&quot;</span>, <span class="dt">showWarnings =</span> F)
-    
-    for (j in <span class="dv">1</span>:<span class="kw">length</span>(locs)) {
-        filename.tmp &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;veg__&quot;</span>, locs[j], <span class="st">&quot;__&quot;</span>, modnames[<span class="dv">1</span>])  <span class="co"># assume one model</span>
-        d.veg &lt;-<span class="st"> </span>va.dat[locs[j]]
-        <span class="kw">save</span>(d.veg, locs, <span class="dt">file =</span> <span class="kw">paste0</span>(vegDir, <span class="st">&quot;/&quot;</span>, filename.tmp, <span class="st">&quot;.RData&quot;</span>))
-        <span class="kw">print</span>(<span class="kw">paste</span>(filename.tmp, <span class="st">&quot;object&quot;</span>, j, <span class="st">&quot;of&quot;</span>, <span class="kw">length</span>(locs), <span class="st">&quot;saved.&quot;</span>))
+            <span class="dt">vegDir =</span> vegDir, <span class="dt">years =</span> years, <span class="dt">cells =</span> <span class="kw">select</span>(cells, -Cell)))
+    } else {
+        len &lt;-<span class="st"> </span><span class="kw">length</span>(repid)
+        if (len &lt;=<span class="st"> </span>n.cores) {
+            va.dat &lt;-<span class="st"> </span><span class="kw">mclapply</span>(repid, getAgeVegStats, <span class="dt">mainDir =</span> mainDir, <span class="dt">vegDir =</span> vegDir, 
+                <span class="dt">years =</span> years, <span class="dt">cells =</span> <span class="kw">select</span>(cells, -Cell), <span class="dt">mc.cores =</span> n.cores)
+        } else {
+            serial.iters &lt;-<span class="st"> </span><span class="kw">ceiling</span>(len/n.cores)
+            n.cores2 &lt;-<span class="st"> </span><span class="kw">which</span>(len/(<span class="dv">1</span>:n.cores) &lt;<span class="st"> </span>serial.iters)[<span class="dv">1</span>]
+            va.dat &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">&quot;list&quot;</span>, serial.iters)
+            for (j in <span class="dv">1</span>:serial.iters) {
+                repid.tmp &lt;-<span class="st"> </span><span class="dv">1</span>:n.cores2 +<span class="st"> </span>(j -<span class="st"> </span><span class="dv">1</span>) *<span class="st"> </span>n.cores2
+                repid.tmp &lt;-<span class="st"> </span>repid.tmp[repid.tmp &lt;=<span class="st"> </span><span class="kw">max</span>(repid)]
+                va.dat.tmp &lt;-<span class="st"> </span><span class="kw">mclapply</span>(repid.tmp, getAgeVegStats, <span class="dt">mainDir =</span> mainDir, 
+                  <span class="dt">vegDir =</span> vegDir, <span class="dt">years =</span> years, <span class="dt">cells =</span> <span class="kw">select</span>(cells, -Cell), 
+                  <span class="dt">mc.cores =</span> n.cores)
+                <span class="co"># print(sapply(va.dat.tmp, class)) err.ind &lt;- which(sapply(va.dat.tmp,</span>
+                <span class="co"># class)==&#39;try-error&#39;) if(length(err.ind)) for(e in 1:length(err.ind))</span>
+                <span class="co"># print(va.dat.tmp[[e]]) print(va.dat.tmp[[1]]) va.dat[[j]] &lt;-</span>
+                <span class="co"># rbindlist(va.dat.tmp)</span>
+                <span class="kw">rm</span>(va.dat.tmp)
+                <span class="kw">gc</span>()
+                <span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Replicate batch&quot;</span>, j, <span class="st">&quot;of&quot;</span>, serial.iters, <span class="st">&quot;complete.&quot;</span>))
+            }
+        }
     }
-    <span class="kw">print</span>(<span class="kw">tables</span>())
-    <span class="kw">rm</span>(va.dat, d.veg)
-    <span class="kw">gc</span>()
+    
+    <span class="co"># va.dat &lt;- rbindlist(va.dat) va.dat[, Model := swapModelName(mod.scen[1])]</span>
+    <span class="co"># va.dat[, Scenario := swapScenarioName(mod.scen[2])] va.dat[, Scenario :=</span>
+    <span class="co"># factor(Scenario, levels=scen.levels)] va.dat[, Phase :=</span>
+    <span class="co"># getPhase(mod.scen[2])] va.dat &lt;- setcolorder(va.dat, c(&#39;Phase&#39;,</span>
+    <span class="co"># &#39;Scenario&#39;, &#39;Model&#39;, &#39;LocGroup&#39;, &#39;Location&#39;, &#39;Vegetation&#39;, &#39;Age&#39;, &#39;Area&#39;,</span>
+    <span class="co"># &#39;Year&#39;, &#39;Replicate&#39;)) setkey(va.dat, Location)</span>
+    <span class="kw">print</span>(<span class="st">&quot;Vegetation area by age completed.&quot;</span>)
+    <span class="co"># print(&#39;Saving veg area by age data tables by location to .RData files.&#39;)</span>
+    
+    <span class="co"># locs &lt;- unique(va.dat$Location) dir.create(vegAreaDir &lt;-</span>
+    <span class="co"># &#39;/big_scratch/mfleonawicz/Rmpi/outputs/vegArea&#39;, showWarnings=F)</span>
+    
+    <span class="co"># for(j in 1:length(locs)){ filename.tmp &lt;- paste0(&#39;veg__&#39;, locs[j], &#39;__&#39;,</span>
+    <span class="co"># modname) d.veg &lt;- va.dat[locs[j]] save(d.veg, locs, file=paste0(vegDir,</span>
+    <span class="co"># &#39;/&#39;, filename.tmp, &#39;.RData&#39;)) print(paste(filename.tmp, &#39;object&#39;, j, &#39;of&#39;,</span>
+    <span class="co"># length(locs), &#39;saved.&#39;)) } print(tables()) rm(va.dat, d.veg) gc()</span>
 }
 
 <span class="co"># All done</span>
@@ -481,6 +480,27 @@ if (Rmpi) {
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

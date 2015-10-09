@@ -244,11 +244,33 @@ img {
     <span class="kw">uiOutput</span>(<span class="st">&quot;TableHeatmap&quot;</span>)), <span class="kw">conditionalPanel</span>(<span class="dt">condition =</span> <span class="st">&quot;input.tsp == &#39;plot_variability&#39; &amp;&amp; input.goButton !== null &amp;&amp; input.goButton &gt; 0&quot;</span>, 
     <span class="kw">plotOutput</span>(<span class="st">&quot;PlotVariability&quot;</span>, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>, <span class="dt">height =</span> <span class="st">&quot;auto&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;varTextSub&quot;</span>), 
     <span class="kw">uiOutput</span>(<span class="st">&quot;TableVariability&quot;</span>)), <span class="kw">conditionalPanel</span>(<span class="dt">condition =</span> <span class="st">&quot;input.tsp == &#39;plot_spatial&#39; &amp;&amp; input.goButton !== null &amp;&amp; input.goButton &gt; 0&quot;</span>, 
-    <span class="kw">plotOutput</span>(<span class="st">&quot;PlotSpatial&quot;</span>, <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>, <span class="dt">height =</span> <span class="st">&quot;auto&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;spatialTextSub&quot;</span>), 
-    <span class="kw">uiOutput</span>(<span class="st">&quot;TableSpatial&quot;</span>)))</code></pre>
+    <span class="kw">conditionalPanel</span>(<span class="dt">condition =</span> <span class="st">&quot;input.loctype == &#39;Cities&#39;&quot;</span>, <span class="kw">HTML</span>(<span class="st">&quot;&lt;h4&gt;Spatial distributions cannot be shown for city locations.&lt;br/&gt;Select a regional scale option.&lt;/h4&gt;&quot;</span>)), 
+    <span class="kw">conditionalPanel</span>(<span class="dt">condition =</span> <span class="st">&quot;input.loctype != &#39;Cities&#39;&quot;</span>, <span class="kw">plotOutput</span>(<span class="st">&quot;PlotSpatial&quot;</span>, 
+        <span class="dt">width =</span> <span class="st">&quot;100%&quot;</span>, <span class="dt">height =</span> <span class="st">&quot;auto&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;spatialTextSub&quot;</span>), <span class="kw">uiOutput</span>(<span class="st">&quot;TableSpatial&quot;</span>))))</code></pre>
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

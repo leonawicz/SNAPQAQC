@@ -219,8 +219,8 @@ img {
 <h3>Audience</h3>
 <p>The primary audience for this app is myself. I use apps like this one to enhance my data QA/QC tasks at SNAP as well as to support various projects. It is first and foremost a convenient workflow-enhancing tool made specific to my needs.</p>
 <p>The secondary audience consists of other <strong>R</strong> Shiny users who are interested in exploring and developing similar apps. I enjoy sharing my work, the code is freely available, and networking with other useRs is fun.</p>
-<p>Mandatory caveats: I do not have time to teach you how to make apps. Nor will you be able to swap your data sets for mine and have this app work for you. It is far too complex to use so directly as a template, but various bits of code you may find useful in your own contexts. I have been developing it off and on when time permits among other duties since somewhere around February of 2014 although the exact date has become a hazy mystery to me, obscured by the mind fog of <strong>R</strong> code I have written in general since then.</p>
-<p>This is to say, if you want an app “just like this,” a common sentiment I encounter, which is quite flattering and much appreciated, I must say it will not happen overnight no matter how much you borrow from this app. Even if I could write the code for this app without any planning, revision, or refactoring, just straight through as a stream-of-consciousness exercise in one sitting, it would still take quite some time to write it all out. And that doesn’t even begin to get into the code written to parse and prep large amounts of data, which the app (among other projects) makes use of. In fact, even the help documentation verbosity that follows, I wrote out just for me because otherwise it would be impossible to recall all of what I had done here.</p>
+<p>Mandatory caveats: I do not have time to teach you how to make apps. Nor will you be able to swap your data sets for mine and have this app work for you. It is far too complex to use so directly as a template, but various bits of code you may find useful in your own contexts.</p>
+<p>This is to say, if you want an app “just like this,” it will not happen overnight no matter how much you borrow from this app. Even if I could write the code for this app without any planning, revision, or refactoring, just straight through as a stream-of-consciousness exercise in one sitting, it would still take quite some time to write it all out. And that doesn’t even begin to get into the code written to parse and prep large amounts of data, which the app (among other projects) makes use of. In fact, even the help documentation verbosity that follows, I needed to write just to recall all of what I had done here.</p>
 <p>The tertiary audience would be other colleagues which do not use <strong>R</strong> but happen to be very interested in climate models and climate change in the Arctic.</p>
 <p>The quaternary audience would be the general public. I like to make apps that are simple, easy to use, and convey a straightforward message that does not require esoteric knowledge or the specialized interpretation skills of a statistician-priest. This app is not one of them. It was never meant to be. I’d prefer not to mention this fourth tier audience at all except that I don’t want to give the impression of complete neglect. But ultimately, this app was made to assist my own complex and data-heavy workflow. It can’t be all things.</p>
 </div>
@@ -250,6 +250,27 @@ img {
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

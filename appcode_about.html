@@ -242,7 +242,8 @@ img {
 <span class="st">        </span>
 <span class="st">        &lt;p style=&quot;text-align:justify&quot;&gt;Currently, there are five main plot types focusing on exploratory data analysis:</span>
 <span class="st">        basic time series plots (not time series analysis), scatter plots, heat maps, various plots designed to highlight variability, and distributional plots.</span>
-<span class="st">        A help section is under development.&lt;/p&gt;&#39;</span>),
+<span class="st">        See the help section for more details on app usage, features, and limitations. Visit the Github page if you find a bug or other issue.</span>
+<span class="st">        It may already be filed and I am not actively working on this project, but it is worth checking.&lt;/p&gt;&#39;</span>),
 
         <span class="kw">HTML</span>(<span class="st">&#39;</span>
 <span class="st">        &lt;div style=&quot;clear: left;&quot;&gt;&lt;img src=&quot;http://www.gravatar.com/avatar/52c27b8719a7543b4b343775183122ea.png&quot; alt=&quot;&quot; style=&quot;float: left; margin-right:5px&quot; /&gt;&lt;/div&gt;</span>
@@ -257,21 +258,26 @@ img {
         
         <span class="kw">fluidRow</span>(
             <span class="kw">column</span>(<span class="dv">4</span>,
-                <span class="kw">strong</span>(<span class="st">&#39;References&#39;</span>),
-                <span class="kw">p</span>(<span class="kw">HTML</span>(<span class="st">&#39;&lt;ul&gt;&#39;</span>),
-                    <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;Coded in R&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://www.r-project.org/&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                    <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;Built with the Shiny package&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://www.rstudio.com/shiny/&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                    <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="st">&quot;Primary supporting R packages&quot;</span>,<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                    <span class="kw">HTML</span>(<span class="st">&#39;&lt;ul&gt;&#39;</span>),
-                        <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;plyr&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://cran.r-project.org/web/packages/plyr/index.html&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                        <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;reshape2&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://cran.r-project.org/web/packages/reshape2/index.html&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                        <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;ggplot2&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://cran.r-project.org/web/packages/ggplot2/index.html&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                        <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;gridExtra&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://cran.r-project.org/web/packages/gridExtra/index.html&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                        <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;png&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://cran.r-project.org/web/packages/png/index.html&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                        <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;&#39;</span>),<span class="kw">a</span>(<span class="st">&#39;Hmisc&#39;</span>, <span class="dt">href=</span><span class="st">&quot;http://cran.r-project.org/web/packages/Hmisc/index.html&quot;</span>, <span class="dt">target=</span><span class="st">&quot;_blank&quot;</span>),<span class="kw">HTML</span>(<span class="st">&#39;&lt;/li&gt;&#39;</span>),
-                    <span class="kw">HTML</span>(<span class="st">&#39;&lt;/ul&gt;&#39;</span>),
-                    <span class="kw">HTML</span>(<span class="st">&#39;&lt;li&gt;Source code on &lt;a href=&quot;https://github.com/ua-snap/shiny-apps/tree/master/cmip3_cmip5/&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;&#39;</span>),
-                <span class="kw">HTML</span>(<span class="st">&#39;&lt;/ul&gt;&#39;</span>))
+                <span class="kw">HTML</span>(<span class="st">&#39;&lt;strong&gt;References&lt;/strong&gt;</span>
+<span class="st">                &lt;p&gt;&lt;ul&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://www.r-project.org/&quot; target=&quot;_blank&quot;&gt;Coded in R&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://www.rstudio.com/shiny/&quot; target=&quot;_blank&quot;&gt;Built with the Shiny package&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;Additional supporting R packages&lt;/li&gt;</span>
+<span class="st">                &lt;ul&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://cran.r-project.org/web/packages/plyr/index.html&quot; target=&quot;_blank&quot;&gt;plyr&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://cran.r-project.org/web/packages/reshape2/index.html&quot; target=&quot;_blank&quot;&gt;reshape2&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;https://cran.r-project.org/web/packages/data.table/index.html&quot; target=&quot;_blank&quot;&gt;data.table&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;https://cran.r-project.org/web/packages/RColorBrewer/index.html&quot; target=&quot;_blank&quot;&gt;RColorBrewer&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://cran.r-project.org/web/packages/ggplot2/index.html&quot; target=&quot;_blank&quot;&gt;ggplot2&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://cran.r-project.org/web/packages/gridExtra/index.html&quot; target=&quot;_blank&quot;&gt;gridExtra&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://cran.r-project.org/web/packages/png/index.html&quot; target=&quot;_blank&quot;&gt;png&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://cran.r-project.org/web/packages/Hmisc/index.html&quot; target=&quot;_blank&quot;&gt;Hmisc&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;https://cran.r-project.org/web/packages/markdown/index.html&quot; target=&quot;_blank&quot;&gt;markdown&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;https://rstudio.github.io/DT/&quot; target=&quot;_blank&quot;&gt;DT&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                    &lt;li&gt;&lt;a href=&quot;http://rstudio.github.io/shinythemes/&quot; target=&quot;_blank&quot;&gt;shinythemes&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">                &lt;/ul&gt;</span>
+<span class="st">                    &lt;li&gt;Source code on &lt;a href=&quot;https://github.com/ua-snap/shiny-apps/tree/master/ar4ar5/&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;</span>
+<span class="st">            &lt;/ul&gt;&#39;</span>)
             )
         ),
         <span class="dt">value=</span><span class="st">&quot;about&quot;</span>
@@ -280,6 +286,27 @@ img {
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

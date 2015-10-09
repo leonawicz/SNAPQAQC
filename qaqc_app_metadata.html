@@ -234,7 +234,7 @@ img {
 <pre class="sourceCode r"><code class="sourceCode r">#### This is the final script run after all app data and metadata files are
 #### compiled.  This is for final formatting related to regions and cities.
 
-<span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>)
+<span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>)
 
 topDir &lt;-<span class="st"> &quot;/workspace/Shared/Users/mfleonawicz/qaqcAppData&quot;</span>
 
@@ -263,22 +263,44 @@ city.cru.files.2km &lt;-<span class="st"> </span><span class="kw">list.files</sp
     <span class="dt">full =</span> T)
 city.cru.files.10min &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.cru.files.path, <span class="st">&quot;world10min&quot;</span>), 
     <span class="dt">full =</span> T)
+city.gcm.files &lt;-<span class="st"> </span>city.gcm.files.10min  <span class="co"># using only 10-minute resolution files</span>
+city.cru.files &lt;-<span class="st"> </span>city.cru.files.10min  <span class="co"># using only 10-minute resolution files</span>
 
-<span class="co"># city names to appear in app menu use one group of cities from above, all</span>
-<span class="co"># four sets are identical</span>
+<span class="co"># city names to appear in app menu</span>
 city.names &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;FSLASH&quot;</span>, <span class="st">&quot;/&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;PER&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;APOS&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">&#39;&quot;</span>, <span class="kw">gsub</span>(<span class="st">&quot;--&quot;</span>, 
-    <span class="st">&quot;, &quot;</span>, <span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="kw">basename</span>(city.gcm.files.10min), <span class="st">&quot;__&quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>)))))
+    <span class="st">&quot;, &quot;</span>, <span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="kw">basename</span>(city.gcm.files), <span class="st">&quot;__&quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>)))))
 
 <span class="co"># subset cities metadata data frame to match final files, same for all sets</span>
-cities.meta.file &lt;-<span class="st"> &quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta.RData&quot;</span>
+cities.meta.file &lt;-<span class="st"> &quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/cities_meta.RData&quot;</span>
 <span class="kw">load</span>(cities.meta.file)
 cities.meta &lt;-<span class="st"> </span><span class="kw">subset</span>(cities.meta, Location %in%<span class="st"> </span>city.names)
 <span class="kw">save</span>(cities.meta, <span class="dt">file =</span> cities.meta.file)  <span class="co"># okay to save over original file</span>
 <span class="kw">rm</span>(cities.meta.file, topDir)</code></pre>
 <p>The <code>meta.RData</code> workspace used by the master QA/QC Shiny app is loaded and re-saved.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">save.image</span>(<span class="kw">file.path</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">save.image</span>(<span class="kw">file.path</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/meta.RData&quot;</span>))</code></pre>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

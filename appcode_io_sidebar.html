@@ -271,8 +271,7 @@ img {
 <h4>Months to seasons aggregation</h4>
 <pre class="sourceCode r"><code class="sourceCode r">output$Months2Seasons &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">SeasonLength</span>())) 
-        <span class="kw">checkboxInput</span>(<span class="st">&quot;months2seasons&quot;</span>, <span class="st">&quot;Make equal-length season(s) of months&quot;</span>, 
-            <span class="ot">FALSE</span>) else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length seasons</span>
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;months2seasons&quot;</span>, <span class="st">&quot;Make seasons&quot;</span>, <span class="ot">FALSE</span>) else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length seasons</span>
 })
 
 output$N_Seasons &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
@@ -299,8 +298,7 @@ output$N_Seasons &lt;-<span class="st"> </span><span class="kw">renderUI</span>(
 <h4>Decades to longer-term periods aggregation</h4>
 <pre class="sourceCode r"><code class="sourceCode r">output$Decades2Periods &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">PeriodLength</span>())) 
-        <span class="kw">checkboxInput</span>(<span class="st">&quot;decades2periods&quot;</span>, <span class="st">&quot;Make equal-length periods(s) of decades&quot;</span>, 
-            <span class="ot">FALSE</span>) else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length periods</span>
+        <span class="kw">checkboxInput</span>(<span class="st">&quot;decades2periods&quot;</span>, <span class="st">&quot;Make long periods&quot;</span>, <span class="ot">FALSE</span>) else <span class="ot">NULL</span>  <span class="co"># Do not allow unequal length periods</span>
 })
 
 output$N_Periods &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
@@ -347,7 +345,8 @@ output$N_Periods &lt;-<span class="st"> </span><span class="kw">renderUI</span>(
     input$aggStats
     input$aggStats2
     <span class="kw">actionButton</span>(<span class="st">&quot;goButton&quot;</span>, <span class="st">&quot;Subset Data&quot;</span>, <span class="dt">icon =</span> <span class="kw">icon</span>(<span class="st">&quot;check&quot;</span>), <span class="dt">class =</span> <span class="st">&quot;btn-primary btn-block&quot;</span>)
-})</code></pre>
+})
+<span class="kw">outputOptions</span>(output, <span class="st">&quot;GoButton&quot;</span>, <span class="dt">suspendWhenHidden =</span> <span class="ot">FALSE</span>)</code></pre>
 <p>The plot-specific input controls below deal with choice of axis variables, grouping (coloring) variables, faceting variables, and choice of plot subtype or statistic.</p>
 </div>
 <div id="time-series-input-controls" class="section level4">
@@ -799,6 +798,27 @@ output$PlotButton_sp &lt;-<span class="st"> </span><span class="kw">renderUI</sp
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

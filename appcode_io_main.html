@@ -279,7 +279,8 @@ output$spatialTextSub &lt;-<span class="st"> </span><span class="kw">renderUI</s
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableTS &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
         <span class="kw">dat</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
-}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
+}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>), 
+    <span class="dt">style =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="dt">rownames =</span> F, <span class="dt">filter =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Table 1: GCM data selection for time series plots.&quot;</span>)
 
 output$TableTS &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (<span class="kw">goBtnNullOrZero</span>()) 
@@ -293,7 +294,8 @@ output$TableTS &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableScatter &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat2</span>())) 
         <span class="kw">dat2</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
-}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
+}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>), 
+    <span class="dt">style =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="dt">rownames =</span> F, <span class="dt">filter =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Table 2: GCM data selection for scatter plots.&quot;</span>)
 
 output$TableScatter &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (<span class="kw">goBtnNullOrZero</span>()) 
@@ -309,7 +311,8 @@ output$TableScatter &lt;-<span class="st"> </span><span class="kw">renderUI</spa
         if (<span class="kw">ncol</span>(<span class="kw">dat_heatmap</span>()) &gt;=<span class="st"> </span><span class="dv">9</span>) 
             <span class="kw">dat_heatmap</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>] else <span class="kw">dat_heatmap</span>()
     }
-}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
+}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>), 
+    <span class="dt">style =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="dt">rownames =</span> F, <span class="dt">filter =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Table 3: GCM data selection for heat maps.&quot;</span>)
 
 output$TableHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (<span class="kw">goBtnNullOrZero</span>()) 
@@ -324,7 +327,8 @@ output$TableHeatmap &lt;-<span class="st"> </span><span class="kw">renderUI</spa
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableVariability &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat</span>())) 
         <span class="kw">dat</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
-}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))  <span class="co"># same as table 1</span>
+}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>), 
+    <span class="dt">style =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="dt">rownames =</span> F, <span class="dt">filter =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Table 4: GCM data selection for variability assessment.&quot;</span>)  <span class="co"># same as table 1</span>
 
 output$TableVariability &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (<span class="kw">goBtnNullOrZero</span>()) 
@@ -338,7 +342,8 @@ output$TableVariability &lt;-<span class="st"> </span><span class="kw">renderUI<
 <pre class="sourceCode r"><code class="sourceCode r">output$SubsetTableSpatial &lt;-<span class="st"> </span><span class="kw">renderDataTable</span>({
     if (!<span class="kw">is.null</span>(<span class="kw">dat_spatial</span>())) 
         <span class="kw">dat_spatial</span>()[, !<span class="st">&quot;Decade&quot;</span>, with =<span class="st"> </span><span class="ot">FALSE</span>]
-}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>))
+}, <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">orderClasses =</span> <span class="ot">TRUE</span>, <span class="dt">lengthMenu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>), <span class="dt">pageLength =</span> <span class="dv">5</span>), 
+    <span class="dt">style =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="dt">rownames =</span> F, <span class="dt">filter =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Table 5: GCM data selection for spatial distributions.&quot;</span>)
 
 output$TableSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</span>({
     if (<span class="kw">goBtnNullOrZero</span>()) 
@@ -350,6 +355,27 @@ output$TableSpatial &lt;-<span class="st"> </span><span class="kw">renderUI</spa
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

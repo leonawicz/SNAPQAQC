@@ -290,7 +290,7 @@ if (!<span class="kw">exists</span>(<span class="st">&quot;cru&quot;</span>)) cr
         topDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;/Data/Base_Data/Climate/AK_CAN_2km&quot;</span>, <span class="kw">paste0</span>(<span class="st">&quot;historical/CRU/CRU_TS&quot;</span>, 
             cru))
     if (regions) {
-        <span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData&quot;</span>)
+        <span class="kw">load</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData&quot;</span>)
     } else cells_shp_list_5pct &lt;-<span class="st"> </span>region.names.out &lt;-<span class="st"> </span>n.shp &lt;-<span class="st"> </span><span class="ot">NULL</span>
 } else if (domain ==<span class="st"> &quot;world10min&quot;</span>) {
     <span class="co"># Currently for cities only</span>
@@ -300,7 +300,7 @@ if (!<span class="kw">exists</span>(<span class="st">&quot;cru&quot;</span>)) cr
     #### Need to insert a load() command analogous to that above for regions
 }
 
-locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv&quot;</span>)</code></pre>
+locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/locs.csv&quot;</span>)</code></pre>
 </div>
 <div id="define-r-objects" class="section level4">
 <h4>Define <strong>R</strong> objects</h4>
@@ -311,7 +311,7 @@ varid &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&
 
 if (cities) {
     if (domain !=<span class="st"> &quot;world10min&quot;</span>) 
-        locs &lt;-<span class="st"> </span><span class="kw">subset</span>(locs, region !=<span class="st"> &quot;NWT&quot;</span>)
+        locs &lt;-<span class="st"> </span><span class="kw">subset</span>(locs, region !=<span class="st"> &quot;Northwest Territories&quot;</span>)
     <span class="co"># locs &lt;- locs[is.na(locs$pop) | locs$pop &gt; 10,]</span>
     l &lt;-<span class="st"> </span><span class="kw">paste</span>(locs$region, locs$loc)
     lu &lt;-<span class="st"> </span><span class="kw">unique</span>(l)
@@ -324,6 +324,11 @@ if (cities) {
         drp &lt;-<span class="st"> </span><span class="kw">c</span>(drp, ind)
     }
     cities &lt;-<span class="st"> </span>locs[-drp, ]
+    if (domain ==<span class="st"> &quot;world10min&quot;</span>) {
+        <span class="co"># hack to deal with specific NT locations</span>
+        nt.na &lt;-<span class="st"> </span><span class="kw">which</span>(cities$loc %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Paulatuk&quot;</span>, <span class="st">&quot;Sachs Harbour&quot;</span>))
+        cities$lon[nt.na] &lt;-<span class="st"> </span>cities$lon[nt.na] +<span class="st"> </span><span class="fl">0.1666667</span>
+    }
     if (<span class="kw">exists</span>(<span class="st">&quot;cities.batch&quot;</span>)) {
         batch.bounds &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(cities) +<span class="st"> </span><span class="dv">1</span>, <span class="dt">length =</span> <span class="dv">11</span>))[<span class="kw">c</span>(cities.batch, 
             cities.batch +<span class="st"> </span><span class="dv">1</span>)] -<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)
@@ -526,7 +531,7 @@ for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
             <span class="kw">print</span>(<span class="kw">length</span>(stats.out) -<span class="st"> </span>i)
         }
         <span class="kw">save</span>(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames, 
-            <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/&quot;</span>, 
+            <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/stats/&quot;</span>, 
                 <span class="st">&quot;CRU&quot;</span>, cru, <span class="st">&quot;_annual_regions_stats.RData&quot;</span>))
         
         <span class="co"># regional samples</span>
@@ -544,7 +549,8 @@ for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
         mid &lt;-<span class="st"> </span>(<span class="kw">ncol</span>(samples) -<span class="st"> </span><span class="dv">1</span>)/<span class="dv">2</span> +<span class="st"> </span><span class="dv">1</span>
         names.hold &lt;-<span class="st"> </span><span class="kw">names</span>(samples)[<span class="dv">1</span>:mid]
         samples &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Location =</span> samples$Location, <span class="kw">rbind</span>(<span class="kw">as.matrix</span>(samples[, 
-            <span class="dv">2</span>:mid]), <span class="kw">as.matrix</span>(samples[, (mid +<span class="st"> </span><span class="dv">1</span>):<span class="kw">ncol</span>(samples)])))
+            <span class="dv">2</span>:mid, <span class="dt">with =</span> <span class="ot">FALSE</span>]), <span class="kw">as.matrix</span>(samples[, (mid +<span class="st"> </span><span class="dv">1</span>):<span class="kw">ncol</span>(samples), 
+            <span class="dt">with =</span> <span class="ot">FALSE</span>])))
         samples$Location &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(samples.names, <span class="dt">each =</span> n2))
         samples.out &lt;-<span class="st"> </span><span class="kw">list</span>()
         for (i in <span class="dv">1</span>:<span class="kw">length</span>(samples.names)) {
@@ -552,7 +558,7 @@ for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
             <span class="kw">rownames</span>(samples.out[[i]]) &lt;-<span class="st"> </span><span class="ot">NULL</span>
         }
         <span class="kw">names</span>(samples.out) &lt;-<span class="st"> </span>samples.names
-        <span class="kw">save</span>(samples.out, samples.names, region.names.out, n.samples, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/&quot;</span>, 
+        <span class="kw">save</span>(samples.out, samples.names, region.names.out, n.samples, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/samples/&quot;</span>, 
             <span class="st">&quot;CRU&quot;</span>, cru, <span class="st">&quot;_annual_regions_samples.RData&quot;</span>))
         
     }
@@ -567,13 +573,34 @@ for (k in <span class="dv">1</span>:<span class="dv">2</span>) {
         for (i in <span class="dv">1</span>:<span class="kw">length</span>(stats.out)) <span class="kw">rownames</span>(stats.out[[i]]) &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">seq</span>(yr1, 
             yr2), <span class="dt">each =</span> <span class="dv">12</span>), <span class="kw">nrow</span>(cities)), <span class="kw">length</span>(varid))
         d &lt;-<span class="st"> </span>stats.out[[<span class="dv">1</span>]]
-        <span class="kw">save</span>(d, d.cities, results.years, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/&quot;</span>, 
+        <span class="kw">save</span>(d, d.cities, results.years, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/cities/&quot;</span>, 
             <span class="st">&quot;CRU&quot;</span>, cru, <span class="st">&quot;_annual_cities_batch&quot;</span>, cities.batch, <span class="st">&quot;_&quot;</span>, domain, <span class="st">&quot;.RData&quot;</span>))
     }
 }</code></pre>
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

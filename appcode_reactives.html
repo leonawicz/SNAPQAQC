@@ -268,7 +268,7 @@ twoBtnNullOrZero_sp &lt;-<span class="st"> </span><span class="kw">reactive</spa
 <div id="time-months-seasons-years-decades-and-long-term-periods" class="section level4">
 <h4>Time: months, seasons, years, decades, and long-term periods</h4>
 <pre class="sourceCode r"><code class="sourceCode r">Decades_original &lt;-<span class="st"> </span><span class="kw">reactive</span>({
-    x &lt;-<span class="st"> </span>input$decs
+    x &lt;-<span class="st"> </span><span class="kw">sort</span>(input$decs)
     if (!<span class="kw">length</span>(x)) 
         x &lt;-<span class="st"> </span>decades
     x
@@ -280,6 +280,7 @@ currentYears &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 })
 
 Months_original &lt;-<span class="st"> </span><span class="kw">reactive</span>({
+    <span class="co"># x &lt;- input$mos[order(match(input$mos, month.abb))]</span>
     x &lt;-<span class="st"> </span>input$mos
     if (!<span class="kw">length</span>(x)) 
         x &lt;-<span class="st"> </span>month.abb
@@ -405,10 +406,14 @@ composite &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 })
 
 aggStatsID &lt;-<span class="st"> </span><span class="kw">reactive</span>({
+    if (input$loctype ==<span class="st"> &quot;Cities&quot;</span>) 
+        <span class="kw">return</span>(<span class="st">&quot;Val&quot;</span>)
     agg.stat.colnames[<span class="kw">which</span>(agg.stat.names ==<span class="st"> </span>input$aggStats)]
 })
 
 aggStatsID2 &lt;-<span class="st"> </span><span class="kw">reactive</span>({
+    if (input$loctype ==<span class="st"> &quot;Cities&quot;</span>) 
+        <span class="kw">return</span>(<span class="st">&quot;Val&quot;</span>)
     agg.stat.colnames[<span class="kw">which</span>(agg.stat.names ==<span class="st"> </span>input$aggStats2)]
 })
 
@@ -527,19 +532,17 @@ dat_master &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 <span class="st">            &quot;&quot;</span>) {
             city.ind &lt;-<span class="st"> </span><span class="kw">which</span>(city.names %in%<span class="st"> </span><span class="kw">Locs</span>())
             for (i in <span class="dv">1</span>:<span class="kw">length</span>(city.ind)) {
-                <span class="co"># still must subset city.gcm.files to specific resolution (2-km or</span>
-                <span class="co"># 10-minute), and below for CRU, perhaps make a reactive variable to store</span>
-                <span class="co"># the subset outside this reactive</span>
+                <span class="co"># currently, akcan 2-km res files are forced. 10-min files not used.</span>
                 <span class="kw">load</span>(city.gcm.files[city.ind[i]], <span class="dt">envir =</span> <span class="kw">environment</span>())
                 if (i ==<span class="st"> </span><span class="dv">1</span>) 
                   city.dat.final &lt;-<span class="st"> </span>city.dat else city.dat.final &lt;-<span class="st"> </span><span class="kw">rbind</span>(city.dat.final, city.dat)
             }
             prog_d_master$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;Subsetting GCM time series data...&quot;</span>, 
                 <span class="dt">value =</span> <span class="fl">2.5</span>)
-            x &lt;-<span class="st"> </span><span class="kw">subset</span>(city.dat.final, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
+            x &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="kw">subset</span>(city.dat.final, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
                 month.abb)] &amp;<span class="st"> </span>Year %in%<span class="st"> </span><span class="kw">currentYears</span>() &amp;<span class="st"> </span>Decade %in%<span class="st"> </span><span class="kw">substr</span>(<span class="kw">Decades_original</span>(), 
                 <span class="dv">1</span>, <span class="dv">4</span>) &amp;<span class="st"> </span>Scenario %in%<span class="st"> </span><span class="kw">scenarios</span>() &amp;<span class="st"> </span>Model %in%<span class="st"> </span><span class="kw">models_original</span>() &amp;<span class="st"> </span>
-<span class="st">                </span>Location %in%<span class="st"> </span>input$locs_cities)
+<span class="st">                </span>Location %in%<span class="st"> </span>input$locs_cities))
         } else if (input$loctype !=<span class="st"> &quot;Cities&quot;</span>) {
             reg.nam &lt;-<span class="st"> </span><span class="kw">sort</span>(region.names.out[[input$loctype]])
             region.ind &lt;-<span class="st"> </span><span class="kw">which</span>(reg.nam %in%<span class="st"> </span><span class="kw">Locs</span>())
@@ -563,12 +566,6 @@ dat_master &lt;-<span class="st"> </span><span class="kw">reactive</span>({
                 <span class="dt">select =</span> -cols.drop)
             x &lt;-<span class="st"> </span><span class="kw">data.table</span>(x)  <span class="co"># make this a data table in the next round of processing the input workspaces and then remove from here</span>
         }
-        x &lt;&lt;-<span class="st"> </span>x
-        mos &lt;&lt;-<span class="st"> </span><span class="kw">Months_original</span>()
-        variable &lt;&lt;-<span class="st"> </span><span class="kw">aggStats</span>()
-        n.s &lt;&lt;-<span class="st"> </span><span class="kw">as.numeric</span>(input$n_seasons)
-        np. &lt;&lt;-<span class="st"> </span><span class="kw">as.numeric</span>(input$n_periods)
-        decs &lt;&lt;-<span class="st"> </span><span class="kw">Decades_original</span>()
         if (!<span class="kw">is.null</span>(input$months2seasons) &amp;&amp;<span class="st"> </span>input$months2seasons) {
             prog_d_master$<span class="kw">set</span>(<span class="dt">message =</span> <span class="st">&quot;GCM time series: aggregating months...&quot;</span>, 
                 <span class="dt">value =</span> <span class="dv">4</span>)
@@ -629,14 +626,15 @@ dat_master &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 <span class="st">            &quot;&quot;</span>) {
             city.ind &lt;-<span class="st"> </span><span class="kw">which</span>(city.names %in%<span class="st"> </span><span class="kw">Locs</span>())
             for (i in <span class="dv">1</span>:<span class="kw">length</span>(city.ind)) {
+                <span class="co"># currently, akcan 2-km res files are forced. 10-min files not used.</span>
                 <span class="kw">load</span>(city.cru.files[city.ind[i]], <span class="dt">envir =</span> <span class="kw">environment</span>())
                 if (i ==<span class="st"> </span><span class="dv">1</span>) 
                   city.cru.dat.final &lt;-<span class="st"> </span>city.cru.dat else city.cru.dat.final &lt;-<span class="st"> </span><span class="kw">rbind</span>(city.cru.dat.final, city.cru.dat)
             }
             <span class="co"># prog_d_cru_master$set(message=&#39;Subsetting CRU 3.2 time series data...&#39;)</span>
-            x &lt;-<span class="st"> </span><span class="kw">subset</span>(city.cru.dat.final, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
+            x &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="kw">subset</span>(city.cru.dat.final, Month %in%<span class="st"> </span>month.abb[<span class="kw">match</span>(<span class="kw">Months_original</span>(), 
                 month.abb)] &amp;<span class="st"> </span>Year %in%<span class="st"> </span><span class="kw">currentYears</span>() &amp;<span class="st"> </span>Decade %in%<span class="st"> </span><span class="kw">substr</span>(<span class="kw">Decades_original</span>(), 
-                <span class="dv">1</span>, <span class="dv">4</span>))  <span class="co"># &amp; </span>
+                <span class="dv">1</span>, <span class="dv">4</span>)))  <span class="co"># &amp; </span>
             <span class="co"># Scenario %in% scenarios() &amp; Model %in% models_original())# &amp; Location %in%</span>
             <span class="co"># input$locs_cities)</span>
         } else if (input$loctype !=<span class="st"> &quot;Cities&quot;</span>) {
@@ -758,7 +756,6 @@ dat2 &lt;-<span class="st"> </span><span class="kw">reactive</span>({
         if (!<span class="kw">is.null</span>(x) &amp;&amp;<span class="st"> </span><span class="kw">aggStatsID</span>() !=<span class="st"> </span><span class="kw">aggStatsID2</span>()) 
             x[, input$vars2] &lt;-<span class="st"> </span><span class="kw">dat_master</span>()[Var ==<span class="st"> </span>input$vars2, <span class="kw">get</span>(<span class="kw">aggStatsID2</span>())]
     })
-    <span class="kw">print</span>(x)
     x
 })</code></pre>
 </div>
@@ -1189,8 +1186,9 @@ pooledVarHeatmap &lt;-<span class="st"> </span><span class="kw">reactive</span>(
 
 groupFacetChoicesVar &lt;-<span class="st"> </span><span class="kw">reactive</span>({
     if (!<span class="kw">is.null</span>(input$xvar)) {
-        ind &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">list</span>(phases, <span class="kw">models</span>(), <span class="kw">scenarios</span>(), <span class="kw">Months</span>(), 
-            <span class="kw">Decades</span>(), <span class="kw">Locs</span>()), length)) &gt;<span class="st"> </span><span class="dv">1</span>)
+        x &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">list</span>(phases, <span class="kw">models</span>(), <span class="kw">scenarios</span>(), <span class="kw">Months</span>(), <span class="kw">Decades</span>(), 
+            <span class="kw">Locs</span>()), length))
+        ind &lt;-<span class="st"> </span><span class="kw">which</span>(x &gt;<span class="st"> </span><span class="dv">1</span> &amp;<span class="st"> </span>x &lt;=<span class="st"> </span><span class="dv">9</span>)
         choices &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;None&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Phase&quot;</span>, <span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Decade&quot;</span>, 
             <span class="st">&quot;Location&quot;</span>)[ind])
         if (!<span class="kw">is.null</span>(choices)) {
@@ -1390,6 +1388,27 @@ colorseq_sp &lt;-<span class="st"> </span><span class="kw">reactive</span>({
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

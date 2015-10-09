@@ -267,7 +267,7 @@ if (<span class="kw">length</span>(comArgs)) for (i in <span class="dv">1</span>
 if (!<span class="kw">exists</span>(<span class="st">&quot;domain&quot;</span>)) <span class="kw">stop</span>(<span class="st">&quot;domain argument not provided. Must be either &#39;akcan2km&#39; or &#39;world10min&#39;&quot;</span>)
 if (!<span class="kw">exists</span>(<span class="st">&quot;cities.batch&quot;</span>)) cities.batch &lt;-<span class="st"> </span><span class="dv">1</span>
 
-<span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities&quot;</span>)
+<span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/cities&quot;</span>)
 
 <span class="kw">library</span>(data.table)
 
@@ -337,6 +337,27 @@ f &lt;-<span class="st"> </span>function(i, <span class="dt">overwrite =</span> 
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 
