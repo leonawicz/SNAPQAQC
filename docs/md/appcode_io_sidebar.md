@@ -55,8 +55,7 @@ output$Location <- renderUI({
 ```r
 output$Months2Seasons <- renderUI({
     if (!is.null(SeasonLength())) 
-        checkboxInput("months2seasons", "Make equal-length season(s) of months", 
-            FALSE) else NULL  # Do not allow unequal length seasons
+        checkboxInput("months2seasons", "Make seasons", FALSE) else NULL  # Do not allow unequal length seasons
 })
 
 output$N_Seasons <- renderUI({
@@ -86,8 +85,7 @@ outputOptions(output, "N_Seasons", suspendWhenHidden = FALSE)
 ```r
 output$Decades2Periods <- renderUI({
     if (!is.null(PeriodLength())) 
-        checkboxInput("decades2periods", "Make equal-length periods(s) of decades", 
-            FALSE) else NULL  # Do not allow unequal length periods
+        checkboxInput("decades2periods", "Make long periods", FALSE) else NULL  # Do not allow unequal length periods
 })
 
 output$N_Periods <- renderUI({
@@ -138,6 +136,7 @@ output$GoButton <- renderUI({
     input$aggStats2
     actionButton("goButton", "Subset Data", icon = icon("check"), class = "btn-primary btn-block")
 })
+outputOptions(output, "GoButton", suspendWhenHidden = FALSE)
 ```
 
 The plot-specific input controls below deal with choice of axis variables, grouping (coloring) variables, faceting variables, and choice of plot subtype or statistic.

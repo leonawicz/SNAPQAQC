@@ -237,6 +237,7 @@ img {
 <h3>global.R</h3>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(shinythemes)
 <span class="kw">library</span>(markdown)
+<span class="kw">library</span>(DT)
 <span class="kw">load</span>(<span class="st">&quot;meta.RData&quot;</span>, <span class="dt">envir =</span> .GlobalEnv)
 
 #### If overriding these region and city file path objects from
@@ -271,6 +272,8 @@ if (<span class="kw">Sys.info</span>()[<span class="st">&quot;sysname&quot;</spa
         <span class="dt">full =</span> T)
     city.cru.files.10min &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(city.cru.files.path, <span class="st">&quot;world10min&quot;</span>), 
         <span class="dt">full =</span> T)
+    city.gcm.files &lt;-<span class="st"> </span>city.gcm.files.10min  <span class="co"># using only 10-minute resolution files</span>
+    city.cru.files &lt;-<span class="st"> </span>city.cru.files.10min  <span class="co"># using only 10-minute resolution files</span>
 }
 ############################################################### 
 
@@ -281,6 +284,27 @@ help_tabpanel_conditional &lt;-<span class="st"> </span><span class="kw">conditi
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

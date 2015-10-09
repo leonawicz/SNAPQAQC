@@ -15,7 +15,7 @@ File path information for GCM and CRU 3.x files are finalized.
 #### This is the final script run after all app data and metadata files are
 #### compiled.  This is for final formatting related to regions and cities.
 
-load("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData")
+load("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/meta.RData")
 
 topDir <- "/workspace/Shared/Users/mfleonawicz/qaqcAppData"
 
@@ -49,14 +49,15 @@ city.cru.files.2km <- list.files(file.path(city.cru.files.path, "akcan2km"),
     full = T)
 city.cru.files.10min <- list.files(file.path(city.cru.files.path, "world10min"), 
     full = T)
+city.gcm.files <- city.gcm.files.10min  # using only 10-minute resolution files
+city.cru.files <- city.cru.files.10min  # using only 10-minute resolution files
 
-# city names to appear in app menu use one group of cities from above, all
-# four sets are identical
+# city names to appear in app menu
 city.names <- gsub("FSLASH", "/", gsub("PER", "\\.", gsub("APOS", "\\'", gsub("--", 
-    ", ", sapply(strsplit(basename(city.gcm.files.10min), "__"), "[[", 1)))))
+    ", ", sapply(strsplit(basename(city.gcm.files), "__"), "[[", 1)))))
 
 # subset cities metadata data frame to match final files, same for all sets
-cities.meta.file <- "/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/cities_meta.RData"
+cities.meta.file <- "/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/cities_meta.RData"
 load(cities.meta.file)
 cities.meta <- subset(cities.meta, Location %in% city.names)
 save(cities.meta, file = cities.meta.file)  # okay to save over original file
@@ -67,5 +68,5 @@ The `meta.RData` workspace used by the master QA/QC Shiny app is loaded and re-s
 
 
 ```r
-save.image(file.path("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final/meta.RData"))
+save.image(file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/meta.RData"))
 ```

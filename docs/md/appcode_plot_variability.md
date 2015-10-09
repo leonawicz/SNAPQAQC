@@ -114,7 +114,7 @@ function(d, d.grp, d.pool, x, y, y.name, stat = "SD", around.mean = FALSE, error
         fill = fill))
     if (plot.theme.dark) 
         g <- g + theme_black(base_size = fontsize) else g <- g + theme_bw(base_size = fontsize)
-    g <- g + ylab(ylb) + theme(legend.position = tolower(lgd.pos))
+    g <- g + ylab(ylb) + theme(legend.position = tolower(lgd.pos), legend.box = "horizontal")
     if (!show.logo && show.title) 
         g <- g + ggtitle(bquote(atop(.(main))))
     if (length(colpal)) 
@@ -212,6 +212,7 @@ function(d, d.grp, d.pool, x, y, y.name, stat = "SD", around.mean = FALSE, error
                   n.groups = n.grp)  #n.grp is a rough estimate
         }
     }
+    g <- g + guides(fill = guide_legend(override.aes = list(alpha = 1)), colour = guide_legend(override.aes = list(alpha = 1)))
     g <- addLogo(g, show.logo, logo.mat, show.title, main, fontsize)
     if (length(g$layers)) 
         print(g)

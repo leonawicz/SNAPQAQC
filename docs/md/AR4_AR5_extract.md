@@ -93,7 +93,7 @@ if (domain == "akcan2km") {
     topDir <- file.path("/Data/Base_Data/Climate/AK_CAN_2km", c("historical", 
         "projected"))  # files are not read, but metadata parsed from filenames list
     if (regions) {
-        load("/workspace/UA/mfleonawicz/leonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
+        load("/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_AKCAN2km_5pct.RData")
     } else cells_shp_list_5pct <- region.names.out <- n.shp <- NULL
 } else if (domain == "world10min") {
     # Currently for cities only
@@ -103,7 +103,7 @@ if (domain == "akcan2km") {
     #### Need to insert a load() command analogous to that above for regions
 }
 
-locs <- read.csv("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv")
+locs <- read.csv("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/locs.csv")
 ```
 
 #### Define **R** objects
@@ -131,7 +131,7 @@ years <- yr1:yr2
 
 if (cities) {
     if (domain != "world10min") 
-        locs <- subset(locs, region != "NWT")
+        locs <- subset(locs, region != "Northwest Territories")
     # locs <- locs[is.na(locs$pop) | locs$pop > 10,]
     l <- paste(locs$region, locs$loc)
     lu <- unique(l)
@@ -144,6 +144,11 @@ if (cities) {
         drp <- c(drp, ind)
     }
     cities <- locs[-drp, ]
+    if (domain == "world10min") {
+        # hack to deal with specific NT locations
+        nt.na <- which(cities$loc %in% c("Paulatuk", "Sachs Harbour"))
+        cities$lon[nt.na] <- cities$lon[nt.na] + 0.1666667
+    }
     if (exists("cities.batch")) {
         batch.bounds <- round(seq(1, nrow(cities) + 1, length = 11))[c(cities.batch, 
             cities.batch + 1)] - c(0, 1)
@@ -381,7 +386,7 @@ for (k in 1:2) {
             print(length(stats.out) - i)
         }
         save(stats.out, results.years, region.names.out, agg.stat.names, agg.stat.colnames, 
-            file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats/", 
+            file = paste0("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/stats/", 
                 models[1], "_", models[4], "_annual_regions_stats.RData"))
         
         # regional samples
@@ -406,7 +411,7 @@ for (k in 1:2) {
                 rownames(samples.out[[i]]) <- NULL
             }
             names(samples.out) <- samples.names
-            save(samples.out, samples.names, region.names.out, n.samples, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples/", 
+            save(samples.out, samples.names, region.names.out, n.samples, file = paste0("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/samples/", 
                 lab, "_annual_regions_samples.RData"))
         }
     }
@@ -432,7 +437,7 @@ for (k in 1:2) {
                 10]
         }
         d <- stats.out[[1]]
-        save(d, d.cities, results.years, file = paste0("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities/", 
+        save(d, d.cities, results.years, file = paste0("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/cities/", 
             models[1], "_", models[4], "_annual_cities_batch", cities.batch, 
             "_", domain, ".RData"))
     }

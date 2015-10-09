@@ -282,7 +282,8 @@ img {
     g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(d2, <span class="kw">aes_string</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">fill =</span> z))
     if (plot.theme.dark) 
         g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">theme_black</span>(<span class="dt">base_size =</span> fontsize) else g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">theme_bw</span>(<span class="dt">base_size =</span> fontsize)
-    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_tile</span>(<span class="dt">colour =</span> color.theme) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="kw">tolower</span>(lgd.pos))
+    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">geom_tile</span>(<span class="dt">colour =</span> color.theme) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="kw">tolower</span>(lgd.pos), 
+        <span class="dt">legend.box =</span> <span class="st">&quot;horizontal&quot;</span>)
     if (aspect_1to1) 
         g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">coord_fixed</span>(<span class="dt">ratio =</span> <span class="dv">1</span>)
     brew.col &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">rev</span>(<span class="kw">brewer.pal</span>(<span class="dv">8</span>, colpal)))(<span class="dv">50</span>)
@@ -304,6 +305,27 @@ img {
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

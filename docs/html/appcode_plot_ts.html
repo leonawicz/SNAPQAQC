@@ -315,7 +315,7 @@ img {
         <span class="dt">colour =</span> color, <span class="dt">fill =</span> fill))
     if (plot.theme.dark) 
         g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">theme_black</span>(<span class="dt">base_size =</span> fontsize) else g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">theme_bw</span>(<span class="dt">base_size =</span> fontsize)
-    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">ylab</span>(ylb) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="kw">tolower</span>(lgd.pos))
+    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">ylab</span>(ylb) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="kw">tolower</span>(lgd.pos), <span class="dt">legend.box =</span> <span class="st">&quot;horizontal&quot;</span>)
     if (!show.logo &amp;&amp;<span class="st"> </span>show.title) 
         g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="kw">bquote</span>(<span class="kw">atop</span>(.(main))))
     if (<span class="kw">length</span>(colpal)) 
@@ -422,12 +422,34 @@ img {
     if (show.panel.text) 
         g &lt;-<span class="st"> </span><span class="kw">annotatePlot</span>(g, <span class="dt">data =</span> d, <span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">text =</span> plot.subtitle, <span class="dt">col =</span> color.theme, 
             <span class="dt">bp =</span> barPlot, <span class="dt">bp.position =</span> bar.pos, <span class="dt">n.groups =</span> n.grp/<span class="dv">2</span>)  <span class="co">#n.grp/2 is a rough estimate</span>
+    g &lt;-<span class="st"> </span>g +<span class="st"> </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">override.aes =</span> <span class="kw">list</span>(<span class="dt">alpha =</span> <span class="dv">1</span>)), <span class="dt">colour =</span> <span class="kw">guide_legend</span>(<span class="dt">override.aes =</span> <span class="kw">list</span>(<span class="dt">alpha =</span> <span class="dv">1</span>)))
     g &lt;-<span class="st"> </span><span class="kw">addLogo</span>(g, show.logo, logo.mat, show.title, main, fontsize)
     <span class="kw">print</span>(g)
 }</code></pre>
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

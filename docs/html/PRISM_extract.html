@@ -237,7 +237,7 @@ img {
 <h3><strong>R</strong> Code</h3>
 <div id="setup" class="section level4">
 <h4>Setup</h4>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/final&quot;</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final&quot;</span>)
 <span class="kw">library</span>(raster)
 <span class="co"># At this time, no buffered 10-minute resolution WGS84 mean value version</span>
 <span class="co"># extracted for domain=&#39;world10min&#39;</span>
@@ -248,14 +248,14 @@ mainDir &lt;-<span class="st"> &quot;/Data/Base_Data/Climate/AK_CAN_2km/historic
 pDir &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) <span class="st">&quot;pr/ak83albers&quot;</span> else <span class="st">&quot;pr/wgs84&quot;</span>
 tDir &lt;-<span class="st"> </span>if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) <span class="st">&quot;tas/ak83albers&quot;</span> else <span class="st">&quot;tas/wgs84&quot;</span>
 
-locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/locs.csv&quot;</span>)
+locs &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/locs.csv&quot;</span>)
 s.p &lt;-<span class="st"> </span><span class="kw">stack</span>(<span class="kw">list.files</span>(<span class="kw">file.path</span>(mainDir, pDir), <span class="dt">pattern =</span> <span class="st">&quot;.tif$&quot;</span>, <span class="dt">full =</span> <span class="ot">TRUE</span>))
 s.t &lt;-<span class="st"> </span><span class="kw">stack</span>(<span class="kw">list.files</span>(<span class="kw">file.path</span>(mainDir, tDir), <span class="dt">pattern =</span> <span class="st">&quot;.tif$&quot;</span>, <span class="dt">full =</span> <span class="ot">TRUE</span>))</code></pre>
 </div>
 <div id="subset-city-data" class="section level4">
 <h4>Subset city data</h4>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select cities and extract data</span>
-locs &lt;-<span class="st"> </span><span class="kw">subset</span>(locs, region !=<span class="st"> &quot;NWT&quot;</span>)
+locs &lt;-<span class="st"> </span><span class="kw">subset</span>(locs, region !=<span class="st"> &quot;Northwest Territories&quot;</span>)
 <span class="co"># locs &lt;- locs[locs$pop &gt; 10,]</span>
 l &lt;-<span class="st"> </span><span class="kw">paste</span>(locs$region, locs$loc)
 lu &lt;-<span class="st"> </span><span class="kw">unique</span>(l)
@@ -279,49 +279,72 @@ prism.t &lt;-<span class="st"> </span><span class="kw">round</span>(<span class=
 </div>
 <div id="load-and-save-workspaces" class="section level4">
 <h4>Load and save workspaces</h4>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save results</span>
-file1 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru31_prism_akcan2km.RData&quot;</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save results file1 &lt;- &#39;cc4lite/cc4lite_cru31_prism_akcan2km.RData&#39;</span>
 file2 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru32_prism_akcan2km.RData&quot;</span>
-file3 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru3132_prism_akcan2km.RData&quot;</span>
-file4 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru31_prism_world10min.RData&quot;</span>
+<span class="co"># file3 &lt;- &#39;cc4lite/cc4lite_cru3132_prism_akcan2km.RData&#39; file4 &lt;-</span>
+<span class="co"># &#39;cc4lite/cc4lite_cru31_prism_world10min.RData&#39;</span>
 file5 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru32_prism_world10min.RData&quot;</span>
-file6 &lt;-<span class="st"> &quot;cc4lite/cc4lite_cru3132_prism_world10min.RData&quot;</span>
+<span class="co"># file6 &lt;- &#39;cc4lite/cc4lite_cru3132_prism_world10min.RData&#39;</span>
 if (domain ==<span class="st"> &quot;akcan2km&quot;</span>) {
-    <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru31_akcan2km.RData&quot;</span>))
+    <span class="co"># load(paste0(&#39;cc4lite/cc4lite_cru31_akcan2km.RData&#39;))</span>
     <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru32_akcan2km.RData&quot;</span>))
     <span class="kw">save</span>(d.2km, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_prism_akcan2km.RData&quot;</span>)
-    <span class="kw">save</span>(d.2km, d.cru31.2km, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file1)
+    <span class="co"># save(d.2km, d.cru31.2km, locs, prism.p, prism.t, prism.cities, file=file1)</span>
     <span class="kw">save</span>(d.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file2)
-    <span class="kw">save</span>(d.2km, d.cru31.2km, d.cru32.2km, locs, prism.p, prism.t, prism.cities, 
-        <span class="dt">file =</span> file3)
+    <span class="co"># save(d.2km, d.cru31.2km, d.cru32.2km, locs, prism.p, prism.t,</span>
+    <span class="co"># prism.cities, file=file3)</span>
 } else if (domain ==<span class="st"> &quot;world10min&quot;</span>) {
-    <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru31_world10min.RData&quot;</span>))
+    <span class="co"># load(paste0(&#39;cc4lite/cc4lite_cru31_world10min.RData&#39;))</span>
     <span class="kw">load</span>(<span class="kw">paste0</span>(<span class="st">&quot;cc4lite/cc4lite_cru32_world10min.RData&quot;</span>))
     <span class="kw">save</span>(d.10min, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_prism_world10min.RData&quot;</span>)
-    <span class="kw">save</span>(d.10min, d.cru31.10min, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file4)
+    <span class="co"># save(d.10min, d.cru31.10min, locs, prism.p, prism.t, prism.cities,</span>
+    <span class="co"># file=file4)</span>
     <span class="kw">save</span>(d.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, <span class="dt">file =</span> file5)
-    <span class="kw">save</span>(d.10min, d.cru31.10min, d.cru32.10min, locs, prism.p, prism.t, prism.cities, 
-        <span class="dt">file =</span> file6)
+    <span class="co"># save(d.10min, d.cru31.10min, d.cru32.10min, locs, prism.p, prism.t,</span>
+    <span class="co"># prism.cities, file=file6)</span>
 }
 
-if (<span class="kw">all</span>(<span class="kw">file.exists</span>(file3, file6))) {
-    <span class="kw">load</span>(file3)
+if (<span class="kw">all</span>(<span class="kw">file.exists</span>(file2, file5))) {
+    <span class="kw">load</span>(file2)
     locs.2km &lt;-<span class="st"> </span>locs
-    <span class="kw">load</span>(file6)
+    <span class="kw">load</span>(file5)
     locs.10min &lt;-<span class="st"> </span>locs
     <span class="kw">save</span>(d.2km, d.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities, 
         <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_prism_2km10min.RData&quot;</span>)
-    <span class="kw">save</span>(d.2km, d.10min, d.cru31.2km, d.cru31.10min, locs.2km, locs.10min, prism.p, 
-        prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_cru31_prism_2km10min.RData&quot;</span>)
+    <span class="co"># save(d.2km, d.10min, d.cru31.2km, d.cru31.10min, locs.2km, locs.10min,</span>
+    <span class="co"># prism.p, prism.t, prism.cities,</span>
+    <span class="co"># file=&#39;cc4lite/cc4lite_cru31_prism_2km10min.RData&#39;)</span>
     <span class="kw">save</span>(d.2km, d.10min, d.cru32.2km, d.cru32.10min, locs.2km, locs.10min, prism.p, 
         prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_cru32_prism_2km10min.RData&quot;</span>)
-    <span class="kw">save</span>(d.2km, d.10min, d.cru31.2km, d.cru31.10min, d.cru32.2km, d.cru32.10min, 
-        locs.2km, locs.10min, prism.p, prism.t, prism.cities, <span class="dt">file =</span> <span class="st">&quot;cc4lite/cc4lite_cru3132_prism_2km10min.RData&quot;</span>)
+    <span class="co"># save(d.2km, d.10min, d.cru31.2km, d.cru31.10min, d.cru32.2km,</span>
+    <span class="co"># d.cru32.10min, locs.2km, locs.10min, prism.p, prism.t, prism.cities,</span>
+    <span class="co"># file=&#39;cc4lite/cc4lite_cru3132_prism_2km10min.RData&#39;)</span>
 }</code></pre>
 </div>
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

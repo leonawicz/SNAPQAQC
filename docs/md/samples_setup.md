@@ -46,7 +46,7 @@ SNAP's ten combined CMIP3 and CMIP5 models are in a hardcoded list as in the par
 
 
 ```r
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/samples")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/samples")
 
 library(parallel)
 library(reshape2)

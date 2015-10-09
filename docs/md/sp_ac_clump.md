@@ -35,6 +35,24 @@ Questions of interest include:
 
 
 
+```
+## Loading required package: sp
+## 
+## Attaching package: 'raster'
+## 
+## The following object is masked from 'package:rCharts':
+## 
+##     addLayer
+## 
+## data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
+## The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
+## 
+## Attaching package: 'data.table'
+## 
+## The following object is masked from 'package:raster':
+## 
+##     shift
+```
 
 #### Autocorrelation and unique observations
 

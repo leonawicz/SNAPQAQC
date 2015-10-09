@@ -53,7 +53,7 @@ if (!exists("domain")) stop("domain argument not provided. Must be either 'akcan
 if (!exists("cities.batch")) cities.batch <- 1
 if (!exists("cru")) cru <- "32"
 
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/cities")
 
 library(data.table)
 
@@ -123,6 +123,6 @@ f <- function(i, overwrite = FALSE) {
 mclapply(1:length(cities.meta$Location), f, mc.cores = 32)
 
 rm(cru, d.cities.cru, f, domain)
-save(cities.meta, file = "../final/cities_meta.RData")  # only necessary one time out of all versions of CRU and GCMs, 10-minute resolution inputs provide larger city set (NWT)
+save(cities.meta, file = "../final/cities_meta.RData")  # only necessary one time out of all versions of CRU and GCMs, 10-minute resolution inputs provide larger city set (Northwest Territories)
 # load('../final/meta.RData') save.image('../final/meta.RData')
 ```

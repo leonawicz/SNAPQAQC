@@ -76,7 +76,7 @@ genNavbar(htmlfile=file.path(proj.location, proj.name, "docs/Rmd/include/navbar.
 yaml.out <- file.path(proj.location, proj.name, "docs/Rmd/_output.yaml")
 libs <- "libs"
 common.header <- "include/in_header.html"
-genOutyaml(file=yaml.out, lib=libs, header=common.header, before_body="include/navbar.html")
+genOutyaml(file=yaml.out, lib=libs, header=common.header, before_body="include/navbar.html", after_body="include/after_body.html")
 
 # @knitr knit_setup
 library(rmarkdown)
@@ -88,7 +88,7 @@ files.Rmd <- list.files(pattern=".Rmd$", full=T)
 
 # @knitr save
 # write all yaml front-matter-specified outputs to Rmd directory for all Rmd files
-lapply(files.Rmd, render, output_format="all")
+for(i in 1:length(files.Rmd)) render(files.Rmd[i], output_format="all")
 insert_gatc(list.files(pattern=".html$"))
 moveDocs(path.docs=docs.path)
 

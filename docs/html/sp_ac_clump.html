@@ -229,6 +229,22 @@ img {
 <h2></h2>
 <div id="initial-explorations" class="section level3">
 <h3>Initial explorations</h3>
+<pre><code>## Loading required package: sp
+## 
+## Attaching package: &#39;raster&#39;
+## 
+## The following object is masked from &#39;package:rCharts&#39;:
+## 
+##     addLayer
+## 
+## data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
+## The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
+## 
+## Attaching package: &#39;data.table&#39;
+## 
+## The following object is masked from &#39;package:raster&#39;:
+## 
+##     shift</code></pre>
 <div id="autocorrelation-and-unique-observations" class="section level4">
 <h4>Autocorrelation and unique observations</h4>
 <p><img src="sp_ac_clump_files/figure-html/autocorr-1.png" /></p>
@@ -294,6 +310,27 @@ img {
 </div>
 </div>
 
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+<script>
+  // manage active state of menu based on current page
+  $(document).ready(function () {
+  
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+    
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+	  
+  });
+</script>
 
 </div>
 

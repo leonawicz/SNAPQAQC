@@ -46,7 +46,7 @@ Setup is minimal. Set working directory. List CRU 3.x files.
 
 
 ```r
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/regional/stats")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/regional/stats")
 
 library(data.table)
 

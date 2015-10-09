@@ -57,7 +57,7 @@ if (length(comArgs)) for (i in 1:length(comArgs)) eval(parse(text = comArgs[[i]]
 if (!exists("domain")) stop("domain argument not provided. Must be either 'akcan2km' or 'world10min'")
 if (!exists("cities.batch")) cities.batch <- 1
 
-setwd("/workspace/UA/mfleonawicz/leonawicz/projects/SNAPQAQC/data/cities")
+setwd("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/cities")
 
 library(data.table)
 

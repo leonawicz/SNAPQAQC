@@ -90,7 +90,8 @@ function(d, x, y, x.name, y.name, Logx = FALSE, Logy = FALSE, flip.axes = FALSE,
         fill = fill))
     if (plot.theme.dark) 
         g <- g + theme_black(base_size = fontsize) else g <- g + theme_bw(base_size = fontsize)
-    g <- g + xlab(xlb) + ylab(ylb) + theme(legend.position = tolower(lgd.pos))
+    g <- g + xlab(xlb) + ylab(ylb) + theme(legend.position = tolower(lgd.pos), 
+        legend.box = "horizontal")
     if (!show.logo && show.title) 
         g <- g + ggtitle(bquote(atop(.(main))))
     if (length(colpal)) 
@@ -126,6 +127,7 @@ function(d, x, y, x.name, y.name, Logx = FALSE, Logy = FALSE, flip.axes = FALSE,
     if (show.panel.text) 
         g <- g + annotate("text", y = max(d[[y]]), x = min(d[[x]]), label = bquote(.(plot.subtitle)), 
             hjust = 0, vjust = 1, fontface = 3, colour = color.theme)
+    g <- g + guides(fill = guide_legend(override.aes = list(alpha = 1)), colour = guide_legend(override.aes = list(alpha = 1)))
     g <- addLogo(g, show.logo, logo.mat, show.title, main, fontsize)
     print(g)
 }

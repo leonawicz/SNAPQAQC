@@ -48,7 +48,7 @@ twoBtnNullOrZero_sp <- reactive({
 
 ```r
 Decades_original <- reactive({
-    x <- input$decs
+    x <- sort(input$decs)
     if (!length(x)) 
         x <- decades
     x
@@ -60,6 +60,7 @@ currentYears <- reactive({
 })
 
 Months_original <- reactive({
+    # x <- input$mos[order(match(input$mos, month.abb))]
     x <- input$mos
     if (!length(x)) 
         x <- month.abb
@@ -191,10 +192,14 @@ currentUnits <- reactive({
 })
 
 aggStatsID <- reactive({
+    if (input$loctype == "Cities") 
+        return("Val")
     agg.stat.colnames[which(agg.stat.names == input$aggStats)]
 })
 
 aggStatsID2 <- reactive({
+    if (input$loctype == "Cities") 
+        return("Val")
     agg.stat.colnames[which(agg.stat.names == input$aggStats2)]
 })
 
@@ -322,19 +327,17 @@ dat_master <- reactive({
             "") {
             city.ind <- which(city.names %in% Locs())
             for (i in 1:length(city.ind)) {
-                # still must subset city.gcm.files to specific resolution (2-km or
-                # 10-minute), and below for CRU, perhaps make a reactive variable to store
-                # the subset outside this reactive
+                # currently, akcan 2-km res files are forced. 10-min files not used.
                 load(city.gcm.files[city.ind[i]], envir = environment())
                 if (i == 1) 
                   city.dat.final <- city.dat else city.dat.final <- rbind(city.dat.final, city.dat)
             }
             prog_d_master$set(message = "Subsetting GCM time series data...", 
                 value = 2.5)
-            x <- subset(city.dat.final, Month %in% month.abb[match(Months_original(), 
+            x <- data.table(subset(city.dat.final, Month %in% month.abb[match(Months_original(), 
                 month.abb)] & Year %in% currentYears() & Decade %in% substr(Decades_original(), 
                 1, 4) & Scenario %in% scenarios() & Model %in% models_original() & 
-                Location %in% input$locs_cities)
+                Location %in% input$locs_cities))
         } else if (input$loctype != "Cities") {
             reg.nam <- sort(region.names.out[[input$loctype]])
             region.ind <- which(reg.nam %in% Locs())
@@ -358,12 +361,6 @@ dat_master <- reactive({
                 select = -cols.drop)
             x <- data.table(x)  # make this a data table in the next round of processing the input workspaces and then remove from here
         }
-        x <<- x
-        mos <<- Months_original()
-        variable <<- aggStats()
-        n.s <<- as.numeric(input$n_seasons)
-        np. <<- as.numeric(input$n_periods)
-        decs <<- Decades_original()
         if (!is.null(input$months2seasons) && input$months2seasons) {
             prog_d_master$set(message = "GCM time series: aggregating months...", 
                 value = 4)
@@ -427,14 +424,15 @@ CRU_master <- reactive({
             "") {
             city.ind <- which(city.names %in% Locs())
             for (i in 1:length(city.ind)) {
+                # currently, akcan 2-km res files are forced. 10-min files not used.
                 load(city.cru.files[city.ind[i]], envir = environment())
                 if (i == 1) 
                   city.cru.dat.final <- city.cru.dat else city.cru.dat.final <- rbind(city.cru.dat.final, city.cru.dat)
             }
             # prog_d_cru_master$set(message='Subsetting CRU 3.2 time series data...')
-            x <- subset(city.cru.dat.final, Month %in% month.abb[match(Months_original(), 
+            x <- data.table(subset(city.cru.dat.final, Month %in% month.abb[match(Months_original(), 
                 month.abb)] & Year %in% currentYears() & Decade %in% substr(Decades_original(), 
-                1, 4))  # & 
+                1, 4)))  # & 
             # Scenario %in% scenarios() & Model %in% models_original())# & Location %in%
             # input$locs_cities)
         } else if (input$loctype != "Cities") {
@@ -559,7 +557,6 @@ dat2 <- reactive({
         if (!is.null(x) && aggStatsID() != aggStatsID2()) 
             x[, input$vars2] <- dat_master()[Var == input$vars2, get(aggStatsID2())]
     })
-    print(x)
     x
 })
 ```
@@ -1015,8 +1012,9 @@ xvarChoices <- reactive({
 
 groupFacetChoicesVar <- reactive({
     if (!is.null(input$xvar)) {
-        ind <- which(unlist(lapply(list(phases, models(), scenarios(), Months(), 
-            Decades(), Locs()), length)) > 1)
+        x <- unlist(lapply(list(phases, models(), scenarios(), Months(), Decades(), 
+            Locs()), length))
+        ind <- which(x > 1 & x <= 9)
         choices <- c("None", c("Phase", "Model", "Scenario", "Month", "Decade", 
             "Location")[ind])
         if (!is.null(choices)) {
