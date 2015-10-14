@@ -29,76 +29,6 @@ sample_densities <- function(data, check.class=TRUE){
     summarise(data, Val=dtBoot(Val))
 }
 
-# summarize distributions of a RV with specified uncertainty bounds around mean, conditioned on or marginalized over models or scenarios
-# constructs a ms_uc_table class object from specifically disttable class objects or row binds multiple ms_uc_table objects
-ms_uc_table <- function(..., lb=0.025, ub=0.975, input="density", drop=NULL, label=NULL, check.class=TRUE){
-    dots <- list(...)
-    if(!length(dots)) stop("No data provided.")
-    if(length(dots) > 1){
-        stopifnot(all(sapply(dots, function(x) class(x)[1]=="ms_uc_table")))
-        stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$lb)))==0)
-        stopifnot(sum(diff(sapply(dots, function(x) attributes(x)$ub)))==0)
-        att <- lapply(dots, function(x) attributes(x)$Passive_ID_columns)
-        for(i in 2:length(att)) stopifnot(all(att[[1]] %in% att[[i]]) && all(att[[i]] %in% att[[1]]))
-        data <- rbindlist(dots, fill=T)
-        cl <- class(data)
-        cl <- unique(c("ms_uc_table", cl[cl!="disttable"]))
-        class(data) <- cl
-        attr(data, "lb") <- lb
-        attr(data, "ub") <- ub
-        attr(data, "Passive_ID_columns") <- names(data)[!(names(data) %in% c("Scenario", "Model", "LB", "Mean", "UB", "Magnitude", "Type"))]
-        return(data)
-    }
-    data <- dots[[1]]
-    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
-    stopifnot(input %in% c("sample", "density"))
-    id <- names(data)
-    stopifnot(all(drop %in% id))
-    x <- c("Scenario", "Model")
-    uc.cond <- c("Sim | scenario and GCM", "Sim and GCM | scenario", "Sim and scenario | GCM")
-    uc.cond <- factor(uc.cond, levels=uc.cond)
-    uc.mar <- c("Sim", "Sim + Scenario", "Sim + Model", "Sim + Scenario + Model")
-    uc.mar <- factor(uc.mar, levels=uc.mar)
-    
-    if(is.null(drop)){
-        if(all(x %in% id)){
-            label <- uc.cond[1]
-         } else if(x[1] %in% id && !(x[2] %in% id)) {
-            label <- uc.cond[2]
-        } else if(!(x[1] %in% id) && x[2] %in% id) {
-            label <- uc.cond[3]
-        } else if(!any(x %in% id)) {
-            label <- uc.mar[4] # marginal
-        } else stop("Conditions in data not met for conditional uncertainty.")
-    } else {
-        if(all(x %in% id) && all(x %in% drop)){
-            label <- uc.mar[1]
-        } else if(!(x[1] %in% id) && x[2] %in% id && !(x[1] %in% drop) && x[2] %in% drop) {
-            label <- uc.mar[2]
-        } else if(x[1] %in% id && !(x[2] %in% id) && x[1] %in% drop && !(x[2] %in% drop)) {
-            label <- uc.mar[3]
-        } else stop("Conditions in data not met for mean marginal uncertainty.")
-    }
-    
-    dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
-    dots2 <- lapply(id[!(id %in% c("Val", "Prob", drop))], as.symbol)
-    if(input=="density") data <- group_by_(sample_densities(data), .dots=dots)
-    data <- summarise(data, LB=quantile(Val, lb), Mean=mean(Val), UB=quantile(Val, ub))
-    if(is.null(drop)){
-        mutate(data, Magnitude=UB-LB, Type=label) %>% group_by_(.dots=dots) -> data
-    } else {
-        group_by_(data, .dots=dots2) %>% summarise(LB=mean(LB), Mean=mean(Mean), UB=mean(UB)) %>%
-            mutate(Magnitude=UB-LB, Type=label) %>% group_by_(.dots=dots2) -> data
-    }
-    cl <- class(data) 
-    cl <- unique(c("ms_uc_table", cl[cl!="disttable"]))
-    class(data) <- cl
-    attr(data, "lb") <- lb
-    attr(data, "ub") <- ub
-    attr(data, "Passive_ID_columns") <- names(data)[!(names(data) %in% c("Scenario", "Model", "LB", "Mean", "UB", "Magnitude", "Type"))]
-    data
-}
-
 # summarize distributions of a RV with specified uncertainty bounds around mean, conditioned on or marginalized over other variables
 # constructs a uc_table class object from specifically disttable class objects or row binds multiple uc_table objects
 uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, bindType.as.factor=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE, check.class=TRUE){
@@ -231,33 +161,6 @@ marginalize <- function(data, margin, keep.prob.col=TRUE, check.class=TRUE){
     group_by_(data, .dots=dots) %>% merge_densities(keep.prob.col, check.class) %>% group_by_(.dots=dots) -> data
     class(data) <- unique(c("disttable", class(data)))
     data
-}
-
-# make data table of uncertainty components (simulation, scenario, and model)
-# constructs a ms_uc_com_table class object from specifically ms_uc_table class objects
-#
-# average individual uncertainty components
-# average simulation uncertainty: d.mean.uc or d.RgM.mean.uc + d.RgS.mean.uc - d.R.mean.uc
-# average scenario uncertainty: d.RgM.mean.uc - d.mean.uc or d.R.mean.uc - d.RgS.mean.uc
-# average model uncertainty: d.RgS.mean.uc - d.mean.uc or d.R.mean.uc - d.RgM.mean.uc
-# average total uncertainty: d.R.mean.uc or d.RgM.mean.uc + d.RgS.mean.uc - d.mean.uc
-ms_uc_components <- function(sim, simScen, simMod, simScenMod, totals.col=FALSE){
-    require(reshape2)
-    stopifnot(all(sapply(list(sim, simScen, simMod, simScenMod), function(x) class(x)[1]=="ms_uc_table")))
-    vars <- c("Sim", "Scenario", "GCM")
-    x <- sim$Magnitude
-    xs <- simScen$Magnitude
-    xm <- simMod$Magnitude
-    xsm <- simScenMod$Magnitude
-    r <- (x + (xs + xm - xsm))/2
-    s <- ((xs - x) + (xsm - xm))/2
-    m <- ((xm - x) + (xsm - xs))/2
-    r[r < 0] <- s[s < 0] <-  m[m < 0] <- 0
-    d <- data.table(sim %>% select(-LB, -Mean, -UB, -Magnitude, -Type), Sim=r, Scenario=s, GCM=m)
-    if(totals.col) { d[, Total:=r+s+m]; vars <- c(vars, "Total") }
-    d <- data.table(melt(d, measure.vars=vars, variable.name="Type", value.name="Magnitude"))
-    class(d) <- unique(c("ms_uc_comp_table", class(d)))
-    d
 }
 
 # make data table of uncertainty components contributed to a total uncertainty by various factors
@@ -462,88 +365,6 @@ distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), fa
     }
     if(return.data) return(data)
 }
-
-# Plot total or compound (by component) average marginal uncertainty in a RV over time with respect to underlying simulation uncertainty and model and scenario uncertainty
-# optionally condition (filter) on other (not model or scenario) factor levels of associated variables
-distplot.ms_uc_table <- function(data, type="total", facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
-    dots <- list(...)
-    data <- .filter_plot_data(data, dots)
-    if(show.plot){
-        if(!(type %in% c("total", "compound", "conditional"))) stop("type must be 'total', 'compound', or 'conditional'.")
-        if(any(c("Scenario", "Model") %in% names(data))){
-            if(!(all(c("Scenario", "Model") %in% names(data)))) stop("If Scenario or Model column present, both must be present.")
-            if(type %in% c("total", "compound")){
-                type <- "conditional"
-                warning(paste("If Scenario and Model columns present, type must be conditional. Switching from", type, "to conditional."))
-            }
-        } else if(type=="conditional"){
-            type <- "total"
-            warning(paste("If Scenario and Model columns absent, type cannot be conditional. Defaulting to total."))
-        }
-        yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
-        clrs2 <- c("Uncertainty"="#00000030", "Combined uncertainty: Simulation + climate scenario + GCM"="#00000030")
-        colour <- if(!is.null(dots$colour)) dots$colour else NULL
-        clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
-        xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
-        ylb <- if(!is.null(dots$ylab)) dots$ylab else "Y"
-        prefix <- if(type=="conditional") "Conditional uncertainty in projected annual" else ""
-        if(type=="total") suffix <- "with uncertainty" else if(type=="compound") suffix <- "compound uncertainty" else suffix <- ""
-        title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
-        if(type=="total"){
-            g <- ggplot(data=data %>% filter(Type=="Sim + Scenario + Model"), aes_string(x="Year", y="Mean", colour=colour)) +
-                geom_ribbon(aes(ymin=LB, ymax=UB, fill="Combined uncertainty: Simulation + climate scenario + GCM")) +
-                geom_line(size=1) + geom_point(size=2)
-        } else if(type=="compound"){
-            g <- ggplot(data=data, aes(x=Year, y=Magnitude, colour=Type)) + geom_line(size=1) + expand_limits(y=0)
-        } else if(type=="conditional"){
-            dgM <- data %>% filter(is.na(Scenario) & !is.na(Model))
-            dgS <- data %>% filter(!is.na(Scenario) & is.na(Model))
-            data <- data %>% filter(!is.na(Scenario) & !is.na(Model))
-            g <- ggplot(data=data, aes(x=Year, y=Magnitude, colour=Type, group=interaction(Scenario, Model))) +
-                geom_line(linetype=2) +
-                geom_line(data=data %>% group_by(Vegetation, Year, Type) %>% summarise(Magnitude=mean(Magnitude)), aes(group=NULL)) +
-                geom_line(data=dgS %>% group_by(Vegetation, Year, Type) %>% summarise(Magnitude=mean(Magnitude)), aes(group=NULL)) +
-                geom_line(data=dgM %>% group_by(Vegetation, Year, Type) %>% summarise(Magnitude=mean(Magnitude)), aes(group=NULL),) +
-                geom_line(data=dgM, aes(group=Model), linetype=2) + geom_line(data=dgS, aes(group=Scenario), linetype=2) + expand_limits(y=0)
-        }
-        g <- g + scale_colour_manual(name="", values=clrs) + scale_fill_manual(name="",values=clrs2) + scale_x_continuous(breaks=yrs.brks) +
-            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
-            guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
-        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
-        print(g)
-    }
-    if(return.data) return(data)
-}
-
-# Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
-# optionally condition (filter) on other (not model or scenario) factor levels of associated variables
-distplot.ms_uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
-    dots <- list(...)
-    data <- .filter_plot_data(data, dots)
-    if(show.plot){
-        if(!(type %in% c("stack", "proportion"))) stop("type must be 'stack' or 'proportion'.")
-        yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
-        clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
-        xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
-        if(!is.null(dots$ylab)) ylb <- dots$ylab else if(type=="stack") ylb <- "Combined uncertainty by source" else ylb <- "Proportion of combined uncertainty"
-        prefix <- if(type=="stack") "Combined uncertainty in projected annual " else "Proportional uncertainty in projected annual "
-        suffix <- "\nEstimated uncertainty component by source"
-        title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
-        if(type=="stack"){
-            g <- ggplot(data=data %>% filter(Type!="Total"), aes(x=Year, y=Magnitude, fill=Type)) +
-                geom_bar(stat="identity") + geom_line(data=data %>% filter(Type=="Total"), colour="black")
-        } else if(type=="proportion"){
-            g <- ggplot(data=data, aes(x=Year, y=Magnitude, fill=Type)) + geom_bar(stat="identity", position="fill")
-        }
-        g <- g + scale_fill_manual(name="",values=clrs) + scale_x_continuous(breaks=yrs.brks) +
-            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
-            guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
-        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
-        print(g)
-    }
-    if(return.data) return(data)
-}
-
 
 # Plot total or compound (by component) average marginal uncertainty in a RV over time with respect to underlying simulation uncertainty and other stepwise added variables
 # optionally condition (filter) on factor levels of associated with other variables not marginalized over
