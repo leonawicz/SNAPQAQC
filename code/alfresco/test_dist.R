@@ -1,9 +1,11 @@
 # @knitr setup
 set.seed(47)
-source("C:/github/SNAPQAQC/code/alfresco/functions.R")
-baseDir <- "C:/github/SNAPQAQC/data"
+#source("C:/github/SNAPQAQC/code/alfresco/functions.R")
+#baseDir <- "C:/github/SNAPQAQC/data"
+source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/functions.R")
+baseDir <- "/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final"
 topDir <- "alfresco"
-dataset <- "veg"
+dataset <- "fs"
 reg.grp <- "LCC Regions"
 reg <- "NW Interior Forest N"
 samples <- TRUE
@@ -18,8 +20,10 @@ year.given <- 2050
 if(!exists("agg.veg")) agg.veg <- FALSE # aggregate to forest and tundra
 if(!exists("lb") | !exists("ub")) { lb <- 0.025; ub <- 0.975 } # confidence limits
 
-dir.create(plotDir <- file.path("C:/github/SNAPQAQC/plots/AlfTest", dataset), recur=T, showWarnings=F) # improve pathing specificity
-setwd(wDir <- baseDir)
+#dir.create(plotDir <- file.path("C:/github/SNAPQAQC/plots/AlfTest", dataset), recur=T, showWarnings=F) # improve pathing specificity
+#setwd(wDir <- baseDir)
+dir.create(plotDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/plots/AlfTest", dataset), recur=T, showWarnings=F) # improve pathing specificity
+setwd(wDir <- file.path(baseDir, topDir, dtype, reg.grp, reg))
 lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
 
 system.time( load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegarea.RData", age="vegage.RData")) )# about 15 seconds on Atlas CPU
@@ -41,7 +45,7 @@ gc()
 # conditional on values of the random variable of interest, X (derived from "Val" and "Prob" columns),
 # can also be examined, but this is not done here.
 
-d <- filter(d, !(Vegetation %in% c("Barren lichen-moss", "Wetland Tundra")) & Year >= yrs.lim[1] & Year <= yrs.lim[2]) %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% disttable
+d <- filter(d, !(Vegetation %in% c("Barren lichen-moss", "Wetland Tundra", "All")) & Year >= yrs.lim[1] & Year <= yrs.lim[2]) %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% disttable
 
 if(agg.veg & dataset=="veg") { d <- toForestTundra(d); agg.veg.lab <- "FT" } else agg.veg.lab <- ""
 if(dataset %in% c("veg", "ba")){
@@ -56,7 +60,7 @@ d.R <- marginalize(d, c("Scenario", "Model")) # f(x(R))
 d.RgS <- marginalize(d, "Model") # f(x(R)|S=s)
 d.RgM <- marginalize(d, "Scenario") # f(x(R)|M=m)
 d.msdist <- msdisttable(d, d.RgS, d.RgM, d.R) # smart bind
-}) # about 320 seconds on Atlas CPU
+}) # about 260 seconds on Atlas CPU
 
 # tertiary data tables (summarizing uncertainty bounds for conditional and marginal distributions of the RV)
 # conditional uncertainty
@@ -81,24 +85,22 @@ d.uc.mar.component2 <- bind_rows(
     mutate(d.uc.mar.component2, Stepwise="Stepwise variable addition: Model, then Scenario")
 ) %>% data.table
 class(d.uc.mar.component2) <- c("uc_comp_table", class(d.uc.mar.component2))
-}) # about 360 seconds on Atlas CPU
+}) # about 300 seconds on Atlas CPU
 
-# Skip this for now
-do.stepwise <- FALSE
+# stepwise uncertainty increase with addition of models
+do.stepwise <- TRUE
 if(do.stepwise){
 library(parallel)
 library(purrr)
-id <- expand.grid(1:5, 1:5)
+id <- expand.grid(1:5, 1:5) # limit stepwise comparison to all pairwise combinations of models
 id <- id[id[,1]!=id[,2],]
 mod.seq <- unique(lapply(strsplit(paste(id[,1], id[,2]), " "), function(x,m) m[as.numeric(sort(x))], m=unique(d$Model)))
-system.time( d.step <- mclapply(1:length(mod.seq), function(i, data, models) uc_stepwise(data=data, models=models[[i]]), data=d, models=mod.seq, mc.cores=16) )
+system.time( d.step <- mclapply(1:length(mod.seq), function(i, data, models) uc_stepwise(data=data, models=models[[i]]), data=d, models=mod.seq, mc.cores=10) ) # about 320 seconds on Atlas CPU
 d.step <- rbindlist(d.step)
 class(d.step) <- unique(c("ucsteptable", "uccomptable", class(d.step)))
-#d.step %>% select(-Phase, -Location, -Var) %>% filter(Type=="Model", Vegetation=="Black Spruce", nchar(GCMset)==3) %>%
-d.step %>% select(-Phase, -Location, -Var) %>% filter(Type=="Model" & Vegetation=="Black Spruce") -> d.step.tmp
+d.step %>% select(-Phase, -Location, -Var) %>% filter(Type=="Model" & Vegetation==veg.given) -> d.step.tmp
 d.step.tmp <- d.step.tmp[grep("\n", d.step.tmp$GCMset),]
-d.step.tmp %>% #mutate(GCMset=sapply(lapply(strsplit(GCMset, " "), sort), paste, collapse="")) %>%
-    group_by(GCMset) %>% summarise(Magnitude=mean(Magnitude)) %>% setorder(-Magnitude) %>% mutate(GCMset=factor(GCMset, levels=rev(GCMset))) -> d.step2 #%>% print
+d.step2 <- group_by(d.step.tmp, GCMset) %>% summarise(Magnitude=mean(Magnitude)) %>% setorder(-Magnitude) %>% mutate(GCMset=factor(GCMset, levels=rev(GCMset)))
 class(d.step2) <- unique(c("ucsteptable", "uccomptable", class(d.step2)))
 }
 
