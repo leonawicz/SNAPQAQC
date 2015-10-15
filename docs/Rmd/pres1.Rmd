@@ -1,0 +1,121 @@
+---
+title: "Working with data"
+author: Matthew Leonawicz
+output: ioslides_presentation
+---
+
+## The three A's
+
+- Access
+- Assemble
+- Analyze
+
+Data extraction, data prep, and statistical analysis
+
+## Abstraction
+
+- Data prep should be abstracted from any analysis
+- "Prep" implies targeted usage, but can be generalized with careful planning
+- Extraction is treated separately from subsequent data prep and is most important to abstract from analysis
+
+----
+
+## Extract once, analyze freely
+
+A series of 100 procedures might consist of 50 heavy duty extraction tasks, each followed by some kind of exploration of the extracted data.
+It should consist of one extraction task followed by 99 unique data analyses.
+
+Example:
+
+1. Specific data are extracted from a 500,000 high-resolution, spatially explicit geotiffs.
+
+- Data are tabled and stored efficiently for subsequent access.
+- No need to return repeatedly to raw maps to perform redundant extractions.
+- Data describe distributions of random variables (RVs) rather than specific statistics
+
+2. Stored data are organized for easy analysis
+
+- Final data formats are standardized tables
+- General enough to work across multiple types of RV data sets, allowing easy merging and comparison of multiple data sets
+
+3. Organized data are loaded in a specific project to be analyzed
+
+## A closer look at data prep
+
+Prep:
+Statistical modeling: Probability distributions of random variables
+
+- Data reduction
+- Data organization
+
+----
+
+Data manipulation
+- Standardized data table formats
+- Easy to work with, easy to read
+- Fast operations
+- Simple tables can store complex data structures and models, which are easily indexed, extracted or unnested
+
+----
+
+Working with probability distributions
+Layer of abstraction between user and detailed code is provided by convenient R functions with S3 object orientation, custom classes and method dispatching.
+
+Conditional distributions
+Marginal distributions
+Joint distributions
+Sanity check: pdf cycling
+
+----
+
+Uncertainty in a random variable
+combined uncertainty across multiple factors
+individual uncertainty components by factor
+proportional uncertainty by factor
+hierarchical stepwise addition of conditional uncertainty by factor
+pairwise comparison of uncertainty from a factor due to specific factor levels
+constraints on maximum uncertainty/minimum certainty
+
+----
+
+Analysis driven by specific research questions
+Data exploration and statistical analysis become easier to perform
+Questions become easier to address
+
+----
+
+Inverse probability
+From distribution of X given Y=y to distribution of Y given X=x
+Look at the joint distribution of X and Scenario
+The table structure utilized is in a sense a sequence of conditional distributions of X, given unique combinations of factor levels of other variables in the table.
+If you want a conditional distribution of X given a specific model and scenario, it is described in full by the relevant subset of rows in the table.
+For a marginal distribution of X with respect to scenarios, it is an integration of the distribution of X across all scenarios, which is analogous to averaging the distributions from each relevant subset of rows.
+The table as a whole can be thought of as the joint distribution of multiple random variables: X, scenario, model, and any other variables in the table, though only indirectly.
+
+To simplify, let's look at a more basic joint probability distribution we can construct from this table.
+it is displayed as a 3 x 3 contingency table, a simple representation of a joint probability mass function where the two variables each have three discrete levels.
+The nine cells in the table are non-negative and sum to one. They represent probabilities of each combination of the variables' values.
+The margins also sum to one. This is where the term marginal distribution comes from; the margins of a contingency table which express the probabilities of levels of a random variable regardless of the level of the other variable.
+
+While scenario was already a categorical variable, stand age was continuous. Here it is classified into three age bins for illustration.
+However, research questions also typically lead to classifying continuous random variables at some point in an analysis in order to make a statement about values in some range of interest.
+We may have already used the full table to make statements about the probability that stand age is greater than x, given a specific scenario, or marginalized over all scenarios.
+Here the single cell marking that combination of age range and scenario level gives the joint probability.
+f(x,y) = f(x|y)*f(y)
+The conditional probability of this age range given the specific scenario is the joint probability divided by the marginal probability of the specific scenario.
+Each scenario has a trivial probability of 1/3 since scenario is a fixed effect.
+While we know the probability of a specific scenario is 1/3, uninteresting for a fixed effect, we can see how it can be derived as the joint probability divided by the conditional probability.
+Why is this worth mentioning? Knowing this, and looking at the joint probability distribution of X and scenario in a contingency table, it's intuitive to see that we can work in the opposite direction.
+While sometimes it is of interest to know the probability that X is greater than x given a specific scenario,
+sometimes research questions translate into asking the opposite: what is the probability that we are working with or looking at output from a specific scenario, given our interest in when X is greater than x?
+This upper tail of the distribution of X may be more likely seen in some scenarios than others.
+Conditional on the values of interest for the random variable X, we have a probability mass function for scenario. This can be applied to any combination of variables.
+For example, given stand age of a certain vegetation class in a region is less than 10 years old, or given the area burned in a region exceeds some upper threshold of interest, what is the probability this can be seen under the input conditions of a specific GCM.
+We have five climate models, but for a project we may only want to work with two of them. Which two do we use?
+The ambiguous answer is the same as it always was: "the hot one and the cold one".
+But the time has passed for applying the unsophisticated guesswork that ambiguity demands.
+We have to ask what that means. What defines hot and cold? Are we more concerned about climate inputs, and if so, hot vs. cold or dry vs. wet, or are we more concerned about fire outputs?
+For some projects it may be more relevant to consider area cover by specific vegetation types.
+Boundary conditions should be well defined.
+When they are, it becomes easy to use those conditions to obtain the probabilities associated with levels of a factor in question, e.g., GCM, and the one with the two GCMs with the lowest and highest probabilities given the conditions, respectively, are the bounding GCMs.
+Trying to distill the choice of models in a case like this from staring an assortment of plots lacks rigor but is also unnecessary.
