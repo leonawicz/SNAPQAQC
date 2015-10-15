@@ -1,7 +1,14 @@
 ---
 title: "Working with data"
 author: Matthew Leonawicz
-output: ioslides_presentation
+output:
+  ioslides_presentation:
+    widescreen: true
+    logo: SNAP_acronym_for-dark-bkgrnd_100px.png
+  beamer_presentation:
+    theme: "AnnArbor"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
 ---
 
 ## The three A's
