@@ -18,27 +18,28 @@ Data extraction, data prep, and statistical analysis
 - "Prep" implies targeted usage, but can be generalized with careful planning
 - Extraction is treated separately from subsequent data prep and is most important to abstract from analysis
 
-----
-
 ## Extract once, analyze freely
 
 A series of 100 procedures might consist of 50 heavy duty extraction tasks, each followed by some kind of exploration of the extracted data.
+
 It should consist of one extraction task followed by 99 unique data analyses.
+
+----
 
 Example:
 
-1. Specific data are extracted from a 500,000 high-resolution, spatially explicit geotiffs.
+Extract data from 500,000 spatially explicit geotiffs
 
 - Data are tabled and stored efficiently for subsequent access.
 - No need to return repeatedly to raw maps to perform redundant extractions.
 - Data describe distributions of random variables (RVs) rather than specific statistics
 
-2. Stored data are organized for easy analysis
+Organize data for easy analysis
 
 - Final data formats are standardized tables
 - General enough to work across multiple types of RV data sets, allowing easy merging and comparison of multiple data sets
 
-3. Organized data are loaded in a specific project to be analyzed
+Load data into a specific project to analyze
 
 ## A closer look at data prep
 
