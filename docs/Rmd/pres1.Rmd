@@ -5,6 +5,7 @@ output:
   ioslides_presentation:
     widescreen: true
     logo: SNAP_acronym_for-dark-bkgrnd_100px.png
+    css: pres1_styles.css
   beamer_presentation:
     theme: "AnnArbor"
     colortheme: "dolphin"
@@ -12,7 +13,7 @@ output:
 ---
 
 ```{r knitr_setup, echo=FALSE}
-opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, messages=FALSE, warnings=FALSE, dpi=300, fig.height=7, fig.width=10.5)
+opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, results="asis", messages=FALSE, warnings=FALSE, dpi=72, fig.width=5, fig.height=3)
 read_chunk("../../code/sp_ac_clump.R")
 ```
 
@@ -53,26 +54,32 @@ Organize data for easy analysis
 
 Load data into a specific project to analyze
 
+
 ## Statistical modeling: A closer look at data prep
+<div class="columns-2">
+Probability distributions
 
-Probability distributions of random variables
+Let $X$ be a continuous random variable of interest, e.g., stand age, burn area, precipitation, etc.
 
-Let $latex X $ be a continuous random variable of interest, e.g., stand age, burn area, precipitation, etc.
+Model the probability density function (pdf) of $X$, $f_X(X)$
 
-Model the probability density function (pdf) of X
+```{r}
+x=seq(-3,3,len=200)
+par(mar=c(0,0,0,0))
+plot(x, dnorm(x), type="l", axes=F, xlab="X", ylab="density")
+abline(v=mean(x), col=2)
+text(mean(x), 0.1, "mean", col=2, pos=4)
+```
+</div>
 
 - Achieve substantial data reduction without effective loss of information
 - Any statistic based on the RV can be calculated from its pdf.
 - No need to return to raw maps each time a new summary is requested; compute it with the distribution model
 
-```{r}
-x=seq(-3,3,len=200)
-plot(dnorm(x), type="l")
-```
-
 ----
 
 Data manipulation
+
 - Standardized data table formats
 - Easy to work with, easy to read
 - Fast operations
