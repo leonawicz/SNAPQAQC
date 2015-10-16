@@ -85,10 +85,14 @@ setwd(rmd.path)
 
 # Rmd files
 files.Rmd <- list.files(pattern=".Rmd$", full=T)
+presentations.Rmd <- list.files(pattern="^pres.*.Rmd$", full=T)
+pages.Rmd <- setdiff(files.Rmd, presentations.Rmd)
 
 # @knitr save
 # write all yaml front-matter-specified outputs to Rmd directory for all Rmd files
-for(i in 1:length(files.Rmd)) render(files.Rmd[i], output_format="all")
+for(i in 1:length(pages.Rmd)) render(pages.Rmd[i], output_format="all")
+for(i in 1:length(presentations.Rmd)) render(presentations.Rmd[i], output_file=paste0("ioslides_", gsub("\\.Rmd", "\\.html", basename(presentations.Rmd[i]))), output_format="ioslides_presentation")
+for(i in 1:length(presentations.Rmd)) render(presentations.Rmd[i], output_file=paste0("slidy_", gsub("\\.Rmd", "\\.html", basename(presentations.Rmd[i]))), output_format="slidy_presentation")
 insert_gatc(list.files(pattern=".html$"))
 moveDocs(path.docs=docs.path)
 
