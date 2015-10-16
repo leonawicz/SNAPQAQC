@@ -6,41 +6,23 @@ output:
     widescreen: true
     logo: SNAP_acronym_for-dark-bkgrnd_100px.png
     css: pres1_styles.css
+  slidy_presentation:
+    theme: united
+    highlight: haddock
+    font_adjustment: -1
   beamer_presentation:
     theme: "AnnArbor"
     colortheme: "dolphin"
     fonttheme: "structurebold"
 ---
 
-```{r knitr_setup, echo=FALSE}
-opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, results="asis", messages=FALSE, warnings=FALSE, dpi=72, fig.width=5, fig.height=3)
-read_chunk("../../code/sp_ac_clump.R")
+```{r knitr_setup, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, message=FALSE, warning=FALSE, dpi=72, fig.width=5, fig.height=3)
 set.seed(47)
-source("C:/github/SNAPQAQC/code/alfresco/functions.R")
-baseDir <- "C:/github/SNAPQAQC/data"
-topDir <- "alfresco"
-dataset <- "fs"
-reg.grp <- "LCC Regions"
-reg <- "NW Interior Forest N"
-samples <- TRUE
-dtype <- if(samples) "samples" else "stats"
-yrs.lim <- c(2010,2019)
-veg.given <- "Black Spruce"
-mod.given <- "CCCMAcgcm31"
-scen.given <- "SRES A1B"
-year.given <- 2050
-if(!exists("agg.veg")) agg.veg <- FALSE # aggregate to forest and tundra
+source("../../code/alfresco/functions.R")
 if(!exists("lb") | !exists("ub")) { lb <- 0.025; ub <- 0.975 } # confidence limits
-setwd(wDir <- baseDir)
 lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
-load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegarea.RData", age="vegage.RData"))
-dataname <- switch(dataset, ba="Burn area", fc="Fire frequency", fs="Fire size", veg="Vegetated area", age="Vegetation age")
-dataname2 <- tolower(dataname)
-d <- get(ls(pattern="^d\\."))
-rm(list=ls(pattern="^d\\."))
-gc()
-d <- filter(d, !(Vegetation %in% c("Barren lichen-moss", "Wetland Tundra", "All")) & Year >= yrs.lim[1] & Year <= yrs.lim[2]) %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% disttable
-
+load("../../data/presentation.RData")
 ```
 
 ## The three A's
@@ -116,18 +98,19 @@ Data manipulation
 Example data table
 
 ```{r}
-d
+data.table(data)
 ```
 
 - Standardized across multiple variables
-- easy to combine and compare
+- Easy to combine and compare
 
 ----
 
 Straightforward manipulation, clear code
 
-```{r}
-d %>% filter(Model=="CCCMAcgcm31") %>% group_by(Scenario, Year) %>% summarise(Avg=mean(Val))
+```{r, tidy=F, echo=TRUE}
+data %>% filter(Model=="CCCMAcgcm31") %>% group_by(Scenario, Model, Vegetation) %>%
+    summarise(Decade="2010s", Avg=mean(Val)) %>% data.table
 ```
 
 - Intuitive verbs
