@@ -15,6 +15,32 @@ output:
 ```{r knitr_setup, echo=FALSE}
 opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, results="asis", messages=FALSE, warnings=FALSE, dpi=72, fig.width=5, fig.height=3)
 read_chunk("../../code/sp_ac_clump.R")
+set.seed(47)
+source("C:/github/SNAPQAQC/code/alfresco/functions.R")
+baseDir <- "C:/github/SNAPQAQC/data"
+topDir <- "alfresco"
+dataset <- "fs"
+reg.grp <- "LCC Regions"
+reg <- "NW Interior Forest N"
+samples <- TRUE
+dtype <- if(samples) "samples" else "stats"
+yrs.lim <- c(2010,2019)
+veg.given <- "Black Spruce"
+mod.given <- "CCCMAcgcm31"
+scen.given <- "SRES A1B"
+year.given <- 2050
+if(!exists("agg.veg")) agg.veg <- FALSE # aggregate to forest and tundra
+if(!exists("lb") | !exists("ub")) { lb <- 0.025; ub <- 0.975 } # confidence limits
+setwd(wDir <- baseDir)
+lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
+load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegarea.RData", age="vegage.RData"))
+dataname <- switch(dataset, ba="Burn area", fc="Fire frequency", fs="Fire size", veg="Vegetated area", age="Vegetation age")
+dataname2 <- tolower(dataname)
+d <- get(ls(pattern="^d\\."))
+rm(list=ls(pattern="^d\\."))
+gc()
+d <- filter(d, !(Vegetation %in% c("Barren lichen-moss", "Wetland Tundra", "All")) & Year >= yrs.lim[1] & Year <= yrs.lim[2]) %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% disttable
+
 ```
 
 ## The three A's
@@ -59,7 +85,7 @@ Load data into a specific project to analyze
 <div class="columns-2">
 Probability distributions
 
-Let $X$ be a continuous random variable of interest, e.g., stand age, burn area, precipitation, etc.
+Let $X$ be random variable, e.g., stand age, burn area, precipitation, etc.
 
 Model the probability density function (pdf) of $X$, $f_X(X)$
 
@@ -74,7 +100,7 @@ text(mean(x), 0.1, "mean", col=2, pos=4)
 
 - Achieve substantial data reduction without effective loss of information
 - Any statistic based on the RV can be calculated from its pdf.
-- No need to return to raw maps each time a new summary is requested; compute it with the distribution model
+- No need to return to raw maps each time a new summary statistic is requested; compute it with the distribution model
 
 ----
 
@@ -84,6 +110,39 @@ Data manipulation
 - Easy to work with, easy to read
 - Fast operations
 - Simple tables can store complex data structures and models, which are easily indexed, extracted or unnested
+
+----
+
+Example data table
+
+```{r}
+d
+```
+
+- Standardized across multiple variables
+- easy to combine and compare
+
+----
+
+Straightforward manipulation, clear code
+
+```{r}
+d %>% filter(Model=="CCCMAcgcm31") %>% group_by(Scenario, Year) %>% summarise(Avg=mean(Val))
+```
+
+- Intuitive verbs
+- Read left-to-right
+- Ideal for standard, human-guided interactive data analysis as well as non-interactive processing
+
+----
+
+Fast operations
+
+- Data table manipulations, restructuring, summarizing and statistical computations are fast
+- Comparable to matrix arithmetic with slight overhead
+- Core functionality optimized in C++, accessed via Rcpp
+
+----
 
 ----
 
