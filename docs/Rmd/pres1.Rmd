@@ -10,6 +10,7 @@ output:
     theme: united
     highlight: haddock
     font_adjustment: -1
+    css: pres1_styles.css
   beamer_presentation:
     theme: "AnnArbor"
     colortheme: "dolphin"
@@ -21,7 +22,7 @@ opts_chunk$set(cache=FALSE, eval=TRUE, echo=FALSE, tidy=TRUE, message=FALSE, war
 set.seed(47)
 source("../../code/alfresco/functions.R")
 if(!exists("lb") | !exists("ub")) { lb <- 0.025; ub <- 0.975 } # confidence limits
-lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
+lapply(c("reshape2", "dplyr", "data.table", "ggplot2", "grid", "tidyr"), library, character.only=T)
 load("../../data/presentation.RData")
 ```
 
@@ -69,7 +70,7 @@ Probability distributions
 
 Let $X$ be random variable, e.g., stand age, burn area, precipitation, etc.
 
-Model the probability density function (pdf) of $X$, $f_X(X)$
+Model the probability density function (pdf) of $X$, $f(X)$
 
 ```{r}
 x=seq(-3,3,len=200)
@@ -127,15 +128,128 @@ Fast operations
 
 ----
 
+Organize complex data structures and statistical models in small tables
+
+- Visually compress large data tables to see the big picture at a glance
+
+<div class="columns-2">
+```{r, tidy=F, echo=TRUE}
+table1 <- data %>% filter(Model=="CCCMAcgcm31" & Year==2010) %>%
+    group_by(Scenario, Vegetation) %>%
+    do(Density=data.table(Val=Val, Prob=Prob), # column collapse
+       Stats=data.frame(as.list(summary(Val))), # summary stats
+       Linear_model=lm(Val~I(rnorm(length(Val)))) # complex object
+    ) %>% data.table
+table1
+```
+</div>
+
+- Access arbitrary objects from data table cells
+
+```{r, tidy=F, echo=TRUE}
+table1$Linear_model[[1]] # Index and extract a specific regression model
+```
+
 ----
 
-Working with probability distributions
-Layer of abstraction between user and detailed code is provided by convenient R functions with S3 object orientation, custom classes and method dispatching.
+Unnest the Summary column
 
-Conditional distributions
-Marginal distributions
-Joint distributions
-Sanity check: pdf cycling
+```{r, tidy=F, echo=TRUE}
+table1 %>% select(Scenario, Vegetation, Stats) %>% unnest %>% data.table
+```
+
+Unnest the Density column to recover the original table values
+```{r, tidy=F, echo=TRUE}
+table1 %>% select(-Stats, -Linear_model) %>% unnest %>% data.table
+```
+
+## Working with probability distributions
+
+Joint distributions: $f_{X_1,X_2,...,X_n}(X_1,X_2,...,X_n)$
+
+- Multivariate distributions, indirectly represented by the table as a whole
+- Relatively trivial in this context since most factors are fixed effects
+
+Conditional distributions: $f_{X,Y}(X|Y=y)$
+
+- Tables are a series of conditional distributions of $X$
+- Accessing a conditional distribution simply requires row filtering
+
+Marginal distributions: $f_{X,Y}(X)$
+
+- Accessible by integrating over levels of $Y$
+
+----
+
+Using distribution tables: Layer of abstraction between user and detailed code
+
+<div class="columns-2">
+Ex: Condition, marginalize, sample
+
+```{r, tidy=F, echo=TRUE}
+ws2014 <- data %>% filter(Vegetation=="White Spruce" & Year==2014)
+values <- ws2014 %>% marginalize(margin="Model") %>%
+    sample_densities
+values2 <- ws2014 %>% marginalize(margin=c("Scenario", "Model")) %>%
+    sample_densities
+```
+Colored lines: $f_{X,Model}(X|Scenario)$
+
+Conditional distributions of $X$ given scenario, marginalized over Model
+
+```{r, fig.width=7, fig.height=5}
+ggplot(data=values, aes(x=Val, colour=Scenario)) + geom_line(stat="density", size=1) + geom_line(data=values2, stat="density", colour="black", linetype=2, size=2) + theme(legend.position="bottom", plot.margin=unit(c(1,0,0,0), units="cm"))
+```
+</div>
+
+Black line: $f_{X,Scenario,Model}(X)$
+
+Marginal distribution of $X$ with respect to Scenario and Model
+
+----
+
+Compare distributions of $X$ defined over an increasing set of interacting factors
+
+```{r, tidy=F, echo=TRUE}
+XgivenSM <- ws2014 %>% filter(Scenario=="SRES B1" & Model=="ukmoHADcm3") # condition on specific scenario and model
+XgivenS <- ws2014 %>% filter(Scenario=="SRES B1") %>% marginalize("Model") # condition on a scenario, marginalize over models
+X <- ws2014 %>% marginalize(c("Scenario", "Model")) # marginalize over scenarios and models
+```
+
+<div class="columns-2">
+```{r, fig.width=7, fig.height=5}
+lev <- c("Condition on both", "Condition on model\nmarginalize scenarios", "Marginalize over both")
+XgivenSM$Type <- factor(lev[1], lev)
+XgivenM$Type <- factor(lev[2], lev)
+X$Type <- factor(lev[3], lev)
+X2 <- rbindlist(list(XgivenSM, XgivenM, X), fill=T)
+ggplot(X2 %>% group_by(Type) %>% sample_densities, aes(x=Val, fill=Type, colour=Type)) + geom_density(size=1, alpha=0.5) + theme(legend.position="bottom")
+```
+
+Marginal distributions tend to be wider
+
+Conditioning on fixed levels of variables tends to narrow a distribution
+
+The distributions of $X$ and $Y$ (e.g., Scenario, Model) are not independent or the distribution of $X$ would be the same regardless of the other variables' levels.
+
+</div>
+
+----
+
+Sanity check: Does a distribution "wash out" if manipulated too many times?
+
+<div class="columns-2">
+- Sometimes several iterations of distribution merging may be required
+- Each merge requires a cycle of sampling from the densities to be merged and estimating a new density from the pooled sample
+- If sample is sufficiently large and density sufficiently flexible, no effective information lost
+
+```{r, fig.width=7, fig.height=5}
+set.seed(1)
+ggplot(X %>% bootDenCycle(10) %>% sample_densities, aes(x=Val, colour=factor(Cycle))) + geom_line(stat="density", size=1) + theme(legend.position="bottom")
+```
+</div>
+
+- Use bootDenCycle() test function to perform 10 sequential cycles of bootstrap resampling and density re-estimation
 
 ----
 
