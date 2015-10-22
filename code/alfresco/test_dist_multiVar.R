@@ -156,22 +156,14 @@ png(paste0("ucModelPairs.png"), height=h, width=w, res=res)
 distplot(d.step2 %>% filter(Var=="Burn Area" & Vegetation %in% c("Black Spruce", "Graminoid Tundra", "All")), facet.formula="Location ~ Vegetation", facet.scales="free_y", facet.ncol=3, ylab=expression("Burn area uncertainty"~(~km^2)~""), flip=FALSE)
 dev.off()
 
-# example histograms of probability distributions of a RV
-png(paste0(dataset, "_hist", agg.veg.lab, ".png"), height=h, width=w, res=res)
-distplot(d, facet.formula="Decade ~ Model", facet.scales="free_y", decade.start.years=seq(2010, 2090, by=20), Scenario=scen.given, Vegetation=veg.given, xlab=lb_ts)
-dev.off()
-png(paste0(dataset, "_hist2", agg.veg.lab, ".png"), height=h, width=w, res=res)
-distplot(d, facet.formula="Model ~ Vegetation", decade.start.years=seq(2010, 2090, by=20), Scenario=scen.given, colour="Decade", xlab=lb_ts)
-dev.off()
-
 # example time series of conditional uncertainty and average marginal uncertainty for a RV with respect to GCMs and scenarios
 # combined total
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucTotal.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.compound, type="total", facet.formula="~ Vegetation", facet.ncol=3, xlab="", ylab=lb_ts)
+png(paste0("tsByVeg", agg.veg.lab, "_ucTotal.png"), height=h, width=w, res=res)
+distplot(d.uc.mar.compound %>% filter(Vegetation %in% c("Black Spruce", "Graminoid Tundra", "All")), type="total", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 # compound
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucCompound.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.compound, type="compound", facet.formula="~ Vegetation", facet.ncol=3, xlab="", ylab=lb_tsu)
+png(paste0("tsByVeg", agg.veg.lab, "_ucCompound.png"), height=h, width=w, res=res)
+distplot(d.uc.mar.compound %>% filter(Vegetation %in% c("Black Spruce", "Graminoid Tundra", "All")), type="compound", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 # individual components: total
 png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentStack.png"), height=h, width=w, res=res)
