@@ -31,7 +31,7 @@ sample_densities <- function(data, check.class=TRUE){
 
 # summarize distributions of a RV with specified uncertainty bounds around mean, conditioned on or marginalized over other variables
 # constructs a uc_table class object from specifically disttable class objects or row binds multiple uc_table objects
-uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, bindType.as.factor=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE, check.class=TRUE){
+uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, bindType.as.factor=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE, drop.vars=NULL, check.class=TRUE){
     dots <- list(...)
     if(!length(dots)) stop("No data provided.")
     if(length(dots) > 1){
@@ -55,7 +55,9 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
     id <- names(data)
     stopifnot(all(margin %in% id))
     
-    get_conditioning_vars <- function(x, vars, ignore.constants){
+    get_conditioning_vars <- function(x, vars, ignore.constants, drop.vars){
+        if(!is.null(drop.vars) && length(vars)) vars <- vars[!(vars %in% drop.vars)]
+        if(!length(vars)) vars <- ""
         if(!(ignore.constants && length(vars))) return(vars)
         idx <- c()
         for(i in 1:length(vars)) if(nrow(unique(x[, vars[i], with=F]))==1) idx <- c(idx, i)
@@ -64,17 +66,19 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
         vars
     }
     
-    get_marginalized_vars <- function(x, vars, var.set, use.var.set){
+    get_marginalized_vars <- function(x, vars, var.set, use.var.set, drop.vars){
+        if(!is.null(drop.vars) && length(vars)) vars <- vars[!(vars %in% drop.vars)]
         if(!use.var.set) return(c("Sim", vars))
         stopifnot(length(var.set) > 0)
         idx <- which(!(var.set %in% names(x)))
         if(length(idx)) vars <- c(var.set[idx], vars)
+        if(!is.null(drop.vars)) vars <- vars[!(vars %in% drop.vars)]
         return(c("Sim", vars))
     }
     
-    conditional.vars <- get_conditioning_vars(x=data, vars=id[!(id %in% c("Val", "Prob", margin))], ignore.constants=ignore.constants)
+    conditional.vars <- get_conditioning_vars(x=data, vars=id[!(id %in% c("Val", "Prob", margin))], ignore.constants=ignore.constants, drop.vars=drop.vars)
     stopifnot(all(condition.on.mean %in% conditional.vars))
-    marginalized.vars <- get_marginalized_vars(x=data, vars=margin, var.set=var.set, use.var.set=use.var.set)
+    marginalized.vars <- get_marginalized_vars(x=data, vars=margin, var.set=var.set, use.var.set=use.var.set, drop.vars=drop.vars)
     if(length(margin)) data <- marginalize(data, margin=margin)
     id <- names(data)
     label.mar <- paste0(marginalized.vars, collapse=" + ")
@@ -219,7 +223,7 @@ uc_stepwise_gcm <- function(data, models=NULL){
 }
 
 # make stepwise GCM data table of uncertainty components (simulation, scenario, and model)
-uc_stepwise <- function(data, models=NULL, use.abb=FALSE){
+uc_stepwise <- function(data, models=NULL, use.abb=FALSE, drop.vars=NULL){
     if(is.null(models)) models <- unique(data$Model)
     stopifnot(length(models) > 1)
     for(i in 1:length(models)){
@@ -229,13 +233,13 @@ uc_stepwise <- function(data, models=NULL, use.abb=FALSE){
         if(!use.abb) {abb <- gcmset; abb.collapse <- "\n"}
         data %>% filter(Model %in% gcmset) %>%
         (function(d) {
-            d %>% uc_table(condition.on.mean=c("Scenario", "Model"), ignore.constants=FALSE) -> d.sim
+            d %>% uc_table(condition.on.mean=c("Scenario", "Model"), ignore.constants=FALSE, drop.vars=drop.vars) -> d.sim
             print(1)
-            d %>% uc_table(condition.on.mean="Model", margin="Scenario", ignore.constants=FALSE) -> d.simScen
+            d %>% uc_table(condition.on.mean="Model", margin="Scenario", ignore.constants=FALSE, drop.vars=drop.vars) -> d.simScen
             print(2)
-            d %>% uc_table(condition.on.mean="Scenario", margin="Model", ignore.constants=FALSE) -> d.simMod
+            d %>% uc_table(condition.on.mean="Scenario", margin="Model", ignore.constants=FALSE, drop.vars=drop.vars) -> d.simMod
             print(3)
-            d %>% uc_table(margin=c("Scenario", "Model"), ignore.constants=FALSE) -> d.simScenMod
+            d %>% uc_table(margin=c("Scenario", "Model"), ignore.constants=FALSE, drop.vars=drop.vars) -> d.simScenMod
             print(4)
             uc_components(uc_table(d.sim, d.simScen, d.simMod, d.simScenMod))
         }) %>% mutate(GCMset=paste(abb, collapse=abb.collapse)) -> d.tmp
@@ -248,7 +252,7 @@ uc_stepwise <- function(data, models=NULL, use.abb=FALSE){
 
 # add Decade column based on Year column and optionally filter decades using vector of decade leading years
 byDecade <- function(data, decade.start.years=NULL) {
-    g <- as.character(groups(data))
+    g <- setdiff(as.character(groups(data)), "Year")
     data <- mutate(data, Decade=paste0(10*Year%/%10, "s"))
     if(!is.null(decade.start.years)) data <- filter(data, Decade %in% paste0(decade.start.years, "s"))
     data %>% group_by_(.dots=lapply(c(g, "Decade"), as.symbol)) %>% marginalize("Year")
@@ -432,7 +436,7 @@ distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet
 
 # Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
 # optionally condition (filter) on other (not model or scenario) factor levels of associated variables
-distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
+distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, flip=TRUE, ...){
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     if(show.plot){
@@ -442,11 +446,13 @@ distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y"
         prefix <- "Average uncertainty by model pair "
         title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location")))
         g <- ggplot(data=data, aes(x=GCMset, y=Magnitude))
-        g <- g + geom_bar(stat="identity") + coord_flip()
+        g <- g + geom_bar(stat="identity")
+        if(flip) g <- g + coord_flip()
         g <- g + scale_fill_manual(name="",values=clrs) +
             theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
         if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
+        if(!flip) g <- g + theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1))
         print(g)
     }
     if(return.data) return(data)
