@@ -218,11 +218,11 @@ X <- ws2014 %>% marginalize(c("Scenario", "Model")) # marginalize over scenarios
 
 <div class="columns-2">
 ```{r, fig.width=7, fig.height=5}
-lev <- c("Condition on both", "Condition on model\nmarginalize scenarios", "Marginalize over both")
+lev <- c("Condition on both", "Condition on scenario\nmarginalize models", "Marginalize over both")
 XgivenSM$Type <- factor(lev[1], lev)
-XgivenM$Type <- factor(lev[2], lev)
+XgivenS$Type <- factor(lev[2], lev)
 X$Type <- factor(lev[3], lev)
-X2 <- rbindlist(list(XgivenSM, XgivenM, X), fill=T)
+X2 <- rbindlist(list(XgivenSM, XgivenS, X), fill=T)
 ggplot(X2 %>% group_by(Type) %>% sample_densities, aes(x=Val, fill=Type, colour=Type)) + geom_density(size=1, alpha=0.5) + theme(legend.position="bottom")
 ```
 
@@ -251,56 +251,183 @@ ggplot(X %>% bootDenCycle(10) %>% sample_densities, aes(x=Val, colour=factor(Cyc
 
 - Use bootDenCycle() test function to perform 10 sequential cycles of bootstrap resampling and density re-estimation
 
-----
+## Summarizing uncertainty in a random variable
 
-Uncertainty in a random variable
-combined uncertainty across multiple factors
-individual uncertainty components by factor
-proportional uncertainty by factor
-hierarchical stepwise addition of conditional uncertainty by factor
-pairwise comparison of uncertainty from a factor due to specific factor levels
-constraints on maximum uncertainty/minimum certainty
-
-----
-
-Analysis driven by specific research questions
-Data exploration and statistical analysis become easier to perform
-Questions become easier to address
+- Uncertainty can be summarized with a certainty interval
+- Uncertainty in $X$ compounds across multiple factors, widening the certainty interval
+- Individual uncertainty components by factor
+- Proportional uncertainty by factor
+- Hierarchical stepwise addition of conditional uncertainty by factor
+- Pairwise comparison of uncertainty from a factor due to specific factor levels
+- Constraints on maximum uncertainty/minimum certainty
 
 ----
 
-Inverse probability
-From distribution of X given Y=y to distribution of Y given X=x
-Look at the joint distribution of X and Scenario
-The table structure utilized is in a sense a sequence of conditional distributions of X, given unique combinations of factor levels of other variables in the table.
-If you want a conditional distribution of X given a specific model and scenario, it is described in full by the relevant subset of rows in the table.
-For a marginal distribution of X with respect to scenarios, it is an integration of the distribution of X across all scenarios, which is analogous to averaging the distributions from each relevant subset of rows.
-The table as a whole can be thought of as the joint distribution of multiple random variables: X, scenario, model, and any other variables in the table, though only indirectly.
+Functions to summarise uncertainty include uc_table(), uc_components() and uc_stepwise()
 
+- uc_table provides quick access to certainty bounds
+- Bounds are based on a flexible definition, default- or user-provided
+
+```{r}
+uc_table(data)
+```
+
+## Uncertainty examples
+
+----
+
+<img src="img/presentations/veg_tsByVeg_ucCompound.png" style="width:960px; height:560px;">
+
+----
+
+<img src="img/presentations/veg_tsByVeg_ucComponentStack.png" style="width:960px; height:560px;">
+
+----
+
+<img src="img/presentations/veg_tsByVeg_ucComponentProp.png" style="width:960px; height:560px;">
+
+----
+
+<img src="img/presentations/veg_tsByVeg_ucComponentStack_stepwise.png" style="width:960px; height:560px;">
+
+----
+
+<img src="img/presentations/veg_ucModelPairs.png" style="width:960px; height:560px;">
+
+----
+
+<img src="img/presentations/veg_marCondDensity4.png" style="width:960px; height:560px;">
+
+----
+
+<img src="img/presentations/veg_tsByVeg_ucTotal.png" style="width:960px; height:560px;">
+
+
+## Analysis driven by specific research questions
+
+- Data exploration and statistical analysis become easier to perform
+- Questions become easier to address
+
+----
+
+Inverse probability: from $f(X|Y=y)$ to $f(Y|X=x)$
+
+<div class="columns-2">
+Example: First look at a joint distribution of $X$ and $Y$, $f_{X,Y}(X,Y)$
+
+$X$ is total regional black spruce area in km$^2$. $Y$ is Scenario. Other factors fixed.
+
+```{r, echo=FALSE}
+X <- filter(data, Model=="CCCMAcgcm31" & Year==2010 & Vegetation=="Black Spruce") %>% data.table
+select(X, -Model, -Year)
+```
+
+</div>
+
+- The table can be viewed as an indirect representation of the joint distribution of multiple random variables.
+- Directly, it is a sequence of conditional distributions of $X$ given unique combinations of factor levels of other variables.
+- Marginal distributions of $X$ with respect to a factor, e.g., Scenario or Model, require integrating out the factor.
+
+----
+
+To simplify, classify $X$ into three categories. Now $X$ and $Y$ are both categorical.
+
+<div class="columns-2">
+```{r, echo=FALSE}
+X <- group_by(X, Scenario) %>% sample_densities %>% group_by(Scenario) %>% summarise(Small=length(which(Val < 85000))/(3*length(Val)),
+    Medium=length(which(Val >= 85000 & Val < 97000))/(3*length(Val)),
+    Large=length(which(Val >= 97000))/(3*length(Val))) %>% data.frame
+rownames(X) <- X$Scenario
+X <- as.table(as.matrix(X[,2:4]))[c(3,1,2),]
+X <- rbind(cbind(X, Margin=margin.table(X,1)), Margin=c(margin.table(X,2), 1))
+kable(X, caption="Joint pmf Spruce Cover & Scenario", digits=4)
+```
+
+$$f(X,Y)/f(Y)=f(X|Y=y)$$
+
+$$f(X,Y)/f(X)=f(Y|X=x)$$
+
+<div class="columns-2">
+```{r}
+kable(X[1,-4] / X[1,4], caption="f(X | Y = SRES B1)", digits=4)
+```
+
+```{r}
+kable(X[-4,1] / X[4,1], caption="f(Y | X = Small)", digits=4)
+```
+
+</div>
+</div>
+
+<div class="notes">
 To simplify, let's look at a more basic joint probability distribution we can construct from this table.
-it is displayed as a 3 x 3 contingency table, a simple representation of a joint probability mass function where the two variables each have three discrete levels.
-The nine cells in the table are non-negative and sum to one. They represent probabilities of each combination of the variables' values.
-The margins also sum to one. This is where the term marginal distribution comes from; the margins of a contingency table which express the probabilities of levels of a random variable regardless of the level of the other variable.
 
-While scenario was already a categorical variable, stand age was continuous. Here it is classified into three age bins for illustration.
-However, research questions also typically lead to classifying continuous random variables at some point in an analysis in order to make a statement about values in some range of interest.
+- It is displayed as a 3 x 3 contingency table, a simple representation of a joint probability mass function where the two variables each have three discrete levels.
+- The nine cells in the table are non-negative and sum to one. They represent probabilities of each combination of the variables' values.
+- The margins also sum to one. This is where the term marginal distribution comes from; the margins of a contingency table which express the probabilities of levels of a random variable regardless of the level of the other variable.
+
+While area was classified for simplicity, research questions also typically lead to classifying continuous random variables at some point in an analysis in order to make a statement about values in some range of interest.
+
 We may have already used the full table to make statements about the probability that stand age is greater than x, given a specific scenario, or marginalized over all scenarios.
 Here the single cell marking that combination of age range and scenario level gives the joint probability.
-f(x,y) = f(x|y)*f(y)
+
 The conditional probability of this age range given the specific scenario is the joint probability divided by the marginal probability of the specific scenario.
 Each scenario has a trivial probability of 1/3 since scenario is a fixed effect.
+
 While we know the probability of a specific scenario is 1/3, uninteresting for a fixed effect, we can see how it can be derived as the joint probability divided by the conditional probability.
+
 Why is this worth mentioning? Knowing this, and looking at the joint probability distribution of X and scenario in a contingency table, it's intuitive to see that we can work in the opposite direction.
+
 While sometimes it is of interest to know the probability that X is greater than x given a specific scenario,
 sometimes research questions translate into asking the opposite: what is the probability that we are working with or looking at output from a specific scenario, given our interest in when X is greater than x?
-This upper tail of the distribution of X may be more likely seen in some scenarios than others.
+
+This upper tail of the distribution of X may more likely be seen in some scenarios than others.
+
 Conditional on the values of interest for the random variable X, we have a probability mass function for scenario. This can be applied to any combination of variables.
-For example, given stand age of a certain vegetation class in a region is less than 10 years old, or given the area burned in a region exceeds some upper threshold of interest, what is the probability this can be seen under the input conditions of a specific GCM.
-We have five climate models, but for a project we may only want to work with two of them. Which two do we use?
-The ambiguous answer is the same as it always was: "the hot one and the cold one".
+
+For example, given stand age of a certain vegetation class in a region is less than 10 years old, or given the area burned in a region exceeds some upper threshold of interest, what is the probability this can be seen under the input conditions of a specific GCM?
+</div>
+
+----
+
+<div class="columns-2">
+Example: "Bounding models"
+
+- Be specific: Bounding what?
+- Be objective: Define conditions. Use math.
+- Be rigorous: Formalize methods. Calculate probabilities.
+
+Ad hoc decision-making from purely exploratory graphs by "eyeballing it" lacks mathematical rigor and scientific objectivity.
+
+The graph here is the opposite: a visual representation of an objective decision, based on a formalized methodological framework.
+
+```{r, echo=FALSE, fig.width=7, fig.height=5}
+X <- filter(data, Vegetation=="White Spruce") %>% sample_densities %>% group_by(Model) %>%
+    summarise(Small=length(which(Val < 92000))/(length(Val)),
+        Medium=length(which(Val >= 92000 & Val < 106000))/(length(Val)),
+        Large=length(which(Val >= 106000))/(length(Val)))
+X <- melt(X, id.vars="Model", variable.name="Area", value.name="Probability") %>% data.table %>% group_by(Area) %>%
+    mutate(Probability=Probability/sum(Probability)) %>% filter(Area=="Large") %>% arrange(Probability) %>% mutate(Model=factor(Model, levels=unique(Model)), Area="f(Model | Spruce Cover = Large)")
+X$Color <- 2
+lev <- levels(X$Model)
+X$Color[X$Model==lev[1]] <- 1
+X$Color[X$Model==tail(lev, 1)] <- 3
+X$Color <- factor(X$Color)
+ggplot(X, aes(x=Model, y=Probability, colour=Color)) + geom_bar(stat="identity", size=2) + facet_wrap(~Area) + scale_colour_manual(values=c("dodgerblue", "white", "firebrick")) + guides(colour=FALSE)
+```
+
+My favorite: Explain what makes your models "hot and cold" models. Can you articulate it simply and unambiguously right away, or do you have to really think about it for the first time?
+</div>
+
+<div class="notes">
+
+Five climate models, but for a project we may only want to work with two of them. Which two do we use?
+The ambiguous answer is the same as always: "the hot one and the cold one".
 But the time has passed for applying the unsophisticated guesswork that ambiguity demands.
 We have to ask what that means. What defines hot and cold? Are we more concerned about climate inputs, and if so, hot vs. cold or dry vs. wet, or are we more concerned about fire outputs?
 For some projects it may be more relevant to consider area cover by specific vegetation types.
+
 Boundary conditions should be well defined.
-When they are, it becomes easy to use those conditions to obtain the probabilities associated with levels of a factor in question, e.g., GCM, and the one with the two GCMs with the lowest and highest probabilities given the conditions, respectively, are the bounding GCMs.
-Trying to distill the choice of models in a case like this from staring an assortment of plots lacks rigor but is also unnecessary.
+When they are, it becomes easy to use those conditions to obtain the probabilities associated with levels of a factor in question, e.g., GCM, and the two GCMs with the lowest and highest probabilities given the conditions, respectively, are the bounding GCMs.
+Trying to distill the choice of models in a case like this from staring an assortment of plots lacks rigor but is also unnecessary when more formal tools are available.
+</div>
