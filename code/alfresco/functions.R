@@ -381,9 +381,16 @@ distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scal
     stopifnot(length(idx)==1)
     if(show.plot){
         if(!(type %in% c("total", "compound", "conditional"))) stop("type must be 'total', 'compound', or 'conditional'.")
-        yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
         clrs2 <- c("#00000030", "#00000030")
         names(clrs2) <- c("Uncertainty", paste("Combined uncertainty:", label.total))
+        annual <- if("Year" %in% names(data)) TRUE else FALSE
+        if(annual){
+            xvar <- "Year"
+            yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
+        } else {
+            xvar <- "Decade"
+            clrs2[2] <- "#000000"
+        }
         colour <- if(!is.null(dots$colour)) dots$colour else NULL
         clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
         xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
@@ -392,17 +399,19 @@ distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scal
         if(type=="total") suffix <- "with uncertainty" else if(type=="compound") suffix <- "compound uncertainty" else suffix <- ""
         title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
         if(type=="total"){
-            g <- ggplot(data=data %>% filter(Type==label.total), aes_string(x="Year", y="Mean", colour=colour), environment=environment()) +
-                geom_ribbon(aes(ymin=LB, ymax=UB, fill=paste("Combined uncertainty:", label.total))) +
-                geom_line(size=1) + geom_point(size=2)
+            g <- ggplot(data=data %>% filter(Type==label.total), aes_string(x=xvar, y="Mean", colour=colour), environment=environment())
+            if(annual) g <- g + geom_ribbon(aes(ymin=LB, ymax=UB, fill=paste("Combined uncertainty:", label.total))) + geom_line(size=1) + geom_point(size=2)
+            if(!annual) g <- g + geom_errorbar(aes(ymin=LB, ymax=UB, colour=paste("Combined uncertainty:", label.total))) + geom_point(size=2)
         } else if(type=="compound"){
-            g <- ggplot(data=data, aes(x=Year, y=Magnitude, colour=Type)) + geom_line(size=1) + expand_limits(y=0)
+            data <- mutate(data, Decade=as.integer(substr(Decade, 1, 4)))
+            g <- ggplot(data=data, aes_string(x=xvar, y="Magnitude", colour="Type")) + geom_line(size=1) + expand_limits(y=0)
         } else if(type=="conditional"){
-            g <- ggplot(data=data, aes_string(x="Year", y="Magnitude", colour="Type")) + geom_point() + expand_limits(y=0)
+            g <- ggplot(data=data, aes_string(x=xvar, y="Magnitude", colour="Type")) + geom_point() + expand_limits(y=0)
         }
-        g <- g + scale_colour_manual(name="", values=clrs) + scale_fill_manual(name="",values=clrs2) + scale_x_continuous(breaks=yrs.brks) +
-            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
+        g <- if(annual | type!="total") g + scale_colour_manual(name="", values=clrs) + scale_fill_manual(name="",values=clrs2) else g + scale_colour_manual(name="", values=clrs2)
+        g <- g + theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
+        if(annual) g <- g + scale_x_continuous(breaks=yrs.brks)
         if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
         print(g)
     }
