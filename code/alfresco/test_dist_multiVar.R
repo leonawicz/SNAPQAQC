@@ -102,8 +102,8 @@ d.uc.mar.compound2 <- uc_table(d.mean.uc, d.RgSM.mean.uc, d.RgLM.mean.uc, d.RgM.
 d.uc.mar.component <- uc_components(d.uc.mar.compound)
 d.uc.mar.component2 <- uc_components(d.uc.mar.compound2)
 d.uc.mar.component2 <- bind_rows(
-    mutate(d.uc.mar.component, Stepwise="Stepwise variable addition: Location, Scenario, Model"),
-    mutate(d.uc.mar.component2, Stepwise="Stepwise variable addition: Scenario, Location, Model")
+    mutate(d.uc.mar.component, Stepwise="Stepwise vars: {Scen, Loc, Mod}"),
+    mutate(d.uc.mar.component2, Stepwise="Stepwise vars: {Loc, Scen, Mod}")
 ) %>% data.table
 class(d.uc.mar.component2) <- c("uc_comp_table", class(d.uc.mar.component2))
 }) # about 300 seconds on Atlas CPU
@@ -125,6 +125,14 @@ d.step2 <- group_by(d.step.tmp, Location, Var, Vegetation, Decade, GCMset) %>% s
 class(d.step2) <- unique(c("ucsteptable", "uccomptable", class(d.step2)))
 }
 
+# inverse probability mass functions
+veg.sub <- c("Black Spruce", "Graminoid Tundra", "All")
+d.pmf1 <- filter(d, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Scenario")
+d.pmf2 <- filter(d.RgLM, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Model")
+d.pmf3 <- filter(d.R, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Decade")
+d.pmf4 <- filter(d.RgLS %>% marginalize(margin=c("Scenario", "Decade")), Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Location")
+
+
 tables()
 
 # @knitr plots
@@ -134,82 +142,59 @@ w <- 4800
 h <- 2800
 res <- 300
 
-#if(dataset %in% c("veg", "ba", "fs")){
-#    lb_ts <- bquote(.(dataname)~(.(unit.scale)~km^2)~"")
-#    lb_tsu <- bquote(.(dataname)~"uncertainty"~(.(unit.scale)~km^2)~"")
-#    lb_comp_stack <- bquote(.(dataname)~"uncertainty"~(.(unit.scale)~km^2)~"")
-#    lb_comp_prop <- paste(dataname, "proportional uncertainty")
-#} else if(dataset=="age") {
-#    lb_ts <- bquote(.(dataname)~(years)~"")
-#    lb_tsu <- bquote(.(dataname)~"uncertainty"~(years)~"")
-#    lb_comp_stack <- bquote(.(dataname)~"uncertainty"~(years)~"")
-#    lb_comp_prop <- paste(dataname, "proportional uncertainty")
-#} else if(dataset=="fc") {
-#    lb_ts <- dataname
-#    lb_tsu <- paste(dataname, "uncertainty")
-#    lb_comp_stack <- paste(dataname, "uncertainty")
-#    lb_comp_prop <- paste(dataname, "proportional uncertainty")
-#}
-
 # example of RV uncertainty by model pairs
 png(paste0("ucModelPairs.png"), height=h, width=w, res=res)
-distplot(d.step2 %>% filter(Var=="Burn Area" & Vegetation %in% c("Black Spruce", "Graminoid Tundra", "All")), facet.formula="Location ~ Vegetation", facet.scales="free_y", facet.ncol=3, ylab=expression("Burn area uncertainty"~(~km^2)~""), flip=FALSE)
+distplot(d.step2 %>% filter(Var=="Burn Area" & Vegetation %in% veg.sub), facet.formula="Location ~ Vegetation", facet.scales="free_y", facet.ncol=3, ylab=expression("Burn area uncertainty"~(~km^2)~""), flip=FALSE)
 dev.off()
 
 # example time series of conditional uncertainty and average marginal uncertainty for a RV with respect to GCMs and scenarios
 # combined total
 png(paste0("tsByVeg", agg.veg.lab, "_ucTotal.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.compound %>% filter(Vegetation %in% c("Black Spruce", "Graminoid Tundra", "All")), type="total", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
+distplot(d.uc.mar.compound %>% filter(Vegetation %in% veg.sub), type="total", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 # compound
 png(paste0("tsByVeg", agg.veg.lab, "_ucCompound.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.compound %>% filter(Vegetation %in% c("Black Spruce", "Graminoid Tundra", "All")), type="compound", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
+distplot(d.uc.mar.compound %>% filter(Vegetation %in% veg.sub), type="compound", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 # individual components: total
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentStack.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.component, type="stack", facet.formula="~ Vegetation", facet.ncol=3, xlab="", ylab=lb_comp_stack)
+png(paste0("tsByVeg", agg.veg.lab, "_ucComponentStack.png"), height=h, width=w, res=res)
+distplot(d.uc.mar.component %>% filter(Vegetation %in% veg.sub), type="stack", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 # individual components: proportions
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentProp.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.component, type="proportion", facet.formula="~ Vegetation", facet.ncol=3, xlab="", ylab=lb_comp_prop)
+png(paste0("tsByVeg", agg.veg.lab, "_ucComponentProp.png"), height=h, width=w, res=res)
+distplot(d.uc.mar.component %>% filter(Vegetation %in% veg.sub), type="proportion", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab="Proportional uncertainty")
 dev.off()
 # stepwise variable addition comparison, individual components: total
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentStack_stepwise.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.component2 %>% filter(Vegetation=="Black Spruce"), type="stack", facet.formula="~ Stepwise", facet.ncol=2, xlab="", ylab=lb_comp_stack)
+png(paste0("tsByVeg", agg.veg.lab, "_ucComponentStack_stepwise.png"), height=h, width=w, res=res)
+distplot(d.uc.mar.component2 %>% filter(Var=="Burn Area" & Vegetation %in% veg.sub), type="stack", facet.formula="Stepwise ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 # stepwise variable addition comparison, individual components: proportions
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucComponentProp_stepwise.png"), height=h, width=w, res=res)
-distplot(d.uc.mar.component2 %>% filter(Vegetation=="Black Spruce"), type="proportion", facet.formula="~ Stepwise", facet.ncol=2, xlab="", ylab=lb_comp_prop)
+png(paste0("tsByVeg", agg.veg.lab, "_ucComponentProp_stepwise.png"), height=h, width=w, res=res)
+distplot(d.uc.mar.component2 %>% filter(Var=="Burn Area" & Vegetation %in% veg.sub), type="proportion", facet.formula="Stepwise ~ Vegetation", facet.ncol=3, xlab="", ylab="Proportional uncertainty")
 dev.off()
 # conditional uncertainty
-png(paste0(dataset, "_tsByVeg", agg.veg.lab, "_ucConditional.png"), height=h, width=w, res=res)
-distplot(d.uc.cond, type="conditional", facet.formula="~ Vegetation", facet.ncol=3, xlab="", ylab=lb_tsu)
+png(paste0("tsByVeg", agg.veg.lab, "_ucConditional.png"), height=h, width=w, res=res)
+distplot(d.uc.cond %>% filter(Vegetation %in% veg.sub), type="conditional", facet.formula="Var ~ Vegetation", facet.ncol=3, xlab="", ylab=expression("Uncertainty"~(~km^2)~""))
 dev.off()
 
 # example cycling of density estimation and sampling of a RV
-png(paste0(dataset, "_bootstrapDensityCycling_10k.png"), height=h, width=w, res=res)
-distplot(d, dist.cycle=TRUE, Scenario=scen.given, Year=year.given, Vegetation=veg.given, Model=mod.given, xlab=lb_ts)
-dev.off()
-png(paste0(dataset, "_bootstrapDensityCycling2_10k.png"), height=h, width=w, res=res)
-distplot(d, dist.cycle=TRUE, Scenario=scen.given, Year=year.given, facet.formula="Model ~ Vegetation", xlab=lb_ts)
-dev.off()
-png(paste0(dataset, "_bootstrapDensityCycling3_10k.png"), height=h, width=w, res=res)
-distplot(d, dist.cycle=TRUE, Scenario=scen.given, Vegetation=veg.given, facet.formula="Model ~ Decade", decade.start.years=seq(2010, 2090, by=20), xlab=lb_ts)
-dev.off()
-png(paste0(dataset, "_bootstrapDensityCycling4_10k.png"), height=h, width=w, res=res)
-distplot(d, dist.cycle=TRUE, Scenario=scen.given, group.vars=c("Model", "Location", "Var", "Vegetation"), facet.formula="Model ~ Vegetation", xlab=lb_ts)
+png("bootstrapDensityCycling_10k.png", height=h, width=w, res=res)
+distplot(d %>% filter(Vegetation %in% veg.sub), dist.cycle=TRUE, Scenario=scen.given, Model=mod.given, Decade=dec.given, facet.formula="Var ~ Vegetation", Log=TRUE, xlab=expression("Log uncertainty"~(log(km^2))~""))
 dev.off()
 
-# example comparisons of marginal and conditional distributions of a RV with respect to GCMs and scenarios
-png(paste0(dataset, "_marCondDensity.png"), height=h, width=w, res=res)
-distplot(d.msdist, facet.formula="~ DistType", Year=year.given, Vegetation=veg.given, xlab=lb_ts)
+# examples of inverse pmf
+png("pmf1.png", height=h, width=w, res=res)
+distplot(d.pmf1, facet.formula="Location ~ Vegetation", colour="Model", xlab="")
 dev.off()
-png(paste0(dataset, "_marCondDensity2.png"), height=h, width=w, res=res)
-distplot(d.msdist, facet.formula="DistType ~ Vegetation", Year=year.given, xlab=lb_ts, strip.text.size=8)
+
+png("pmf2.png", height=h, width=w, res=res)
+distplot(d.pmf2, facet.formula="~Vegetation", colour="Location", xlab="")
 dev.off()
-png(paste0(dataset, "_marCondDensity3.png"), height=h, width=w, res=res)
-distplot(d.msdist, facet.formula="DistType ~ Decade", Vegetation=veg.given, decade.start.years=seq(2010, 2090, by=20), xlab=lb_ts, , strip.text.size=8)
+
+png("pmf3.png", height=h, width=w, res=res)
+distplot(d.pmf3, colour="Vegetation", xlab="")
 dev.off()
-png(paste0(dataset, "_marCondDensity4.png"), height=h, width=w, res=res)
-distplot(d.msdist, facet.formula="~ DistType", Vegetation=veg.given, xlab=lb_ts)
+
+png("pmf4.png", height=h, width=w, res=res)
+distplot(d.pmf4, colour="Vegetation", xlab="")
 dev.off()
