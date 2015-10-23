@@ -167,6 +167,55 @@ marginalize <- function(data, margin, keep.prob.col=TRUE, check.class=TRUE){
     data
 }
 
+# Obtain the inverse probability mass function of a specified factor given a conditional value range of the continuous RV defined by the Val and Prob columns
+# Constructs a pmftable class object from specifically a disttable object
+# A pmftable has only a Prob column
+inverse_pmf <- function(data, val.range, var.new, check.class=TRUE){
+    require(tidyr)
+    stopifnot(length(val.range)==2 && val.range[1] < val.range[2])
+    stopifnot(var.new %in% c("Phase", "Scenario", "Model", "Location", "Vegetation", "Decade"))
+    if(check.class && class(data)[1]!="disttable") data <- disttable(data)
+    id <- names(data)
+    stopifnot(var.new %in% id)
+    dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
+    n.levels <- length(unique(data[[var.new]]))
+    data <- group_by_(data, .dots=dots) %>% sample_densities %>% group_by_(.dots=dots[!(dots %in% var.new)])
+    if(var.new=="Phase"){
+        data <- data %>% do(Phase=unique(Phase),
+           numer=group_by_(., .dots=dots) %>% summarise(numer=length(which(Val >= val.range[1] & Val <= val.range[2]))/(n.levels*length(Val))) %>% group_by %>% select(numer),
+           denom=group_by_(., .dots=dots[!(dots %in% var.new)]) %>% summarise(denom=rep(length(which(Val >= val.range[1] & Val <= val.range[2]))/length(Val), n.levels)) %>% group_by %>% select(denom))
+    }
+    if(var.new=="Scenario"){
+        data <- data %>% do(Scenario=unique(Scenario),
+           numer=group_by_(., .dots=dots) %>% summarise(numer=length(which(Val >= val.range[1] & Val <= val.range[2]))/(n.levels*length(Val))) %>% group_by %>% select(numer),
+           denom=group_by_(., .dots=dots[!(dots %in% var.new)]) %>% summarise(denom=rep(length(which(Val >= val.range[1] & Val <= val.range[2]))/length(Val), n.levels)) %>% group_by %>% select(denom))
+    }
+    if(var.new=="Model"){
+        data <- data %>% do(Model=unique(Model),
+           numer=group_by_(., .dots=dots) %>% summarise(numer=length(which(Val >= val.range[1] & Val <= val.range[2]))/(n.levels*length(Val))) %>% group_by %>% select(numer),
+           denom=group_by_(., .dots=dots[!(dots %in% var.new)]) %>% summarise(denom=rep(length(which(Val >= val.range[1] & Val <= val.range[2]))/length(Val), n.levels)) %>% group_by %>% select(denom))
+    }
+    if(var.new=="Location"){
+        data <- data %>% do(Location=unique(Location),
+           numer=group_by_(., .dots=dots) %>% summarise(numer=length(which(Val >= val.range[1] & Val <= val.range[2]))/(n.levels*length(Val))) %>% group_by %>% select(numer),
+           denom=group_by_(., .dots=dots[!(dots %in% var.new)]) %>% summarise(denom=rep(length(which(Val >= val.range[1] & Val <= val.range[2]))/length(Val), n.levels)) %>% group_by %>% select(denom))
+    }
+    if(var.new=="Vegetation"){
+        data <- data %>% do(Vegetation=unique(Vegetation),
+           numer=group_by_(., .dots=dots) %>% summarise(numer=length(which(Val >= val.range[1] & Val <= val.range[2]))/(n.levels*length(Val))) %>% group_by %>% select(numer),
+           denom=group_by_(., .dots=dots[!(dots %in% var.new)]) %>% summarise(denom=rep(length(which(Val >= val.range[1] & Val <= val.range[2]))/length(Val), n.levels)) %>% group_by %>% select(denom))
+    }
+    if(var.new=="Decade"){
+        data <- data %>% do(Decade=unique(Decade),
+           numer=group_by_(., .dots=dots) %>% summarise(numer=length(which(Val >= val.range[1] & Val <= val.range[2]))/(n.levels*length(Val))) %>% group_by %>% select(numer),
+           denom=group_by_(., .dots=dots[!(dots %in% var.new)]) %>% summarise(denom=rep(length(which(Val >= val.range[1] & Val <= val.range[2]))/length(Val), n.levels)) %>% group_by %>% select(denom))
+    }
+    data <- unnest(data) %>% group_by_(.dots=dots) %>% summarise(Prob=numer/denom) %>% data.table %>% group_by_(.dots=dots)
+    class(data) <- unique(c("pmftable", class(data)))
+    attr(data, "var") <- var.new
+    data
+}
+
 # make data table of uncertainty components contributed to a total uncertainty by various factors
 # constructs a uc_com_table class object from specifically uc_table class objects
 # stepwise individual uncertainty components, given uncertainty from variables already marginalized over
@@ -301,14 +350,14 @@ distplot <- function(x, ...) UseMethod("distplot")
 }
 
 # helper function for making a default plot title when title is not specified as a ... argument
-.plottitle_label <- function(d, id.vars=c("Scenario", "Model", "Year", "Vegetation", "Var", "Location"), suffix=""){
+.plottitle_label <- function(d, id.vars=c("Scenario", "Model", "Year", "Decade", "Vegetation", "Var", "Location"), suffix=""){
     f <- function(x, d) if(!(x %in% names(d)) || nrow(unique(d[,x, with=F])) > 1) return("") else return(as.character(unlist(unique(d[,x, with=F]))))
     paste(gsub(" +", " ", paste(sapply(id.vars, f, d=d), collapse=" ")), suffix)
 }
 
 # Plot distributions of a RV after optionally conditioning (filtering) and/or marginalizing over (merging) factor levels of associated variables
 # Plot repeated cycle of bootstrap resampling followed by density re-estimation of a RV with dist.cycle=TRUE and n > 1
-distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", show.plot=TRUE, return.data=TRUE, ...){
+distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, Log=FALSE, ...){
     stopifnot(is.null(group.vars) || all(group.vars %in% names(data)))
     merge.factors <- if(length(group.vars) < length(groups(data))) TRUE else FALSE
     dots <- list(...)
@@ -317,6 +366,7 @@ distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.chara
     if(merge.factors) data <- merge_densities(data)
     if(dist.cycle) data <- bootDenCycle(data, n)
     data <-sample_densities(data)
+    if(Log) data <- mutate(data, Val=log(Val + 1))
     if(show.plot){
         colour <- if(!is.null(dots$colour)) dots$colour else NULL
         clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
@@ -335,14 +385,14 @@ distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.chara
         g <- g + guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title) + theme_bw(base_size=16) +
             theme(legend.position="bottom", legend.box="horizontal", axis.text.y=element_blank(), axis.ticks.y=element_blank())
         if(!is.null(colour) && nrow(unique(data[, colour, with=F])) <= length(clrs)) g <- g + scale_colour_manual(name="", values=clrs)
-        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales)
+        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
         print(g)
     }
     if(return.data) return(data)
 }
 
 # Plot comparison of marginal and conditional distributions of a RV with respect to GCMs and scenarios
-distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", show.plot=TRUE, return.data=TRUE, ...){
+distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", ncol=facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
     dots <- list(...)
     group_by_(data, .dots=lapply(group.vars, as.symbol)) %>% .filter_plot_data(dots) %>%
         .aggToDecades(decades=dots$decade.start.years) %>% sample_densities -> data
@@ -364,7 +414,7 @@ distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), fa
             theme(legend.position="bottom", legend.box="horizontal", axis.text.y=element_blank(), axis.ticks.y=element_blank(),
                 strip.text=element_text(size=strip.text.size)) +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
-        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales)
+        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
         print(g)
     }
     if(return.data) return(data)
@@ -372,7 +422,7 @@ distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), fa
 
 # Plot total or compound (by component) average marginal uncertainty in a RV over time with respect to underlying simulation uncertainty and other stepwise added variables
 # optionally condition (filter) on factor levels of associated with other variables not marginalized over
-distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
+distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scales="free_y", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     x <- as.character(unique(data$Type))
@@ -406,7 +456,13 @@ distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scal
             data <- mutate(data, Decade=as.integer(substr(Decade, 1, 4)))
             g <- ggplot(data=data, aes_string(x=xvar, y="Magnitude", colour="Type")) + geom_line(size=1) + expand_limits(y=0)
         } else if(type=="conditional"){
-            g <- ggplot(data=data, aes_string(x=xvar, y="Magnitude", colour="Type")) + geom_point() + expand_limits(y=0)
+            if(!annual){
+                facet.vars <- if(is.null(facet.formula)) NULL else gsub(" ", "", strsplit(facet.formula, "~")[[1]])
+                group.vars <- lapply(c("Decade", "Type", facet.vars), as.symbol)
+                data <- group_by_(data, .dots=group.vars) %>% mutate(Ymin=min(Magnitude), Ymax=max(Magnitude))
+            }
+            g <- ggplot(data=data, aes_string(x=xvar, y="Magnitude", colour="Type")) + expand_limits(y=0)
+            g <- if(annual) g + geom_point()  else g + geom_linerange(aes(ymin=Ymin, ymax=Ymax), position=position_dodge(width=0.7)) + geom_point(aes(ymin=Ymin, ymax=Ymax), position=position_dodge(width=0.7))
         }
         g <- if(annual | type!="total") g + scale_colour_manual(name="", values=clrs) + scale_fill_manual(name="",values=clrs2) else g + scale_colour_manual(name="", values=clrs2)
         g <- g + theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
@@ -420,22 +476,26 @@ distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scal
 
 # Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
 # optionally condition (filter) on other (not model or scenario) factor levels of associated variables
-distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, ...){
+distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet.scales="free_y", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     if(show.plot){
         if(!(type %in% c("stack", "proportion"))) stop("type must be 'stack' or 'proportion'.")
-        yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
         clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
+        annual <- if("Year" %in% names(data)) TRUE else FALSE
+        if(annual){
+            xvar <- "Year"
+            yrs.brks <- seq(min(data$Year) - min(data$Year) %% 10, max(data$Year) + (10 - max(data$Year) %% 10), by=10)
+        } else xvar <- "Decade"
         xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
         if(!is.null(dots$ylab)) ylb <- dots$ylab else if(type=="stack") ylb <- "Combined uncertainty by source" else ylb <- "Proportion of combined uncertainty"
         prefix <- if(type=="stack") "Combined uncertainty in projected annual " else "Proportional uncertainty in projected annual "
         suffix <- "\nEstimated uncertainty component by source"
         title <- if(!is.null(dots$title)) dots$title else paste0(prefix, .plottitle_label(data, id.vars=c("Year", "Vegetation", "Var", "Location"), suffix=suffix))
-        g <- ggplot(data=data, aes(x=Year, y=Magnitude, fill=Type))
+        g <- ggplot(data=data, aes_string(x=xvar, y="Magnitude", fill="Type"))
         g <- if(type=="stack") g + geom_bar(stat="identity") else if(type=="proportion") g + geom_bar(stat="identity", position="fill")
-        g <- g + scale_fill_manual(name="",values=clrs) + scale_x_continuous(breaks=yrs.brks) +
-            theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
+        if(annual) g <- g + scale_x_continuous(breaks=yrs.brks)
+        g <- g + scale_fill_manual(name="",values=clrs) + theme_bw(base_size=16) + theme(legend.position="bottom", legend.box="horizontal") +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title)
         if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
         print(g)
@@ -445,7 +505,7 @@ distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet
 
 # Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
 # optionally condition (filter) on other (not model or scenario) factor levels of associated variables
-distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y", facet.ncol=1, show.plot=TRUE, return.data=TRUE, flip=TRUE, ...){
+distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, flip=TRUE, ...){
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     if(show.plot){
@@ -467,3 +527,25 @@ distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y"
     if(return.data) return(data)
 }
 
+# Plot pmf of a factor after optionally conditioning (filtering) factor levels of other variables
+distplot.pmftable <- function(data, facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+    dots <- list(...)
+    data <- .filter_plot_data(data, dots)
+    if(show.plot){
+        colour <- if(!is.null(dots$colour)) dots$colour else NULL
+        fill <- if(!is.null(dots$fill)) dots$fill else NULL
+        clrs <- if(!is.null(dots$color.vec)) dots$color.vec else c("#E69F00", "#0072B2", "#CC79A7", "#D55E00", "#009E73")
+        xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
+        ylb <- if(!is.null(dots$ylab)) dots$ylab else "Density"
+        suffix <- "pmf"
+        title <- if(!is.null(dots$title)) dots$title else .plottitle_label(data, suffix=suffix)
+        g <- ggplot(data=data, aes_string(x=attributes(data)$var, y="Prob", colour=colour, fill=fill)) + geom_bar(stat="identity") +
+            guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title) + theme_bw(base_size=16) +
+            theme(legend.position="bottom", legend.box="horizontal", axis.text.y=element_blank(), axis.ticks.y=element_blank())
+        if(!is.null(colour) && nrow(unique(data[, colour, with=F])) <= length(clrs)) g <- g + scale_colour_manual(name="", values=clrs)
+        if(!is.null(fill) && nrow(unique(data[, fill, with=F])) <= length(clrs)) g <- g + scale_fill_manual(name="", values=clrs)
+        if(!is.null(facet.formula)) g <- g + facet_wrap(as.formula(facet.formula), scales=facet.scales, ncol=facet.ncol)
+        print(g)
+    }
+    if(return.data) return(data)
+}
