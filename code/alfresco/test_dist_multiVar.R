@@ -127,10 +127,10 @@ class(d.step2) <- unique(c("ucsteptable", "uccomptable", class(d.step2)))
 
 # inverse probability mass functions
 veg.sub <- c("Black Spruce", "Graminoid Tundra", "All")
-d.pmf1 <- filter(d, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Scenario")
-d.pmf2 <- filter(d.RgLM, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Model")
-d.pmf3 <- filter(d.R, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Decade")
-d.pmf4 <- filter(d.RgLS %>% marginalize(margin=c("Scenario", "Decade")), Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(0,1000), var.new="Location")
+d.pmf1 <- filter(d, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(1000,1e6), var.new="Scenario")
+d.pmf2 <- filter(d.RgLM, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(1000,1e6), var.new="Model")
+d.pmf3 <- filter(d.R, Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(1000,1e6), var.new="Decade")
+d.pmf4 <- filter(d.RgLS %>% marginalize(margin=c("Scenario", "Decade")), Var=="Burn Area" & Vegetation %in% veg.sub) %>% inverse_pmf(val.range=c(1000,1e6), var.new="Location")
 
 
 tables()
@@ -184,17 +184,17 @@ dev.off()
 
 # examples of inverse pmf
 png("pmf1.png", height=h, width=w, res=res)
-distplot(d.pmf1, facet.formula="Location ~ Vegetation", colour="Model", xlab="")
+distplot(d.pmf1, facet.formula="Location ~ Vegetation", fill="Model", xlab="")
 dev.off()
 
 png("pmf2.png", height=h, width=w, res=res)
-distplot(d.pmf2, facet.formula="~Vegetation", colour="Location", xlab="")
+distplot(d.pmf2, facet.formula="~Vegetation", fill="Location", xlab="")
 dev.off()
 
 png("pmf3.png", height=h, width=w, res=res)
-distplot(d.pmf3, colour="Vegetation", xlab="")
+distplot(d.pmf3, fill="Vegetation", xlab="")
 dev.off()
 
 png("pmf4.png", height=h, width=w, res=res)
-distplot(d.pmf4, colour="Vegetation", xlab="")
+distplot(d.pmf4, fill="Vegetation", xlab="")
 dev.off()

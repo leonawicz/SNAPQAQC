@@ -539,7 +539,7 @@ distplot.pmftable <- function(data, facet.formula=NULL, facet.scales="free", fac
         ylb <- if(!is.null(dots$ylab)) dots$ylab else "Density"
         suffix <- "pmf"
         title <- if(!is.null(dots$title)) dots$title else .plottitle_label(data, suffix=suffix)
-        g <- ggplot(data=data, aes_string(x=attributes(data)$var, y="Prob", colour=colour, fill=fill)) + geom_bar(stat="identity") +
+        g <- ggplot(data=data, aes_string(x=attributes(data)$var, y="Prob", colour=colour, fill=fill)) + geom_bar(stat="identity", position="dodge") +
             guides(colour=guide_legend(override.aes=list(alpha=1))) + labs(x=xlb, y=ylb, title=title) + theme_bw(base_size=16) +
             theme(legend.position="bottom", legend.box="horizontal", axis.text.y=element_blank(), axis.ticks.y=element_blank())
         if(!is.null(colour) && nrow(unique(data[, colour, with=F])) <= length(clrs)) g <- g + scale_colour_manual(name="", values=clrs)
