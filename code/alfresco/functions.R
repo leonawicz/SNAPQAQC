@@ -358,6 +358,7 @@ distplot <- function(x, ...) UseMethod("distplot")
 # Plot distributions of a RV after optionally conditioning (filtering) and/or marginalizing over (merging) factor levels of associated variables
 # Plot repeated cycle of bootstrap resampling followed by density re-estimation of a RV with dist.cycle=TRUE and n > 1
 distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, Log=FALSE, ...){
+    data <- copy(data)
     stopifnot(is.null(group.vars) || all(group.vars %in% names(data)))
     merge.factors <- if(length(group.vars) < length(groups(data))) TRUE else FALSE
     dots <- list(...)
@@ -393,6 +394,7 @@ distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.chara
 
 # Plot comparison of marginal and conditional distributions of a RV with respect to GCMs and scenarios
 distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", ncol=facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+    data <- copy(data)
     dots <- list(...)
     group_by_(data, .dots=lapply(group.vars, as.symbol)) %>% .filter_plot_data(dots) %>%
         .aggToDecades(decades=dots$decade.start.years) %>% sample_densities -> data
@@ -423,6 +425,7 @@ distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), fa
 # Plot total or compound (by component) average marginal uncertainty in a RV over time with respect to underlying simulation uncertainty and other stepwise added variables
 # optionally condition (filter) on factor levels of associated with other variables not marginalized over
 distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scales="free_y", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+    data <- copy(data)
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     x <- as.character(unique(data$Type))
@@ -477,6 +480,7 @@ distplot.uc_table <- function(data, type="total", facet.formula=NULL, facet.scal
 # Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
 # optionally condition (filter) on other (not model or scenario) factor levels of associated variables
 distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet.scales="free_y", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+    data <- copy(data)
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     if(show.plot){
@@ -506,6 +510,7 @@ distplot.uc_comp_table <- function(data, type="stack", facet.formula=NULL, facet
 # Plot stacks or proprtions of average simulation, scenario, and model component marginal uncertainty in a RV over time
 # optionally condition (filter) on other (not model or scenario) factor levels of associated variables
 distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, flip=TRUE, ...){
+    data <- copy(data)
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
     if(show.plot){
@@ -529,8 +534,10 @@ distplot.ucsteptable <- function(data, facet.formula=NULL, facet.scales="free_y"
 
 # Plot pmf of a factor after optionally conditioning (filtering) factor levels of other variables
 distplot.pmftable <- function(data, facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+    data <- copy(data)
     dots <- list(...)
     data <- .filter_plot_data(data, dots)
+    data <- filter(data, !(is.na(Prob) | is.nan(Prob)))
     if(show.plot){
         colour <- if(!is.null(dots$colour)) dots$colour else NULL
         fill <- if(!is.null(dots$fill)) dots$fill else NULL
