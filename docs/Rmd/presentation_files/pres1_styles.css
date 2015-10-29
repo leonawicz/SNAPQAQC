@@ -1,0 +1,30 @@
+slides > slide[data-slide-num= "1"]
+{
+background-color: #9ACD32;
+}
+
+slides > slide[data-slide-num= "34"]
+{
+background-color: #9ACD32;
+}
+
+.codefont pre {
+    font-size: 12px;
+    line-height: 10px;
+}
+
+pre {
+  font-family: 'Source Code Pro', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 14px;
+  padding: 10px 0 10px 10px;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+  width: 106%;
+  left: -10px;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  /*overflow: hidden;*/
+}

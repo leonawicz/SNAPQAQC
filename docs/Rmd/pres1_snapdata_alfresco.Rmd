@@ -1,16 +1,16 @@
 ---
-title: "Working with data"
+title: "Working with SNAP data:\nALFRESCO"
 author: Matthew Leonawicz
 output:
   ioslides_presentation:
     widescreen: true
-    logo: SNAP_acronym_for-dark-bkgrnd_100px.png
-    css: pres1_styles.css
+    logo: presentation_files/snap_mark_fullcolor_transparent.png
+    css: presentation_files/pres1_styles.css
   slidy_presentation:
     theme: united
     highlight: haddock
     font_adjustment: -1
-    css: pres1_styles.css
+    css: presentation_files/pres1_styles.css
   beamer_presentation:
     theme: "AnnArbor"
     colortheme: "dolphin"
@@ -85,9 +85,9 @@ text(mean(x), 0.1, "mean", col=2, pos=4)
 - Any statistic based on the RV can be calculated from its pdf.
 - No need to return to raw maps each time a new summary statistic is requested; compute it with the distribution model
 
-----
+# The right tools for the job
 
-Data manipulation
+## Data manipulation
 
 - Standardized data table formats
 - Easy to work with, easy to read
@@ -163,6 +163,8 @@ Unnest the Density column to recover the original table values
 table1 %>% select(-Stats, -Linear_model) %>% unnest %>% data.table
 ```
 
+# Distributions of random variables
+
 ## Working with probability distributions
 
 Joint distributions: $f_{X_1,X_2,...,X_n}(X_1,X_2,...,X_n)$
@@ -230,7 +232,7 @@ Marginal distributions tend to be wider
 
 Conditioning on fixed levels of variables tends to narrow a distribution
 
-The distributions of $X$ and $Y$ (e.g., Scenario, Model) are not independent or the distribution of $X$ would be the same regardless of the other variables' levels.
+The distribution of $X$ is not independent of the distribution of $Y$ (e.g., Scenario, Model) or the distribution of $X$ would be the same regardless of the other variables' levels.
 
 </div>
 
@@ -272,36 +274,37 @@ Functions to summarise uncertainty include uc_table(), uc_components() and uc_st
 uc_table(data)
 ```
 
-## Uncertainty examples
+# Uncertainty examples
 
 ----
 
-<img src="img/presentations/veg_tsByVeg_ucCompound.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_tsByVeg_ucCompound.png" style="width:960px; height:560px;">
 
 ----
 
-<img src="img/presentations/veg_tsByVeg_ucComponentStack.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_tsByVeg_ucComponentStack.png" style="width:960px; height:560px;">
 
 ----
 
-<img src="img/presentations/veg_tsByVeg_ucComponentProp.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_tsByVeg_ucComponentProp.png" style="width:960px; height:560px;">
 
 ----
 
-<img src="img/presentations/veg_tsByVeg_ucComponentStack_stepwise.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_tsByVeg_ucComponentStack_stepwise.png" style="width:960px; height:560px;">
 
 ----
 
-<img src="img/presentations/veg_ucModelPairs.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_ucModelPairs.png" style="width:960px; height:560px;">
 
 ----
 
-<img src="img/presentations/veg_marCondDensity4.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_marCondDensity4.png" style="width:960px; height:560px;">
 
 ----
 
-<img src="img/presentations/veg_tsByVeg_ucTotal.png" style="width:960px; height:560px;">
+<img src="presentation_files/small_veg_tsByVeg_ucTotal.png" style="width:960px; height:560px;">
 
+# The right data for the job
 
 ## Analysis driven by specific research questions
 
@@ -431,3 +434,7 @@ Boundary conditions should be well defined.
 When they are, it becomes easy to use those conditions to obtain the probabilities associated with levels of a factor in question, e.g., GCM, and the two GCMs with the lowest and highest probabilities given the conditions, respectively, are the bounding GCMs.
 Trying to distill the choice of models in a case like this from staring an assortment of plots lacks rigor but is also unnecessary when more formal tools are available.
 </div>
+
+## The end
+
+Thank you
