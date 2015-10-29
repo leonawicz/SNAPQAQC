@@ -44,14 +44,17 @@ Questions of interest include:
 ## 
 ##     addLayer
 ## 
-## data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
-## The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
+## The following object is masked from 'package:tidyr':
 ## 
-## Attaching package: 'data.table'
+##     extract
 ## 
-## The following object is masked from 'package:raster':
+## The following object is masked from 'package:data.table':
 ## 
 ##     shift
+## 
+## The following object is masked from 'package:dplyr':
+## 
+##     select
 ```
 
 #### Autocorrelation and unique observations
