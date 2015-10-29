@@ -393,7 +393,7 @@ distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.chara
 }
 
 # Plot comparison of marginal and conditional distributions of a RV with respect to GCMs and scenarios
-distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", ncol=facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
     data <- copy(data)
     dots <- list(...)
     group_by_(data, .dots=lapply(group.vars, as.symbol)) %>% .filter_plot_data(dots) %>%

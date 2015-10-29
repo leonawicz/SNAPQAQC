@@ -30,13 +30,14 @@ prep_alf_files <- function(i, loopBy, mainDir, reps, years){
     files
 }
 
-# @knitr extract_fsv
+# @knitr extract_data
 extract_data <- function(i, type, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, ...){
     stopifnot(length(type) > 0 && type %in% c("av", "fsv"))
     if(type=="av") return(extract_av(i, loopBy, mainDir, ageDir, reps, years, cells, ...))
     if(type=="fsv") return(extract_fsv(i, loopBy, mainDir, reps, years, cells, ...))
 }
 
+# @knitr extract_fsv
 extract_fsv <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
     if(is.null(list(...)$veg.labels)) {
         veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
