@@ -45,8 +45,6 @@ Intermediate outputs are handled by additional **R** scripts.
 ## R code
 
 ### Setup
-ADD_TEXT_HERE: EXAMPLE
-Setup consists of loading required **R** packages and additional files, preparing any command line arguments for use, and defining functions and other **R** objects.
 
 ```{r setup}
 ```

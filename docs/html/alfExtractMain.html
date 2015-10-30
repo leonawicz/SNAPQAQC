@@ -257,7 +257,6 @@ img {
 <h2>R code</h2>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
-<p>ADD_TEXT_HERE: EXAMPLE Setup consists of loading required <strong>R</strong> packages and additional files, preparing any command line arguments for use, and defining functions and other <strong>R</strong> objects.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Command line arguments</span>
 args =<span class="st"> </span>(<span class="kw">commandArgs</span>(<span class="ot">TRUE</span>))
 if (!<span class="kw">length</span>(args)) <span class="kw">q</span>(<span class="st">&quot;no&quot;</span>) else for (i in <span class="dv">1</span>:<span class="kw">length</span>(args)) <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> args[[i]]))

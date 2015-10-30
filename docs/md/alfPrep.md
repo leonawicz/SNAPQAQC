@@ -38,7 +38,6 @@ Things to note:
 ## R code
 
 ### Setup
-Setup consists of loading required **R** packages and defining file paths and other **R** objects including scenario names, vegetation classes, numbers of processing cores, and sampling factor for distributional estimation.
 
 
 ```r
