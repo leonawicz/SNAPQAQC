@@ -93,7 +93,7 @@ pages.Rmd <- setdiff(files.Rmd, presentations.Rmd)
 for(i in 1:length(pages.Rmd)) render(pages.Rmd[i], output_format="all")
 for(i in 1:length(presentations.Rmd)){
     outfile <- gsub("\\.Rmd", "\\.html", basename(presentations.Rmd[i]))
-    render(presentations.Rmd[i], output_file=paste0("ioslides_", outfile), output_dir=".", output_format="ioslides_presentation")
+    render(presentations.Rmd[i], output_file=outfile, output_dir=".", output_format="ioslides_presentation")
     render(presentations.Rmd[i], output_file=paste0("slidy_", outfile), output_dir=".", output_format="slidy_presentation")
 }
 insert_gatc(list.files(pattern=".html$"))
