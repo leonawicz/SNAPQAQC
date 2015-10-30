@@ -259,7 +259,6 @@ img {
 <h2>R code</h2>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
-<p>Setup consists of loading required <strong>R</strong> packages and defining file paths and other <strong>R</strong> objects including scenario names, vegetation classes, numbers of processing cores, and sampling factor for distributional estimation.</p>
 <pre class="sourceCode r"><code class="sourceCode r">comargs &lt;-<span class="st"> </span>(<span class="kw">commandArgs</span>(<span class="ot">TRUE</span>))
 if (!<span class="kw">length</span>(comargs)) <span class="kw">q</span>(<span class="st">&quot;no&quot;</span>) else for (z in <span class="dv">1</span>:<span class="kw">length</span>(comargs)) <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> comargs[[z]]))
 
