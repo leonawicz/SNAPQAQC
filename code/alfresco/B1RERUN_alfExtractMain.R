@@ -21,6 +21,7 @@ if(exists("repSample") && is.numeric(repSample)){
 	cat("Sampled replicates:\n", reps, "\n")
 }
 if(!exists("useCRU")) useCRU <- FALSE
+if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
 
 library(raster)
 library(data.table)
@@ -39,7 +40,7 @@ if(Rmpi){
 }
 
 # Load data table of cell indices defining groups of shapefile polygons
-load("/workspace/UA/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_akcan1km2km.RData")
+load("/atlas_scratch/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_akcan1km2km.RData")
 cells <- filter(cells, Source=="akcan1km") %>% group_by %>% select(-Source) %>% group_by(LocGroup, Location)
 if(exists("locgroup")){
     cat("locgroup = "); cat(locgroup); cat("\n")
@@ -48,10 +49,10 @@ if(exists("locgroup")){
     stopifnot(nrow(cells) > 0)
 }
 
-dirs <- list.files("/big_scratch/apbennett/Calibration/FinalCalib/b1_rerun", pattern=".*.sres.*.", full=T)
+dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib/b1_rerun", pattern=".*.sres.*.", full=T)
 mainDirs <- rep(paste0(dirs,"/Maps")[model.index], each=length(itervar))
 modname <- unique(basename(dirname(mainDirs)))
-if(mpiBy=="rep") dir.create(ageDir <- file.path("/big_scratch/mfleonawicz/Rmpi/outputs/veg", modname), recursive=T, showWarnings=F) else ageDir <- NULL
+if(mpiBy=="rep") dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg", modname), recursive=T, showWarnings=F) else ageDir <- NULL
 
 #veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
@@ -99,14 +100,14 @@ if(Rmpi){
 # Issue commands to slaves
 if(Rmpi){
 	mpi.bcast.cmd( mainDir <- mainDirs[id] )
-	mpi.bcast.cmd( source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtract.R") )
-	mpi.bcast.cmd( dir.create(tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/proc",id), showWarnings=F) )
+	mpi.bcast.cmd( source("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtract.R") )
+	mpi.bcast.cmd( dir.create(tmpDir <- paste0("/atlas_scratch/mfleonawicz/tmp/proc",id), showWarnings=F) )
 	mpi.bcast.cmd( rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir) )
 	print("mpi.bcast.cmd calls completed. Now running mpi.remote.exec...")
 } else {
 	mainDir <- mainDirs[1]
-	source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtract.R")
-	tmpDir <- paste0("/big_scratch/mfleonawicz/tmp/procX")
+	source("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtract.R")
+	tmpDir <- paste0("/atlas_scratch/mfleonawicz/tmp/procX")
 	rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir)
 }
 
@@ -156,7 +157,7 @@ if(doFire){
 	print("Fire size by vegetation class completed.")
 	print("Saving fire size by vegetation class data frames by location to .RData file.")
 	locs <- unique(fsv.dat$Location)
-	dir.create(fsvDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fsv", recursive=TRUE, showWarnings=FALSE)
+	dir.create(fsvDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/fsv"), recursive=TRUE, showWarnings=FALSE)
 	for(j in 1:length(locs)){
 		filename.tmp <- if(useCRU) paste0("fsv__", locs[j], "__", "CRU32") else paste0("fsv__", locs[j], "__", modname)
 		d.fsv <- fsv.dat[locs[j]]
@@ -217,7 +218,7 @@ if(doAgeVeg){
     print("Vegetation area completed.")
     print("Saving vegetation area data tables by location to .RData files.")
 	locs <- unique(d.area$Location)
-	dir.create(vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg", showWarnings=F)
+	dir.create(vegDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg"), showWarnings=F)
 
 	for(j in 1:length(locs)){
         filename.tmp <- if(useCRU) paste0("veg__", locs[j], "__", "CRU32") else paste0("veg__", locs[j], "__", modname)
@@ -246,7 +247,7 @@ if(doAgeVeg){
     print("Vegetation area by age completed.")
     print("Saving vegetation area by age data tables by location to .RData files.")
 	locs <- unique(d.age$Location)
-	dir.create(ageDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/age", showWarnings=F)
+	dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/age"), showWarnings=F)
 
 	for(j in 1:length(locs)){
         filename.tmp <- if(useCRU) paste0("age__", locs[j], "__", "CRU32") else paste0("age__", locs[j], "__", modname)

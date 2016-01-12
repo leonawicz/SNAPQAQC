@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   10/04/2015        ####
+#### Last updated:   01/11/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -15,11 +15,12 @@ library(reshape2)
 library(data.table)
 library(dplyr)
 
-if(!exists("mainDir")) mainDir <- "/big_scratch/mfleonawicz/Rmpi/outputs"
+if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
+if(!exists("mainDir")) mainDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions")
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), or 'fsv' (fire sizes by vegetation class).")
 stopifnot(length(variable)==1 && variable %in% c("age", "veg", "fsv"))
 inDir <- file.path(mainDir, variable)
-outDir <- "/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco"
+outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName)
 
 # All regions for which stage-1 outputs currently exist on disk.
 # Checking fsv files, but it is assumed stage one processing has been done on a common set of regions for all variables.

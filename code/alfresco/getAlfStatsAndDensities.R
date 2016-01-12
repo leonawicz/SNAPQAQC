@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   10/04/2015        ####
+#### Last updated:   01/11/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -15,7 +15,9 @@ library(reshape2)
 library(data.table)
 library(dplyr)
 
-if(!exists("mainDir")) mainDir <- "/big_scratch/mfleonawicz/Rmpi/outputs"
+if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
+if(!exists("mainDir")) mainDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions")
+dir.create(outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName), recur=T, showWarnings=F)
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), 'abfc' (area burned and fire counts), or 'fsv' (fire sizes by vegetation class).")
 ageDirs <- list.files(file.path(mainDir, "vegDir"), full=T)
 empty <- which(lapply(ageDirs, function(x) length(list.files(x)))==0)
@@ -98,7 +100,7 @@ btfun_dt <- function(p1, p2, n.samples=length(p)/2, n.boot=10000, interp=FALSE, 
 
 # @knitr get_ageStats_ageDensities
 # Primary processing functions
-get_ageStats_ageDensities <- function(j, dirs, n.samples=1000, n.samples.in, n.boot=10000, datnames, veg.labels, scen.levels){
+get_ageStats_ageDensities <- function(j, dirs, outDir, n.samples=1000, n.samples.in, n.boot=10000, datnames, veg.labels, scen.levels){
 	pat <- paste0("^age__.*.rep.*.RData$")
 	pat2 <- substr(pat, 1, nchar(pat) - 9)
 	files.list <- lapply(1:length(dirs), function(i, dirs, ...) list.files(dirs[i], ...), dirs=dirs, full=T, pattern=pat)
@@ -161,8 +163,8 @@ get_ageStats_ageDensities <- function(j, dirs, n.samples=1000, n.samples.in, n.b
     gc()
     d.alf.age[, Scenario:=factor(Scenario, levels=scen.levels)]
 	region.dat[, Scenario:=factor(Scenario, levels=scen.levels)]
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.age, file=paste0(samplesDir, "/", "vegetationAge.RData"))
 	gc()
 	save(region.dat, file=file.path(statsDir, "stats_age.RData"))
@@ -170,7 +172,7 @@ get_ageStats_ageDensities <- function(j, dirs, n.samples=1000, n.samples.in, n.b
 }
 
 # @knitr get_fireStats_fireDensities
-get_fireStats_fireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, scen.levels){
+get_fireStats_fireDensities <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, datnames, scen.levels){
 	files <- list.files(inDir, full=T, pattern="^abfc__.*.RData$")
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
@@ -213,8 +215,8 @@ get_fireStats_fireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, 
     region.dat <- rbindlist(stat.list)
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
     d.alf.ba <- d.alf.fire[Var=="Burn Area",]
     d.alf.fc <- d.alf.fire[Var=="Fire Count",]
     rm(d.alf.fire)
@@ -226,7 +228,7 @@ get_fireStats_fireDensities <- function(j, inDir, n.samples=1000, n.boot=10000, 
 }
 
 # @knitr get_vegStats_vegDensities
-get_vegStats_vegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, veg.labels, scen.levels){
+get_vegStats_vegDensities <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, datnames, veg.labels, scen.levels){
 	files <- list.files(inDir, full=T, pattern="^veg__.*.RData$")
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
@@ -272,8 +274,8 @@ get_vegStats_vegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
     region.dat <- rbindlist(stat.list)
 	rm(dat.list, stat.list, d.tmp, stats.tmp)
     gc()
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.veg, file=file.path(samplesDir, "vegetatedArea.RData"))
 	gc()
 	save(region.dat, file=file.path(statsDir, "stats_veg.RData"))
@@ -281,7 +283,7 @@ get_vegStats_vegDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
 }
 
 # @knitr get_fsvStats_fsvDensities
-get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, datnames, veg.labels, scen.levels){
+get_fsvStats_fsvDensities <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, datnames, veg.labels, scen.levels){
 	files <- list.files(inDir, full=T, pattern="^fsv__.*.RData$")
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
@@ -348,8 +350,8 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
     region.dat <- rbindlist(stat)
 	rm(dat, stat)
     gc()
-	dir.create(statsDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final/alfresco/samples", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
     save(d.alf.fs, file=file.path(samplesDir, "fsByVeg.RData"))
     save(d.alf.ba, file=file.path(samplesDir, "baByVeg.RData"))
     save(d.alf.fc, file=file.path(samplesDir, "fcByVeg.RData"))
@@ -360,10 +362,10 @@ get_fsvStats_fsvDensities <- function(j, inDir, n.samples=1000, n.boot=10000, da
 
 # Processing
 # @knitr proc_fire
-if("abfc" %in% variable) out.fire <- mclapply(1:n.regions, get_fireStats_fireDensities, inDir=abfcDir, n.samples=n.samples, datnames=datnames, scen.levels=scen.levels, mc.cores=n.cores)
+if("abfc" %in% variable) out.fire <- mclapply(1:n.regions, get_fireStats_fireDensities, inDir=abfcDir, outDir=outDir, n.samples=n.samples, datnames=datnames, scen.levels=scen.levels, mc.cores=n.cores)
 # @knitr proc_veg
-if("veg" %in% variable) out.veg <- mclapply(1:n.regions, get_vegStats_vegDensities, inDir=vegDir, n.samples=n.samples, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
+if("veg" %in% variable) out.veg <- mclapply(1:n.regions, get_vegStats_vegDensities, inDir=vegDir, outDir=outDir, n.samples=n.samples, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
 # @knitr proc_fsv
-if("fsv" %in% variable) out.fsv <- mclapply(1:n.regions, get_fsvStats_fsvDensities, inDir=fsvDir, n.samples=n.samples, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
+if("fsv" %in% variable) out.fsv <- mclapply(1:n.regions, get_fsvStats_fsvDensities, inDir=fsvDir, outDir=outDir, n.samples=n.samples, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
 # @knitr proc_age
-if("age" %in% variable) out.age <- mclapply(1:n.regions, get_ageStats_ageDensities, dirs=ageDirs, n.samples=n.samples, n.samples.in=n.samples.in, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
+if("age" %in% variable) out.age <- mclapply(1:n.regions, get_ageStats_ageDensities, dirs=ageDirs, outDir=outDir, n.samples=n.samples, n.samples.in=n.samples.in, datnames=datnames, veg.labels=veg.labels, scen.levels=scen.levels, mc.cores=n.cores)
