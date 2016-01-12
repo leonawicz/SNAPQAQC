@@ -110,9 +110,11 @@ dtDen <- function(x, n=1000, adj=0.1, out="vector", min.zero=TRUE, diversify=FAL
 }
 
 # reclass Vegetation column to aggregate Forest and Tundra entries
-toForestTundra <- function(data, group.vars=as.character(groups(data)), keep.prob.col=TRUE, check.class=TRUE){
+toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
+    group.vars <- as.character(groups(data))
     if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     nam <- names(data)
+    nam2 <- nam[!(nam %in% c("Val", "Prob"))]
     tundra <- c("Graminoid Tundra", "Shrub Tundra", "Wetland Tundra")
     f1 <- function(x) summarise(x, Val=dtBoot(Val))
     f2 <- function(x) summarise(x, Val=dtDen(Val))
@@ -120,10 +122,11 @@ toForestTundra <- function(data, group.vars=as.character(groups(data)), keep.pro
         f1 <- function(x) summarise(x, Val=dtBoot(Val, Prob))
         if(keep.prob.col) f2 <- function(x) summarise(x, Val=dtDen(Val, out="list")$x, Prob=dtDen(Val, out="list")$y)
     }
-    f1(data) %>% mutate(Vegetation2=ifelse(as.character(Vegetation) %in% tundra, "Tundra", "Forest"), Obs=1:nboot) %>%
+    data <- group_by_(data, .dots=lapply(nam2, as.symbol)) %>% f1 %>%
+        mutate(Vegetation2=ifelse(as.character(Vegetation) %in% tundra, "Tundra", "Forest"), Obs=1:formals(dtBoot)$n.boot) %>%
         select(-Vegetation) %>% mutate(Vegetation=Vegetation2) %>% select(-Vegetation2) %>%
-        group_by_(.dots=lapply(c(group.vars, "Obs"), as.symbol)) %>% summarise(Val=sum(Val)) %>%
-        f2 %>% group_by_(.dots=lapply(group.vars, as.symbol)) %>% setcolorder(nam) %>% setkey -> data
+        group_by_(.dots=lapply(c(nam2, "Obs"), as.symbol)) %>% summarise(Val=sum(Val)) %>%
+        f2 %>% group_by_(.dots=lapply(group.vars, as.symbol)) %>% setcolorder(nam) %>% setkey
     class(data) <- unique(c("disttable", class(data)))
     data
 }
