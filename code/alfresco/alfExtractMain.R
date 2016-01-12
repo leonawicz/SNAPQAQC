@@ -20,6 +20,7 @@ if(exists("repSample") && is.numeric(repSample)){
 	reps <- sort(sample(reps, min(repSample, length(reps))))
 	cat("Sampled replicates:\n", reps, "\n")
 }
+if(!exists("useCRU")) useCRU <- FALSE
 
 library(raster)
 library(data.table)
@@ -139,10 +140,16 @@ if(doFire){
     }
 	
     fsv.dat.names.ini <- copy(names(fsv.dat))
-	fsv.dat[, Model := swapModelName(mod.scen[1])]
-	fsv.dat[, Scenario := swapScenarioName(mod.scen[2])]
-	fsv.dat[, Scenario := factor(Scenario, levels=scen.levels)]
-	fsv.dat[, Phase := getPhase(mod.scen[2])]
+    if(useCRU){
+        fsv.dat[, Model := "CRU 3.2"]
+        fsv.dat[, Scenario := "Historical"]
+        fsv.dat[, Phase := "Observed"]
+    } else {
+        fsv.dat[, Model := swapModelName(mod.scen[1])]
+        fsv.dat[, Scenario := swapScenarioName(mod.scen[2])]
+        fsv.dat[, Scenario := factor(Scenario, levels=scen.levels)]
+        fsv.dat[, Phase := getPhase(mod.scen[2])]
+    }
 	fsv.dat <- setcolorder(fsv.dat, c("Phase", "Scenario", "Model", fsv.dat.names.ini))
 	setkey(fsv.dat, Location)
 	
@@ -151,7 +158,7 @@ if(doFire){
 	locs <- unique(fsv.dat$Location)
 	dir.create(fsvDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/fsv", recursive=TRUE, showWarnings=FALSE)
 	for(j in 1:length(locs)){
-		filename.tmp <- paste0("fsv__", locs[j], "__", modname)
+		filename.tmp <- if(useCRU) paste0("fsv__", locs[j], "__", "CRU32") else paste0("fsv__", locs[j], "__", modname)
 		d.fsv <- fsv.dat[locs[j]]
 		save(d.fsv, file=paste0(fsvDir, "/", filename.tmp, ".RData"))
 		print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
@@ -195,10 +202,16 @@ if(doAgeVeg){
     }
 
     d.area.names.ini <- copy(names(d.area))
-    d.area[, Model := swapModelName(mod.scen[1])]
-	d.area[, Scenario := swapScenarioName(mod.scen[2])]
-	d.area[, Scenario := factor(Scenario, levels=scen.levels)]
-	d.area[, Phase := getPhase(mod.scen[2])]
+    if(useCRU){
+        d.area[, Model := "CRU 3.2"]
+        d.area[, Scenario := "Historical"]
+        d.area[, Phase := "Observed"]
+    } else {
+        d.area[, Model := swapModelName(mod.scen[1])]
+        d.area[, Scenario := swapScenarioName(mod.scen[2])]
+        d.area[, Scenario := factor(Scenario, levels=scen.levels)]
+        d.area[, Phase := getPhase(mod.scen[2])]
+    }
 	d.area <- setcolorder(d.area, c("Phase", "Scenario", "Model", d.area.names.ini))
 	setkey(d.area, Location)
     print("Vegetation area completed.")
@@ -207,7 +220,7 @@ if(doAgeVeg){
 	dir.create(vegDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/veg", showWarnings=F)
 
 	for(j in 1:length(locs)){
-		filename.tmp <- paste0("veg__", locs[j], "__", modname)
+        filename.tmp <- if(useCRU) paste0("veg__", locs[j], "__", "CRU32") else paste0("veg__", locs[j], "__", modname)
 		d.vegarea <- d.area[locs[j]]
 		save(d.vegarea, file=paste0(vegDir, "/", filename.tmp, ".RData"))
 		print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
@@ -218,10 +231,16 @@ if(doAgeVeg){
     
     if(mpiBy=="year"){
     d.age.names.ini <- copy(names(d.age))
-    d.age[, Model := swapModelName(mod.scen[1])]
-    d.age[, Scenario := swapScenarioName(mod.scen[2])]
-    d.age[, Scenario := factor(Scenario, levels=scen.levels)]
-    d.age[, Phase := getPhase(mod.scen[2])]
+    if(useCRU){
+        d.age[, Model := "CRU 3.2"]
+        d.age[, Scenario := "Historical"]
+        d.age[, Phase := "Observed"]
+    } else {
+        d.age[, Model := swapModelName(mod.scen[1])]
+        d.age[, Scenario := swapScenarioName(mod.scen[2])]
+        d.age[, Scenario := factor(Scenario, levels=scen.levels)]
+        d.age[, Phase := getPhase(mod.scen[2])]
+    }
     d.age <- setcolorder(d.age, c("Phase", "Scenario", "Model", d.age.names.ini))
     setkey(d.age, Location)
     print("Vegetation area by age completed.")
@@ -230,7 +249,7 @@ if(doAgeVeg){
 	dir.create(ageDir <- "/big_scratch/mfleonawicz/Rmpi/outputs/age", showWarnings=F)
 
 	for(j in 1:length(locs)){
-		filename.tmp <- paste0("age__", locs[j], "__", modname)
+        filename.tmp <- if(useCRU) paste0("age__", locs[j], "__", "CRU32") else paste0("age__", locs[j], "__", modname)
 		d.vegage <- d.age[locs[j]]
 		save(d.vegage, file=paste0(ageDir, "/", filename.tmp, ".RData"))
 		print(paste(filename.tmp, "object", j, "of", length(locs), "saved."))
