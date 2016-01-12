@@ -15,4 +15,4 @@
 # mainDir is optional, default shown above;
 # variable is required, options are age, veg, and fsv;
 # projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
-mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3
+mpirun -np 1 Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3

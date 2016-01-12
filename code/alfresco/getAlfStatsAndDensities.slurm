@@ -18,4 +18,4 @@
 # multiple variables can be processed serially in one job if passed with proper escaping as, e.g., variable=c\(\'age\',\'veg\'\);
 # age input sample size currently known and hardcoded in script as n.samples.in=100
 # density output sample size currently hardcoded in script as n.samples=1000
-mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/getAlfStatsAndDensities.R $1 $2 $3
+mpirun -np 1 Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/getAlfStatsAndDensities.R $1 $2 $3

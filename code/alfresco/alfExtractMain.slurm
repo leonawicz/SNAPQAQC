@@ -4,11 +4,12 @@
 #SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --account=snap
 #SBATCH -p main
-#SBATCH --ntasks=93
+####SBATCH --ntasks=93
+#SBATCH --ntasks=58
 #SBATCH --job-name=alfExtractMain
 #SBATCH --nodes=4
-#SBATCH --nodelist=atlas01,atlas13,atlas14,atlas15
-#SBATCH --ntasks-per-node=24
+#SBATCH --nodelist=atlas14,atlas15
+#SBATCH --ntasks-per-node=29
 
 # CL variables passed take form, e.g., model.index=1, reps=1:200, years=1900:2100;
 # currently, years defaults to 2008:2100, this will change;
@@ -23,4 +24,4 @@
 # mpiBy="rep" is default. Alternative is "year". Called 'mpiBy' but also applies when uses the parallel package on a single node;
 # repSample, optional, e.g., repSample=30, means randomly sample 30 replicates from the full set
 # projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
-mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtractMain.R $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11
+mpirun -np 1 Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtractMain.R $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11
