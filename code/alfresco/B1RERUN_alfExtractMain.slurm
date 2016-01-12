@@ -22,4 +22,5 @@
 
 # mpiBy="rep" is default. Alternative is "year". Called 'mpiBy' but also applies when uses the parallel package on a single node;
 # repSample, optional, e.g., repSample=30, means randomly sample 30 replicates from the full set
-mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/B1RERUN_alfExtractMain.R $1 $2 $3 $4 $5 $6 $7 $8 $9 $10
+# projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
+mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/B1RERUN_alfExtractMain.R $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11

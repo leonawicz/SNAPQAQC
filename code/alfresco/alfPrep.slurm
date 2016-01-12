@@ -14,4 +14,5 @@
 # CL variables passed take form, e.g., mainDir=\'/big_scratch/mfleonawicz/Rmpi/outputs\', variable=\'veg\'
 # mainDir is optional, default shown above;
 # variable is required, options are age, veg, and fsv;
-mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2
+# projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
+mpirun -np 1 Rscript /workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3
