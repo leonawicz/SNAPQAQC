@@ -11,12 +11,13 @@ prep_alf_files <- function(i, loopBy, mainDir, reps, years){
         iter <- reps
         keep <- reps - 1
         id <- paste0("_", years[i], ".tif$")
+        mainDir <- paste0(mainDir, "/Map_", years[i])
     } else if(loopBy=="year") {
         keep <- iter <- years
         id <- paste0("_",c(0:199)[i],"_.*.tif$")
     }
     p <- lapply(c("A", "V", "FireS"), function(p, id) gsub("expression","",paste(bquote(expression("^",.(p),".*.",.(id))),collapse="")), id=id)
-    files <- lapply(1:length(p), function(i, dir, p) list.files(dir, pattern=p[[i]], full=TRUE), dir=mainDir, p=p)
+    files <- lapply(1:length(p), function(i, dir, p) list.files(dir, pattern=p[[i]], full=TRUE, recur=TRUE), dir=mainDir, p=p)
     names(files) <- c("Age", "Veg", "FID")
     if(loopBy=="rep") files.idx <- as.numeric(gsub("FireScar_", "", gsub("_\\d+\\.tif", "", basename(files$FID)))) + 1
     if(loopBy=="year") files.idx <- as.numeric(gsub("FireScar_\\d+_", "", gsub(".tif", "", basename(files$FID))))
@@ -31,26 +32,62 @@ prep_alf_files <- function(i, loopBy, mainDir, reps, years){
 }
 
 # @knitr extract_data
-extract_data <- function(i, type, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, ...){
+extract_data <- function(i, type, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, readMethod="loop", ...){
     stopifnot(length(type) > 0 && type %in% c("av", "fsv"))
-    if(type=="av") return(extract_av(i, loopBy, mainDir, ageDir, reps, years, cells, ...))
-    if(type=="fsv") return(extract_fsv(i, loopBy, mainDir, reps, years, cells, ...))
+    if(type=="av") return(extract_av(i, loopBy, mainDir, ageDir, reps, years, cells, readMethod, ...))
+    if(type=="fsv") return(extract_fsv(i, loopBy, mainDir, reps, years, cells, readMethod, ...))
 }
 
 # @knitr extract_fsv
-extract_fsv <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
+extract_fsv <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, readMethod="loop", ...){
     if(is.null(list(...)$veg.labels)) {
         veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
     } else veg.labels <- list(...)$veg.labels
     x <- prep_alf_files(i=i, loopBy=loopBy, mainDir=mainDir, reps=reps, years=years)
     cells <- group_by(cells, LocGroup, Location)
     d.fs <- vector("list", length(x$iter))
-    for(j in 1:length(x$iter)){ # fire size by vegetation class
-        v <- list(FID=getValues(raster(x$FID[j], band=2)), Veg=getValues(raster(x$Veg[j])))
-        d <- filter(cells, Cell %in% which(!is.na(v$FID))) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell]], levels=veg.labels), FID=v$FID[Cell]) %>%
-            group_by(LocGroup, Location, Vegetation, FID) %>% summarise(Val=length(Cell), Var="Fire Size")
-        d.fs[[j]] <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
-        print(switch(loopBy, "rep"=paste0("Year ", years[i], ": Replicate ", x$iter[j]), "year"=paste0("Replicate ", i, ": Year ", years[x$iter[j]])))
+    
+    # fire size by vegetation class
+    if(readMethod=="stack"){
+        print("#### READING FULL REPLICATE STACK TO MEMORY ####")
+        v <- list(FID=getValues(stack(x$FID, bands=2)), Veg=getValues(stack(x$Veg, quick=TRUE)))
+        gc()
+        print("#### READ COMPLETE ####")
+        for(j in 1:length(x$iter)){ # fire size by vegetation class
+            d <- filter(cells, Cell %in% which(!is.na(v$FID[,j]))) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell,j]], levels=veg.labels), FID=v$FID[Cell,j]) %>%
+                group_by(LocGroup, Location, Vegetation, FID) %>% summarise(Val=length(Cell), Var="Fire Size")
+            d.fs[[j]] <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
+            print(switch(loopBy, "rep"=paste0("Year ", years[i], ": Replicate ", x$iter[j]), "year"=paste0("Replicate ", i, ": Year ", years[x$iter[j]])))
+        }
+        rm(v)
+        gc()
+    } else if(readMethod=="loop"){
+        # fire size by vegetation class
+        #fn <- function(j, x, v, cells, veg.labels, loopBy){
+        #    d <- filter(cells, Cell %in% which(!is.na(v$FID))) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell]], levels=veg.labels), FID=v$FID[Cell]) %>%
+        #        group_by(LocGroup, Location, Vegetation, FID) %>% summarise(Val=length(Cell), Var="Fire Size")
+        #    d <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
+        #    d
+        #}
+        #system.time({ d.fs <- lapply(1:10, fn, x, v, cells, veg.labels, loopBy) })
+        
+        # fire size by vegetation class
+        #fn <- function(j, x, cells, veg.labels, loopBy){
+        #    v <- list(FID=getValues(raster(x$FID[j], band=2)), Veg=getValues(raster(x$Veg[j])))
+        #    d <- filter(cells, Cell %in% which(!is.na(v$FID))) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell]], levels=veg.labels), FID=v$FID[Cell]) %>%
+        #        group_by(LocGroup, Location, Vegetation, FID) %>% summarise(Val=length(Cell), Var="Fire Size")
+        #    d <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
+        #    d
+        #}
+        #system.time({ d.fs <- lapply(1:length(x$iter), fn, x, cells, veg.labels, loopBy) })
+        
+        for(j in 1:length(x$iter)){ # fire size by vegetation class
+            v <- list(FID=getValues(raster(x$FID[j], band=2)), Veg=getValues(raster(x$Veg[j])))
+            d <- filter(cells, Cell %in% which(!is.na(v$FID))) %>% mutate(Vegetation=factor(veg.labels[v$Veg[Cell]], levels=veg.labels), FID=v$FID[Cell]) %>%
+                group_by(LocGroup, Location, Vegetation, FID) %>% summarise(Val=length(Cell), Var="Fire Size")
+            d.fs[[j]] <- if(loopBy=="rep") mutate(d, Replicate=x$iter[j]) else if(loopBy=="year") mutate(d, Year=x$iter[j])
+            print(switch(loopBy, "rep"=paste0("Year ", years[i], ": Replicate ", x$iter[j]), "year"=paste0("Replicate ", i, ": Year ", years[x$iter[j]])))
+        }
     }
     d.fs <- if(loopBy=="rep") rbindlist(d.fs)[, Year:=as.integer(years[i])] else if(loopBy=="year") rbindlist(d.fs)[, Replicate:=as.integer(i)]
     d.fs <- setcolorder(d.fs, c("LocGroup", "Location", "Var", "Vegetation", "Year", "Val", "FID", "Replicate")) %>%
@@ -60,7 +97,7 @@ extract_fsv <- function(i, loopBy, mainDir, reps=NULL, years=NULL, cells, ...){
 }
 
 # @knitr extract_av
-extract_av <- function(i, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, ...){
+extract_av <- function(i, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, cells, readMethod="loop", ...){
     if(is.null(list(...)$veg.labels)) {
         veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
     } else veg.labels <- list(...)$veg.labels
