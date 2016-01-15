@@ -15,6 +15,8 @@ library(reshape2)
 library(data.table)
 library(dplyr)
 
+if(!exists("period")) period <- stop("Must provide 'period' argument in escaped quotes. Options are 'historical' or 'projected'.")
+stopifnot(length(period)==1 && variable %in% c("historical", "projected"))
 if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
 if(!exists("mainDir")) mainDir <- "/atlas_scratch/mfleonawicz/alfresco"
 mainDir <- file.path(mainDir, projectName, "extractions")
@@ -28,7 +30,7 @@ outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alf
 regions <- unique(sapply(strsplit(list.files(file.path(inDir)), "__"), "[", 2))
 n.regions <- length(regions)
 n.cores <- min(n.regions, 32)
-print(n.cores)
+
 # @knitr functions1
 # Support functions
 # Density estimation
@@ -55,11 +57,13 @@ dtBoot <- function(p, p2=NULL, n.boot=10000, interp=TRUE, n.interp=100000, round
 
 # @knitr prep_data
 # Primary processing functions
-prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, ...){
+prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ...){
     id <- basename(inDir)
     exact <- list(...)$exact
     if(is.null(exact) || !is.logical(exact) || id!="veg") exact <- FALSE
-	files <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.RData$"))
+	files.hist <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.CRU.*.RData$"))
+    files.all <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.RData$"))
+    if(period=="historical") files <- files.hist else if(period=="projected") files <- setdiff(files.all, files.hist)
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
 	if(j > length(locs)) return(NULL)
@@ -87,7 +91,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, ...){
         }
 		d <- group_by(d, Phase, Scenario, Model, Location, Var, Vegetation, Year)
         if(id=="age"){
-            d <- summarise(d %>% filter(Vegetation!="Barren lichen-moss"),
+            d <- summarise(d %>% filter(!(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest"))),
                 Val=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$x,
                 Prob=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         }
@@ -129,4 +133,4 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, ...){
 }
 
 # @knitr run
-mclapply(1:n.regions, prep_data, inDir, outDir, mc.cores=n.cores)
+mclapply(1:n.regions, prep_data, inDir, outDir, mc.cores=n.cores, period=period)
