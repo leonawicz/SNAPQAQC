@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   01/11/2015        ####
+#### Last updated:   01/14/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -16,7 +16,8 @@ library(data.table)
 library(dplyr)
 
 if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
-if(!exists("mainDir")) mainDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions")
+if(!exists("mainDir")) mainDir <- "/atlas_scratch/mfleonawicz/alfresco"
+mainDir <- file.path(mainDir, projectName, "extractions")
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), or 'fsv' (fire sizes by vegetation class).")
 stopifnot(length(variable)==1 && variable %in% c("age", "veg", "fsv"))
 inDir <- file.path(mainDir, variable)
@@ -27,7 +28,7 @@ outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alf
 regions <- unique(sapply(strsplit(list.files(file.path(inDir)), "__"), "[", 2))
 n.regions <- length(regions)
 n.cores <- min(n.regions, 32)
-
+print(n.cores)
 # @knitr functions1
 # Support functions
 # Density estimation
@@ -85,7 +86,11 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, ...){
             gc()
         }
 		d <- group_by(d, Phase, Scenario, Model, Location, Var, Vegetation, Year)
-        if(id=="age") d <- summarise(d, Val=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$x, Prob=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+        if(id=="age"){
+            d <- summarise(d %>% filter(Vegetation!="Barren lichen-moss"),
+                Val=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$x,
+                Prob=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+        }
         if(!exact & id=="veg") d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         get_stats <- function(data, exact=FALSE){
             if(!exact) data <- summarise(data, Val=dtBoot(Val, Prob, n.boot=n.boot)) %>% group_by(Year, add=T)
@@ -100,22 +105,23 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, ...){
 	}
     dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
 	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
+    prefix <- if(stat[[1]]$Scenario[1]=="Historical") "historical" else "projected"
     if(id=="fsv"){
         dat <- rbindlist(dat)
         d.alf.fs <- filter(dat, Var=="Fire Size")
         d.alf.ba <- filter(dat, Var=="Burn Area")
         d.alf.fc <- filter(dat, Var=="Fire Count")
         stats.alf.fire <- rbindlist(stat)
-        save(d.alf.fs, file=file.path(samplesDir, "fsByVeg.RData"))
-        save(d.alf.ba, file=file.path(samplesDir, "baByVeg.RData"))
-        save(d.alf.fc, file=file.path(samplesDir, "fcByVeg.RData"))
-        save(stats.alf.fire, file=file.path(statsDir, "stats_fsbafcByVeg.RData"))
+        save(d.alf.fs, file=file.path(samplesDir, paste0(prefix, "_fsByVeg.RData")))
+        save(d.alf.ba, file=file.path(samplesDir, paste0(prefix, "_baByVeg.RData")))
+        save(d.alf.fc, file=file.path(samplesDir, paste0(prefix, "_fcByVeg.RData")))
+        save(stats.alf.fire, file=file.path(statsDir, paste0(prefix, "_stats_fsbafcByVeg.RData")))
     } else {
         data.obj.name <- switch(id, age="d.alf.vegage", veg="d.alf.vegarea")
         stats.obj.name <- switch(id, age="stats.alf.vegage", veg="stats.alf.vegarea")
         assign(data.obj.name, rbindlist(dat))
         assign(stats.obj.name, rbindlist(stat))
-        filename <- paste0(tail(strsplit(data.obj.name, "\\.")[[1]], 1), ".RData")
+        filename <- paste0(prefix, "_", tail(strsplit(data.obj.name, "\\.")[[1]], 1), ".RData")
         save(list=data.obj.name, file=file.path(samplesDir, filename))
         save(list=stats.obj.name, file=file.path(statsDir, filename))
     }
