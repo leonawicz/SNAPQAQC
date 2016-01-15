@@ -11,9 +11,9 @@
 #SBATCH --job-name=AlfPrep
 #SBATCH --nodes=1
 
-# CL variables passed take form, e.g., mainDir=\'/atlas_scratch/mfleonawicz/alfresco\', variable=\'veg\'
+# CL variables passed take form, e.g., mainDir=\'/atlas_scratch/mfleonawicz/alfresco\', variable=\'veg\';
 # mainDir is optional, default shown above;
-# variable is required, options are age, veg, and fsv;
+# period, required, options are historical or projected;
+# variable, required, options are age, veg, and fsv;
 # projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
-# mpirun  --oversubscribe -np 1 Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3
-Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3
+Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3 $4
