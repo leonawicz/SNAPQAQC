@@ -3,16 +3,14 @@
 args=(commandArgs(TRUE))
 if(!length(args)) q("no") else for(i in 1:length(args)) eval(parse(text=args[[i]]))
 
-if(!exists("model.index")) stop("Must provide a model.index 1 to 15, e.g., model.index=1")
-stopifnot(length(model.index)==1)
+if(!exists("modelIndex")) stop("Must provide a modelIndex 1 to 15, e.g., modelIndex=1")
+stopifnot(length(modelIndex)==1)
 if(!exists("reps")) stop("Must provide replicates as integer(s) 1:200, e.g., reps=1:25")
 if(!exists("years")) years <- 2008:2100 # Assume if not specified
 if(!exists("Rmpi")) Rmpi <- TRUE
-if(Rmpi) {
-    if(!exists("mpiBy")) mpiBy <- "year"
-    itervar <- if(mpiBy=="rep") reps else if(mpiBy=="year") 1:length(years) else stop("mpiBy must be 'rep' or 'year'.")
-    loopBy <- if(mpiBy=="rep") "year" else "rep"
-}
+if(!exists("mpiBy")) mpiBy <- "year"
+itervar <- if(mpiBy=="rep") reps else if(mpiBy=="year") 1:length(years) else stop("mpiBy must be 'rep' or 'year'.")
+loopBy <- if(mpiBy=="rep") "year" else "rep"
 if(!exists("doFire")) doFire <- TRUE
 if(!exists("doAgeVeg")) doAgeVeg <- TRUE
 if(exists("repSample") && is.numeric(repSample)){
@@ -22,6 +20,7 @@ if(exists("repSample") && is.numeric(repSample)){
 }
 if(!exists("useCRU")) useCRU <- FALSE
 if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
+if(!exists("readMethod")) readMethod <- "loop"
 
 library(raster)
 library(data.table)
@@ -49,8 +48,9 @@ if(exists("locgroup")){
     stopifnot(nrow(cells) > 0)
 }
 
-dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
-mainDirs <- rep(paste0(dirs,"/Maps")[model.index], each=length(itervar))
+#dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
+dirs <- list.files("/atlas_scratch/mfleonawicz/test/FinalCalib", pattern=".*.sres.*.", full=T)
+mainDirs <- rep(paste0(dirs,"/Maps")[modelIndex], each=length(itervar))
 modname <- unique(basename(dirname(mainDirs)))
 if(mpiBy=="rep") dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg", modname), recursive=T, showWarnings=F) else ageDir <- NULL
 
@@ -93,6 +93,7 @@ if(Rmpi){
 	mpi.bcast.Robj2slave(ageDir)
 	mpi.bcast.Robj2slave(itervar)
     mpi.bcast.Robj2slave(loopBy)
+    mpi.bcast.Robj2slave(readMethod)
 	print("mpi.bcast.Robj2slave calls completed.")
 }
 
@@ -116,12 +117,12 @@ if(Rmpi){
 if(doFire){
     print("#### Compiling fire statistics... ####")
 	if(Rmpi){
-        fsv.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA)) )
+        fsv.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), readMethod=readMethod) )
         fsv.dat <- rbindlist(fsv.dat)
     } else {
         len <- length(itervar)
         if(len <= n.cores){
-            fsv.dat <- mclapply(itervar, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), mc.cores=n.cores)
+            fsv.dat <- mclapply(itervar, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), readMethod=readMethod, mc.cores=n.cores)
             fsv.dat <- rbindlist(fsv.dat)
         } else {
             serial.iters <- ceiling(len/n.cores)
@@ -130,7 +131,7 @@ if(doFire){
             for(j in 1:serial.iters){
                 itervar.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
-                fsv.tmp <- mclapply(itervar.tmp, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), mc.cores=n.cores)
+                fsv.tmp <- mclapply(itervar.tmp, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), readMethod=readMethod, mc.cores=n.cores)
                 fsv.dat[[j]] <- rbindlist(fsv.tmp)
                 rm(fsv.tmp)
                 gc()
@@ -174,13 +175,13 @@ if(doFire){
 if(doAgeVeg){
     print("#### Compiling vegetation class and age statistics... ####")
 	if(Rmpi){
-        va.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell)) )
+        va.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), readMethod=readMethod) )
         d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
         if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
 	} else {
         len <- length(itervar)
         if(len <= n.cores){
-            va.dat <- mclapply(itervar, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
+            va.dat <- mclapply(itervar, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), readMethod=readMethod, mc.cores=n.cores)
             d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
             if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
         } else {
@@ -190,7 +191,7 @@ if(doAgeVeg){
             for(j in 1:serial.iters){
                 itervar.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
-                va.dat <- mclapply(itervar.tmp, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), mc.cores=n.cores)
+                va.dat <- mclapply(itervar.tmp, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), readMethod=readMethod, mc.cores=n.cores)
                 d.area[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.area))
                 if(mpiBy=="year") d.age[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.age))
                 rm(va.dat)
