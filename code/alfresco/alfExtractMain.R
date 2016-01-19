@@ -49,7 +49,8 @@ if(exists("locgroup")){
 }
 
 #dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
-dirs <- list.files("/atlas_scratch/mfleonawicz/test/FinalCalib", pattern=".*.sres.*.", full=T)
+if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern="CRU", full=T)
+if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern=".*.sres.*.", full=T)
 mainDirs <- rep(paste0(dirs,"/Maps")[modelIndex], each=length(itervar))
 modname <- unique(basename(dirname(mainDirs)))
 if(mpiBy=="rep") dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg", modname), recursive=T, showWarnings=F) else ageDir <- NULL
