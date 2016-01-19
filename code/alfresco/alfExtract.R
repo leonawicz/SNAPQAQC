@@ -11,7 +11,7 @@ prep_alf_files <- function(i, loopBy, mainDir, reps, years){
         iter <- reps
         keep <- reps - 1
         id <- paste0("_", years[i], ".tif$")
-        mainDir <- paste0(mainDir, "/Map_", years[i])
+        mainDir <- file.path(mainDir, years[i])
     } else if(loopBy=="year") {
         keep <- iter <- years
         id <- paste0("_",c(0:199)[i],"_.*.tif$")
