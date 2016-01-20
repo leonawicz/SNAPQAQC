@@ -98,13 +98,13 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
                 Val=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x,
                 Prob=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         }
-        if(!exact & id=="veg"){
+        if(id=="veg"){
             d <- d %>% do(.,
                 Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>%
                     complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
                     fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
-            ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
-            summarise(Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+            ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
+            if(!exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         }
         get_stats <- function(data, exact=FALSE){
             if(!exact) data <- summarise(data, Val=dtBoot(Val, Prob, n.boot=n.boot)) %>% group_by(Year, add=T)
@@ -112,7 +112,8 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
                 Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
                 Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) %>% group_by(Year, add=T)
         }
-        s <- get_stats(d, exact=exact)
+        s <- get_stats(d, exact=exact) # exact=TRUE only applies to veg area stats, for comparison with veg area stats computed after veg area density estimation
+        if(id=="veg" & exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         dat[[i]] <- d
         stat[[i]] <- s
         print(i)
