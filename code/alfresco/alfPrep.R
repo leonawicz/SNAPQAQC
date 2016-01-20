@@ -84,6 +84,11 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
             d <- data.table(bind_rows(d, d2)) %>% mutate(Vegetation=factor(Vegetation, levels=unique(Vegetation))) %>%
                 group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) # individual and aggregate-veg fire sizes
             d2 <- group_by(d, Replicate, add=T) %>% summarise(BA=sum(Val), FC=length(Val)) # burn area and fire frequency
+            d2 <- d2 %>% do(.,
+                Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>% # expand to include replicates with burn area and fire frequency of zero
+                    complete(c(Phase, Scenario, Model, Location, Var, Vegetation, Year), fill=list(BA=0L, FC=0L)) %>%
+                    fill(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% data.table
+            ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
             d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y)
             d2.ba <- summarise(d2, Val=dtDen(BA, n=n.samples, out="list")$x, Prob=dtDen(BA, n=n.samples, out="list")$y) %>% mutate(Var="Burn Area")
             d2.fc <- summarise(d2, Val=dtDen(FC, n=n.samples, out="list")$x, Prob=dtDen(FC, n=n.samples, out="list")$y) %>% mutate(Var="Fire Count")
@@ -100,7 +105,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
         }
         if(id=="veg"){
             d <- d %>% do(.,
-                Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>%
+                Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>% # expand to include replicates with veg area of zero
                     complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
                     fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
             ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
