@@ -22,6 +22,7 @@ if(!exists("mainDir")) mainDir <- "/atlas_scratch/mfleonawicz/alfresco"
 mainDir <- file.path(mainDir, projectName, "extractions")
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), or 'fsv' (fire sizes by vegetation class).")
 stopifnot(length(variable)==1 && variable %in% c("age", "veg", "fsv"))
+if(!exists("reps")) reps <- NULL
 inDir <- file.path(mainDir, variable)
 outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName)
 
@@ -59,6 +60,7 @@ dtBoot <- function(p, p2=NULL, n.boot=10000, interp=TRUE, n.interp=100000, round
 # Primary processing functions
 prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ...){
     id <- basename(inDir)
+    reps <- list(...)$reps
     exact <- list(...)$exact
     if(is.null(exact) || !is.logical(exact) || id!="veg") exact <- FALSE
 	files.hist <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.CRU.*.RData$"))
@@ -76,6 +78,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
         rm(list=ls(pattern="^d\\."))
 		loc.grp <- d$LocGroup[1]
 		loc <- d$Location[1]
+        reps.all <- if(is.null(reps)) sort(unique(d$Replicate)) else reps
         if(id=="fsv"){
             d2 <- group_by(d, Phase, Scenario, Model, Location, Var, Year, Replicate, FID) %>% summarise(Val=sum(Val)) %>% mutate(Vegetation="All") # agg-veg FS
             d <- data.table(bind_rows(d, d2)) %>% mutate(Vegetation=factor(Vegetation, levels=unique(Vegetation))) %>%
@@ -91,11 +94,18 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
         }
 		d <- group_by(d, Phase, Scenario, Model, Location, Var, Vegetation, Year)
         if(id=="age"){
-            d <- summarise(d %>% filter(!(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest"))),
-                Val=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$x,
-                Prob=dtDen(sample(Age, n.boot, T, Freq), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+            d <- summarise(d %>% filter(!(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")) & length(Age) > 30), # must be at least 30 pixels to estimate age distribution
+                Val=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x,
+                Prob=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         }
-        if(!exact & id=="veg") d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+        if(!exact & id=="veg"){
+            d <- d %>% do(.,
+                Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>%
+                    complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
+                    fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
+            ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>%
+            summarise(Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+        }
         get_stats <- function(data, exact=FALSE){
             if(!exact) data <- summarise(data, Val=dtBoot(Val, Prob, n.boot=n.boot)) %>% group_by(Year, add=T)
             summarise(data, Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
@@ -133,4 +143,4 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
 }
 
 # @knitr run
-mclapply(1:n.regions, prep_data, inDir, outDir, mc.cores=n.cores, period=period)
+mclapply(1:n.regions, prep_data, inDir, outDir, mc.cores=n.cores, period=period, reps=reps)
