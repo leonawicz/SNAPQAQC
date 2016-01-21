@@ -76,7 +76,6 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
 	for(i in 1:length(files)){
 		load(files[i], envir=environment())
         d <- get(ls(pattern="^d\\."))
-        if(nrow(d)==0) return() # skip if any null data table for the location occur
         rm(list=ls(pattern="^d\\."))
 		loc.grp <- d$LocGroup[1]
 		loc <- d$Location[1]
@@ -87,7 +86,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
                 group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) # individual and aggregate-veg fire sizes
             d2 <- group_by(d, Replicate, add=T) %>% summarise(BA=sum(Val), FC=length(Val)) # burn area and fire frequency
             d2 <- d2 %>% do(.,
-                Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>% # expand to include replicates with burn area and fire frequency of zero
+                Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with burn area and fire frequency of zero
                     complete(c(Phase, Scenario, Model, Location, Var, Vegetation, Year), fill=list(BA=0L, FC=0L)) %>%
                     fill(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% data.table
             ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
@@ -100,14 +99,16 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
             gc()
         }
 		d <- group_by(d, Phase, Scenario, Model, Location, Var, Vegetation, Year)
-        if(id=="age"){
-            d <- summarise(d %>% filter(!(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")) & length(Age) > 30), # must be at least 30 pixels to estimate age distribution
-                Val=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x,
+        if(id=="age"){ # note that estimating age "distribution" is still allowed when all pixels for a given veg type have a contant age value across space in a given year
+            d <- filter(d, !(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")) & sum(Freq) > 30) # must be at least 30 pixels across all reps to estimate age distribution
+            if(nrow(d)==0) return("Insufficient data.") # skip if any null data table for the location occurs for age, based on removal of irrelevant veg types or insufficient samples
+            print(paste("j =", j, "| loc =", loc, "| loc.grp =", loc.grp, "| Age[1] = ", d$Age[1], "| Freq[1] =", d$Freq[1], "| nrow(d) =", nrow(d)))
+            d <- summarise(d, Val=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x, # constant age permitted (when length(Freq)==1)
                 Prob=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
         }
         if(id=="veg"){
             d <- d %>% do(.,
-                Expanded=right_join(., data.table(Replicate=as.integer(reps.all))) %>% # expand to include replicates with veg area of zero
+                Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with veg area of zero
                     complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
                     fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
             ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
