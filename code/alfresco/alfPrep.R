@@ -76,6 +76,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
 	for(i in 1:length(files)){
 		load(files[i], envir=environment())
         d <- get(ls(pattern="^d\\."))
+        if(nrow(d)==0) return() # skip if any null data table for the location occur
         rm(list=ls(pattern="^d\\."))
 		loc.grp <- d$LocGroup[1]
 		loc <- d$Location[1]
