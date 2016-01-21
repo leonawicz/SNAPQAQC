@@ -4,7 +4,7 @@
 
 #### Script author:  Matthew Leonawicz ####
 #### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   01/14/2015        ####
+#### Last updated:   01/20/2015        ####
 
 # @knitr setup
 comargs <- (commandArgs(TRUE))
@@ -14,9 +14,10 @@ library(parallel)
 library(reshape2)
 library(data.table)
 library(dplyr)
+library(tidyr)
 
 if(!exists("period")) period <- stop("Must provide 'period' argument in escaped quotes. Options are 'historical' or 'projected'.")
-stopifnot(length(period)==1 && variable %in% c("historical", "projected"))
+stopifnot(length(period)==1 && period %in% c("historical", "projected"))
 if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
 if(!exists("mainDir")) mainDir <- "/atlas_scratch/mfleonawicz/alfresco"
 mainDir <- file.path(mainDir, projectName, "extractions")
