@@ -1,14 +1,14 @@
 # @knitr setup
 set.seed(47)
-source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/functions.R")
-baseDir <- "/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final"
-topDir <- "alfresco"
+source("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/functions.R")
+projectName <- "IEM"
+baseDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName)
 dataset <- "ba"
-reg.grp <- "LCC Regions"
-reg <- "NW Interior Forest N"
+reg.grp <- "Alaska L2 Ecoregions"
+reg <- "Intermontane Boreal"
 samples <- TRUE
 dtype <- if(samples) "samples" else "stats"
-yrs.lim <- c(2010,2100)
+yrs.lim <- c(2008,2100)
 
 veg.given <- "All"
 mod.given <- "CCCMAcgcm31"
@@ -19,7 +19,7 @@ if(!exists("agg.veg")) agg.veg <- FALSE # aggregate to forest and tundra
 if(!exists("lb") | !exists("ub")) { lb <- 0.025; ub <- 0.975 } # confidence limits
 
 dir.create(plotDir <- file.path("/workspace/UA/mfleonawicz/projects/SNAPQAQC/plots/AlfTest", dataset), recur=T, showWarnings=F) # improve pathing specificity
-setwd(wDir <- file.path(baseDir, topDir, dtype, reg.grp, reg))
+setwd(wDir <- file.path(baseDir, dtype, reg.grp, reg))
 lapply(c("reshape2", "dplyr", "data.table", "ggplot2"), library, character.only=T)
 
 system.time( load(switch(dataset, ba="baByVeg.RData", fc="fcByVeg.RData", fs="fsByVeg.RData", veg="vegetatedArea.RData", age="vegetationAge.RData")) )# about 20 seconds on Atlas CPU
