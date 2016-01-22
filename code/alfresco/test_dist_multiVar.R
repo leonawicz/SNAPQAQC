@@ -2,15 +2,15 @@
 set.seed(47)
 #source("C:/github/SNAPQAQC/code/alfresco/functions.R")
 #baseDir <- "C:/github/SNAPQAQC/data"
-source("/workspace/UA/mfleonawicz/projects/SNAPQAQC/code/alfresco/functions.R")
-baseDir <- "/workspace/UA/mfleonawicz/projects/SNAPQAQC/data/final"
-topDir <- "alfresco"
-dataset <- c("fs", "ba")
-reg.grp <- "LCC Regions"
-reg <- c("NW Interior Forest S", "NW Interior Forest N")
+source("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/functions.R")
+projectName <- "IEM"
+baseDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName)
+dataset <- c("ba")
+reg.grp <- "Alaska L2 Ecoregions"
+reg <- c("Intermontane Boreal")
 samples <- TRUE
 dtype <- if(samples) "samples" else "stats"
-yrs.lim <- c(2010,2100)
+yrs.lim <- c(2008,2100)
 
 veg.given <- "Black Spruce"
 mod.given <- "CCCMAcgcm31"
