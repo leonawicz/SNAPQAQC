@@ -15,6 +15,7 @@ prep_alf_files <- function(i, loopBy, mainDir, reps, years){
     } else if(loopBy=="year") {
         keep <- iter <- years
         id <- paste0("_",c(0:199)[i],"_.*.tif$")
+        mainDir <- file.path(mainDir, reps[i])
     }
     p <- lapply(c("A", "V", "FireS"), function(p, id) gsub("expression","",paste(bquote(expression("^",.(p),".*.",.(id))),collapse="")), id=id)
     files <- lapply(1:length(p), function(i, dir, p) list.files(dir, pattern=p[[i]], full=TRUE, recur=TRUE), dir=mainDir, p=p)
@@ -118,20 +119,17 @@ extract_av <- function(i, loopBy, mainDir, ageDir=NULL, reps=NULL, years=NULL, c
     }
     d.age <- if(loopBy=="rep") rbindlist(d.age)[, Year:=as.integer(years[i])] else if(loopBy=="year") rbindlist(d.age)[, Replicate:=as.integer(i)]
     d.age <- group_by(d.age, LocGroup, Location, Year, Vegetation) %>% setorder(Replicate, LocGroup, Location, Year, Vegetation, Age, Freq)
+    d.area <- group_by(d.age, Replicate, add=T) %>% summarise(Val=sum(Freq))
+    d.area[, Var:= "Vegetated Area"]
+    setcolorder(d.area, c("LocGroup", "Location", "Var", "Vegetation", "Year", "Val", "Replicate"))
     locs <- unique(d.age$Location)
     if(loopBy=="rep"){
-        d.area <- group_by(d.age, Replicate, add=T) %>% summarise(Val=sum(Freq))
-        d.area[, Var:= "Vegetated Area"]
-        setcolorder(d.area, c("LocGroup", "Location", "Var", "Vegetation", "Year", "Val", "Replicate"))
         d.age <- group_by(d.age, Age, add=T) %>% summarise(Freq=sum(Freq))
         d.age[, Var:= "Vegetation Age"]
         setcolorder(d.age, c("LocGroup", "Location", "Var", "Vegetation", "Year", "Age", "Freq"))
         return(list(d.area=d.area, d.age=d.age))
     }
     if(loopBy=="year"){
-        d.area <- summarise(d.age, Val=sum(Freq))
-        d.area[, Var:= "Vegetated Area"]
-        setcolorder(d.area, c("LocGroup", "Location", "Var", "Vegetation", "Year", "Val", "Replicate"))
         setkey(d.age, Location)
         for(j in 1:length(locs)){
             obj.name.tmp <- paste0("age__", locs[j], "__rep", i)
