@@ -1,15 +1,41 @@
 # @knitr functions
 # Distribution data table class constructor
-disttable <- function(data, check.values=TRUE){
-    stopifnot(any(class(data) %in% c("grouped_dt", "tbl_dt", "tbl", "data.table", "data.frame")))
-    stopifnot(all(c("Val", "Prob") %in% names(data)))
-    if(check.values){
-        stopifnot(is.numeric(data$Val) && is.numeric(data$Prob))
-        stopifnot(!any(is.na(data$Val)) && !any(is.na(data$Prob)))
-        stopifnot(min(data$Prob) >= 0)
+disttable <- function(x, y=NULL, Val="Val", Prob="Prob", discrete=FALSE, check.values=TRUE, density.args=list()){
+    if("disttable" %in% class(x)) return(x)
+    if(is.numeric(x)){
+        if(any(is.na(x))) stop("Missing values not permitted.")
+        if(is.null(y)) y <- attr(x, "prob")
+        if(is.null(y)){
+            if(discrete){
+                x <- table(x)
+                y <- as.numeric(x/length(x))
+                x <- as.numeric(names(x))
+            } else {
+                x <- do.call(density, args=c(list(x=x), density.args))
+                y <- x$y
+                x <- x$x
+            }
+        }
+        if(length(x) != length(y)) stop("Values and probabilities do not have equal length.")
+        x <- data.frame(Val=x, Prob=y)
     }
-    class(data) <- unique(c("disttable", class(data)))
-    data
+    stopifnot(any(class(x) %in% c("grouped_dt", "tbl_dt", "tbl", "data.table", "data.frame")))
+    if(Val==Prob) stop("`Val` and `Prob` cannot refer to the same column.")
+    id <- names(x)
+    if(!(Val %in% id) && !("Val" %in% id)) stop(paste("No column called", Val))
+    if(!(Prob %in% id) && !("Prob" %in% id)) stop(paste("No column called", Prob))
+    if(Val %in% id && Val != "Val") names(x)[id==Val] <- "Val"
+    if(Prob %in% id && Prob != "Prob") names(x)[id==Prob] <- "Prob"
+    if(check.values){
+        stopifnot(is.numeric(x$Val) && is.numeric(x$Prob))
+        stopifnot(!any(is.na(x$Val)) && !any(is.na(x$Prob)))
+        stopifnot(min(x$Prob) >= 0)
+        #stopifnot(max(x$Prob) <= 1)
+        dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
+        if(any((group_by_(x, .dots=dots) %>% summarise(Duplicated=any(duplicated(Val))))$Duplicated)) stop("Duplicated values in `Val`.")
+    }
+    class(x) <- unique(c("disttable", class(x)))
+    x
 }
 
 # bootstrap sample from estimated pdf
@@ -31,7 +57,7 @@ sample_densities <- function(data, check.class=TRUE){
 
 # summarize distributions of a RV with specified uncertainty bounds around mean, conditioned on or marginalized over other variables
 # constructs a uc_table class object from specifically disttable class objects or row binds multiple uc_table objects
-uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, bindType.as.factor=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE, drop.vars=NULL, check.class=TRUE){
+uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NULL, density.args=list(), bindType.as.factor=TRUE, ignore.constants=TRUE, var.set=c("Phase", "Scenario", "Model", "Location", "Var", "Vegetation", "Year"), use.var.set=TRUE, drop.vars=NULL, check.class=TRUE){
     dots <- list(...)
     if(!length(dots)) stop("No data provided.")
     if(length(dots) > 1){
@@ -79,7 +105,7 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
     conditional.vars <- get_conditioning_vars(x=data, vars=id[!(id %in% c("Val", "Prob", margin))], ignore.constants=ignore.constants, drop.vars=drop.vars)
     stopifnot(all(condition.on.mean %in% conditional.vars))
     marginalized.vars <- get_marginalized_vars(x=data, vars=margin, var.set=var.set, use.var.set=use.var.set, drop.vars=drop.vars)
-    if(length(margin)) data <- marginalize(data, margin=margin)
+    if(length(margin)) data <- marginalize(data, margin=margin, density.args=density.args)
     id <- names(data)
     label.mar <- paste0(marginalized.vars, collapse=" + ")
     label.con <- if(conditional.vars[1]=="") "" else paste("|", paste0(conditional.vars, collapse=", "))
@@ -102,26 +128,26 @@ uc_table <- function(..., lb=0.025, ub=0.975, condition.on.mean=NULL, margin=NUL
 }
 
 # estimated pdf from bootstrap sample
-dtDen <- function(x, n=1000, adj=0.1, out="vector", min.zero=TRUE, diversify=FALSE){
-    b <- max(1, 0.05*diff(range(x)))
-    z <- density(x, adjust=adj, n=n, from=min(x)-b, to=max(x)+b)
-    if(min.zero && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+b)
-    if(out=="vector") return(as.numeric(c(z$x, z$y))) else if(out=="list") return(z)
+#dtDen <- function(x, n=1000, adj=0.1, out="vector", min.zero=TRUE){
+#    b <- max(1, 0.05*diff(range(x)))
+#    z <- density(x, adjust=adj, n=n, from=min(x)-b, to=max(x)+b)
+#    if(min.zero && any(z$x < 0)) z <- density(x, adjust=adj, n=n, from=0, to=max(x)+b)
+#    if(out=="vector") return(as.numeric(c(z$x, z$y))) else if(out=="list") return(z)
+#}
+
+dtDen <- function(x, n=1000, adj=0.1, ...){
+    density(x, n=n, adjust=adj, ...)
 }
 
 # reclass Vegetation column to aggregate Forest and Tundra entries
-toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
+toForestTundra <- function(data, density.args=list(), check.class=TRUE){
     group.vars <- as.character(groups(data))
     if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     nam <- names(data)
     nam2 <- nam[!(nam %in% c("Val", "Prob"))]
     tundra <- c("Graminoid Tundra", "Shrub Tundra", "Wetland Tundra")
-    f1 <- function(x) summarise(x, Val=dtBoot(Val))
-    f2 <- function(x) summarise(x, Val=dtDen(Val))
-    if("Prob" %in% nam){
-        f1 <- function(x) summarise(x, Val=dtBoot(Val, Prob))
-        if(keep.prob.col) f2 <- function(x) summarise(x, Val=dtDen(Val, out="list")$x, Prob=dtDen(Val, out="list")$y)
-    }
+    f1 <- function(x) summarise(x, Val=dtBoot(Val, Prob))
+    f2 <- function(x) summarise(x, Val=do.call(density, c(list(x=Val), density.args)$x), Prob=do.call(density, c(list(x=Val), density.args)$y))
     data <- group_by_(data, .dots=lapply(nam2, as.symbol)) %>% f1 %>%
         mutate(Vegetation2=ifelse(as.character(Vegetation) %in% tundra, "Tundra", "Forest"), Obs=1:formals(dtBoot)$n.boot) %>%
         select(-Vegetation) %>% mutate(Vegetation=Vegetation2) %>% select(-Vegetation2) %>%
@@ -132,21 +158,17 @@ toForestTundra <- function(data, keep.prob.col=TRUE, check.class=TRUE){
 }
 
 # merge distributions using a cycle of bootstrap resampling followed by density re-estimation
-merge_densities <- function(data, keep.prob.col=TRUE, check.class=TRUE){
+merge_densities <- function(data, density.args=list(), check.class=TRUE){
     if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     g <- as.character(groups(data))
-    if("Prob" %in% names(data)){
-        if(keep.prob.col){
-            data <- summarise(data, Val=dtDen(dtBoot(Val, Prob), out="list")$x, Prob=dtDen(dtBoot(Val, Prob), out="list")$y)
-        } else data <- summarise(data, Val=dtDen(dtBoot(Val, Prob)))
-    } else data <- summarise(data, Val=dtDen(dtBoot(Val)))
+    data <- summarise(data, Val=do.call(density, c(list(x=dtBoot(Val, Prob)), density.args)$x), Prob=do.call(density, c(list(x=dtBoot(Val, Prob)), density.args)$y))
     if(all(g %in% names(data))) data <- group_by_(data, .dots=lapply(g, as.symbol))
     class(data) <- unique(c("disttable", class(data)))
     data
 }
 
 # Repeat cycle of bootstrap resampling followed by density re-estimation n-1 times, assumes Prob column present
-bootDenCycle <- function(data, n, start=NULL, group.vars=as.character(groups(data)), check.class=TRUE){
+bootDenCycle <- function(data, n, start=NULL, group.vars=as.character(groups(data)), density.args=list(), check.class=TRUE){
     if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     if(!("Cycle" %in% names(data))) data$Cycle <- 1
     if(is.null(start)) start <- max(data$Cycle)
@@ -155,17 +177,17 @@ bootDenCycle <- function(data, n, start=NULL, group.vars=as.character(groups(dat
         class(data) <- unique(c("disttable", class(data)))
         return(select_(data, .dots=lapply(c(group.vars, "Val", "Prob", "Cycle"), as.symbol)) %>% group_by(Cycle, add=T))
     }
-    data %>% bind_rows( filter(data, Cycle==start) %>% merge_densities %>% mutate(Cycle=start+1) ) %>%
+    data %>% bind_rows( filter(data, Cycle==start) %>% merge_densities(density.args=density.args, check.class=check.class) %>% mutate(Cycle=start+1) ) %>%
         data.table %>% group_by_(.dots=lapply(group.vars, as.symbol)) %>% disttable %>% bootDenCycle(n-1, start+1, group.vars)
 }
 
 # marginalize distribution of RV (Val column) over selected categorical variables (Scenario, Model)
-marginalize <- function(data, margin, keep.prob.col=TRUE, check.class=TRUE){
+marginalize <- function(data, margin, density.args=list(), check.class=TRUE){
     if(check.class && class(data)[1]!="disttable") data <- disttable(data)
     id <- names(data)
     if(length(margin) && any(!(margin %in% id))) stop("Marginalizing variable(s) not found.")
     dots <- lapply(id[!(id %in% c("Val", "Prob", margin))], as.symbol)
-    group_by_(data, .dots=dots) %>% merge_densities(keep.prob.col, check.class) %>% group_by_(.dots=dots) -> data
+    group_by_(data, .dots=dots) %>% merge_densities(density.args=density.args, check.class=check.class) %>% group_by_(.dots=dots) -> data
     class(data) <- unique(c("disttable", class(data)))
     data
 }
@@ -253,28 +275,6 @@ uc_components <- function(data){
 }
 
 # make stepwise GCM data table of uncertainty components (simulation, scenario, and model)
-uc_stepwise_gcm <- function(data, models=NULL){
-    uc.mar <- c("Sim", "Sim + Scenario", "Sim + Model", "Sim + Scenario + Model")
-    uc.mar <- factor(uc.mar, levels=uc.mar)
-    if(is.null(models)) models <- unique(data$Model)
-    for(i in 1:length(models)){
-        gcmset <- models[1:i]
-        abb <- sapply(gcmset, function(x) switch(x, "CCCMAcgcm31"="C", "GFDLcm21"="G", "MIROC32m"="M", "MPIecham5"="E", "ukmoHADcm3"="H", "unknown"))
-        data %>% filter(Model %in% gcmset) %>%
-        (function(d) {
-            d %>% uncertainty(drop=c("Scenario", "Model"), label=uc.mar[1]) -> d.sim
-            d %>% marginalize("Scenario") %>% uncertainty(drop="Model", label=uc.mar[2]) -> d.simScen
-            d %>% marginalize("Model") %>% uncertainty(drop="Scenario", label=uc.mar[3]) -> d.simMod
-            d %>% marginalize(c("Scenario", "Model")) %>% uncertainty(label=uc.mar[4]) -> d.simScenMod
-            uc_components(sim=d.sim, simScen=d.simScen, simMod=d.simMod, simScenMod=d.simScenMod)
-        }) %>% mutate(GCMset=paste(abb, collapse=" ")) -> d.tmp
-        if(i==1) d <- d.tmp else d <- bind_rows(d, d.tmp)
-    }
-    class(d) <- unique(c("ucsteptable", "uccomptable", "disttable", class(d)))
-    d
-}
-
-# make stepwise GCM data table of uncertainty components (simulation, scenario, and model)
 uc_stepwise <- function(data, models=NULL, use.abb=FALSE, drop.vars=NULL){
     if(is.null(models)) models <- unique(data$Model)
     stopifnot(length(models) > 1)
@@ -285,13 +285,13 @@ uc_stepwise <- function(data, models=NULL, use.abb=FALSE, drop.vars=NULL){
         if(!use.abb) {abb <- gcmset; abb.collapse <- "\n"}
         data %>% filter(Model %in% gcmset) %>%
         (function(d) {
-            d %>% uc_table(condition.on.mean=c("Scenario", "Model"), ignore.constants=FALSE, drop.vars=drop.vars) -> d.sim
+            d %>% uc_table(condition.on.mean=c("Scenario", "Model"), density.args=density.args, ignore.constants=FALSE, drop.vars=drop.vars) -> d.sim
             print(1)
-            d %>% uc_table(condition.on.mean="Model", margin="Scenario", ignore.constants=FALSE, drop.vars=drop.vars) -> d.simScen
+            d %>% uc_table(condition.on.mean="Model", margin="Scenario", density.args=density.args, ignore.constants=FALSE, drop.vars=drop.vars) -> d.simScen
             print(2)
-            d %>% uc_table(condition.on.mean="Scenario", margin="Model", ignore.constants=FALSE, drop.vars=drop.vars) -> d.simMod
+            d %>% uc_table(condition.on.mean="Scenario", margin="Model", density.args=density.args, ignore.constants=FALSE, drop.vars=drop.vars) -> d.simMod
             print(3)
-            d %>% uc_table(margin=c("Scenario", "Model"), ignore.constants=FALSE, drop.vars=drop.vars) -> d.simScenMod
+            d %>% uc_table(margin=c("Scenario", "Model"), density.args=density.args, ignore.constants=FALSE, drop.vars=drop.vars) -> d.simScenMod
             print(4)
             uc_components(uc_table(d.sim, d.simScen, d.simMod, d.simScenMod))
         }) %>% mutate(GCMset=paste(abb, collapse=abb.collapse)) -> d.tmp
@@ -303,11 +303,11 @@ uc_stepwise <- function(data, models=NULL, use.abb=FALSE, drop.vars=NULL){
 }
 
 # add Decade column based on Year column and optionally filter decades using vector of decade leading years
-byDecade <- function(data, decade.start.years=NULL) {
+byDecade <- function(data, decade.start.years=NULL, density.args=list()) {
     g <- setdiff(as.character(groups(data)), "Year")
     data <- mutate(data, Decade=paste0(10*Year%/%10, "s"))
     if(!is.null(decade.start.years)) data <- filter(data, Decade %in% paste0(decade.start.years, "s"))
-    data %>% group_by_(.dots=lapply(c(g, "Decade"), as.symbol)) %>% marginalize("Year")
+    data %>% group_by_(.dots=lapply(c(g, "Decade"), as.symbol)) %>% marginalize("Year", density.args=density.args)
 }
 
 # compare marginal and conditional distributions of a RV with respect to models and scenarios
@@ -345,9 +345,9 @@ distplot <- function(x, ...) UseMethod("distplot")
 }
 
 # helper function aggregating annual distributions of a RV to decades by marginalizing over years by decade
-.aggToDecades <- function(data, group.vars=as.character(groups(data)), decades=NULL){
+.aggToDecades <- function(data, group.vars=as.character(groups(data)), decades=NULL, , density.args=list()){
     if(is.null(decades)) return(data)
-    data <- byDecade(data, decades)
+    data <- byDecade(data, decades, density.args=density.args)
     group.vars[group.vars=="Year"] <- "Decade"
     group_by_(data, .dots=lapply(group.vars, as.symbol))
 }
@@ -360,15 +360,15 @@ distplot <- function(x, ...) UseMethod("distplot")
 
 # Plot distributions of a RV after optionally conditioning (filtering) and/or marginalizing over (merging) factor levels of associated variables
 # Plot repeated cycle of bootstrap resampling followed by density re-estimation of a RV with dist.cycle=TRUE and n > 1
-distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, Log=FALSE, ...){
+distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.character(groups(data)), density.args=list(), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, Log=FALSE, ...){
     data <- copy(data)
     stopifnot(is.null(group.vars) || all(group.vars %in% names(data)))
     merge.factors <- if(length(group.vars) < length(groups(data))) TRUE else FALSE
     dots <- list(...)
     .filter_plot_data(data, dots) %>% group_by_(.dots=lapply(group.vars, as.symbol)) %>%
-        .aggToDecades(group.vars, dots$decade.start.years) -> data
-    if(merge.factors) data <- merge_densities(data)
-    if(dist.cycle) data <- bootDenCycle(data, n)
+        .aggToDecades(group.vars, dots$decade.start.years, density.args=density.args) -> data
+    if(merge.factors) data <- merge_densities(data, density.args=density.args)
+    if(dist.cycle) data <- bootDenCycle(data, n, density.args=density.args)
     data <-sample_densities(data)
     if(Log) data <- mutate(data, Val=log(Val + 1))
     if(show.plot){
@@ -396,11 +396,11 @@ distplot.disttable <- function(data, n=10, dist.cycle=FALSE, group.vars=as.chara
 }
 
 # Plot comparison of marginal and conditional distributions of a RV with respect to GCMs and scenarios
-distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
+distplot.msdisttable <- function(data, group.vars=as.character(groups(data)), density.args=list(), facet.formula=NULL, facet.scales="free", facet.ncol=NULL, show.plot=TRUE, return.data=TRUE, ...){
     data <- copy(data)
     dots <- list(...)
     group_by_(data, .dots=lapply(group.vars, as.symbol)) %>% .filter_plot_data(dots) %>%
-        .aggToDecades(decades=dots$decade.start.years) %>% sample_densities -> data
+        .aggToDecades(decades=dots$decade.start.years, density.args=density.args) %>% sample_densities -> data
     if(show.plot){
         xlb <- if(!is.null(dots$xlab)) dots$xlab else "X"
         ylb <- if(!is.null(dots$ylab)) dots$ylab else "Density"
