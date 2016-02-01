@@ -1,0 +1,73 @@
+R = simulation replicate = {1, 2, ..., 200}
+S = scenario = {B1, A1B, A2}
+M = model = {cccma, gfdl, echam, miroc, had}
+U = uncertainty
+
+Using a probability distribution framework to describe what I am interested in:
+
+U is the "uncertainty", or "distribution" of some random variable of interest, e.g., total black spruce area (in region x at time t) and can be described in various forms using the following notation.
+
+1. U(R,S,M) is the joint uncertainty/distribution [d.RSM]
+2. U(R,S) is the marginal uncertainty among R and S with respect to/after integrating out M [d.RS]
+3. U(R,M) is the marginal uncertainty among R and M with respect to S [d.RM]
+4. U(R) is the marginal uncertainty among R with respect to S and M [d.R]
+5. U(R|S=s) is the marginal uncertainty among R conditional on/given S=s with respect to M [d.RgS]
+6. U(R|M=m) is the marginal uncertainty among R given M=m with respect to S [d.RgM]
+7. U(R,S|M=m) is the joint uncertainty among R and S given M=m [d.RSgM]
+8. U(R,M|S=s) is the joint uncertainty among R and M given S=s [d.RMgS]
+9. U(R|S=s,M=m) is the uncertainty in R given S=s and M=m [d.RgSM]
+
+The first is the full joint uncertainty (assuming only these three variables, R, S, and M)
+The last is the univariate conditional uncertainty of interest (not interested in uncertainty given a specific simulation replicate out of 200 for example).
+The remainder are multivariate and marginal distributions of interest, some also being conditioned upon another variable.
+
+
+To do list:
+1. Test multiple variables in end-stage test script
+
+2. Test multiple locations in end-stage test script
+
+3. Test multiple variables and locations in end-stage test script.
+Achieve generality of factor usage, e.g., condition on/marginalize over other variables' levels besides models and scenarios.
+
+4. Reverse probabilities. Given a range of one or continuous RVs (e.g., age, veg, burn area), examine the pmf of factors like scenario and model
+
+5. Examine hierarchical probabilities and uncertainty bounds such as the total vegetated area of black spruce under age 10 years old.
+This requires the distribution of black spruce area and distribution of black spruce age in that area.
+The simple version which ignores uncertainty multiplies the fraction of black spruce under 10 years (area under the curve in the lower tail of the age distribution) by the mean of the vegetated area distribution.
+Instead, maintain information about uncertainty my multiplying by the chosen confidence limits associated with the vegetated area distribution.
+
+6. Compare results from multiple approaches to the same problem.
+   Specifically, distributions of total burn area aggregated across all vegetation types.
+   
+  A. Method 1. These estimated distributions are available directly (for a given year, GCM, etc.).
+  
+  B. Method 2. A burn area distribution can also be indirectly estimated from a sum of n fire sizes sampled from the fire size distribution where n is based on the fire frequency distribution.
+     For example, to obtain 95% empirical confidence limits on burn area, one simple approach is to obtain these limits, n1 and n2, for fire frequency.
+     Then sample from the fire size distribution at each of these sampling intensities, summing each set of samples.
+     It is simpler than this, however, because all sampling is done on the same fire size distribution. Only one sample of sufficient size needs to be taken.
+     We can also imagine a case where the fire frequency is small and sampling variation would dominate (possibly even invert) the resultant confidence limits.
+     Instead, take one arbitrarily large bootstrap sample from the fire size distribution, say n=10,000.
+     
+     If the 95% fire frequency limits are n1 and n2, the 95% burn area limits are n1*sum(n fire sizes)/n and n2*sum(n fire sizes)/n
+     But this is just n1 and n2 times the mean of the fire size distribution, respectively. Number of fires times average fire size.
+     There is no need to sample fire sizes if you already know the mean of this distribution. Otherwise, continue by computing the sample mean.
+     
+     Still, since we have the fire size distribution, it is preferable to use it to obtain the burn area distribution, only computing confidence limits directly on the burn area as the final step.
+     Compared to method 1, to obtain an actual burn area distribution indirectly, do the following:
+     Draw one sample, n, from the fire frequency distribution. Then draw n samples from the fire size distribution and sum the n fire sizes to obtain the burn area sample.
+     Bootstrap this procedure for generating samples of burn area N times to uncover the burn area distribution.
+     
+     If working only with a specific vegetation type, applying method 2 is analogous to when applied at the aggregatd-vegetation scale.
+     
+  C. Method 3. Use distributions of burn area by vegetation type to estimate the total burn area distribution.
+     Make one random draw from each vegetation type (this is for a given ecoregion and time point) and sum together. Repeat this N times.
+     There is ecological fallacy inherent in this approach. Fire frequency, size, and total burn area in each vegetation type are not independent of those in other vegetation types.
+     As a result, aggregate totals may have excessive variability.
+     Method 3 can be made worse by adding the additional noise of method 2.
+     This involves using fire frequency and fire size distributions at the vegetation-specific level to obtain veg-specific burn area rather than using the directly available vegetation-specific burn area.
+     Although this is possible and the ecological fallacy may be difficult to perceive, consider for a moment something more obvious; that vegetation-specific fire size distributions cannot be combined to estimate the regional fire size distribution.
+     Information is missing regarding the overlap of unique fires, e.g., unique fire IDs. A fire may cross multiple vegetation types, having a total area and a vegetation-specific area.
+     A fire size at the regional scale cannot be partitioned and a fire size in multiple vegetation types cannot be associated and combined.
+     Estimation of the original distributions at each scale was done using unique fire IDs in the source data, yielding these scale-specific distribution functions in lieu of static scale-specific samples.
+     

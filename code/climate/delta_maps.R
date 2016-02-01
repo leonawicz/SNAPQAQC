@@ -6,7 +6,8 @@ tmpDir <- paste0("/atlas_scratch/mfleonawicz/tmp")
 rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir)
 
 # setup
-cru.yrs <- 1970:1999
+prism.yrs <- 1961:1990
+#cru.yrs <- 1970:1999
 gcm.yrs <- 2010:2039
 topDir <- "/Data/Base_Data/Climate/AK_CAN_2km"
 vars <- c("tas", "pr")
@@ -19,28 +20,33 @@ n.r <- length(rcps)
 n.m1 <- length(ar4models)
 n.m2 <- length(ar5models)
 seasons <- list(Winter=1:3, Spring=4:6, Summer=7:9, Fall=10:12)
-cru32dirs <- file.path(topDir, "historical/CRU/CRU_TS32", vars)
+prism6190dirs <- file.path(topDir, "historical/singleBand/prism/AK_CAN_2km_PRISM/AK_CAN_geotiffs", vars, "ak83albers")
+#cru32dirs <- file.path(topDir, "historical/CRU/CRU_TS32", vars)
 ar4dirs <- file.path(topDir, "projected/AR4_CMIP3_models", rep(scenarios, each=n.m1), ar4models, rep(vars, each=n.s*n.m1))
 ar5dirs <- file.path(topDir, "projected/AR5_CMIP5_models", rep(rcps, each=n.m2), ar5models, rep(vars, each=n.r*n.m2))
-outDir <- paste0("../data/delta_maps/climate_2km/base_climatology_CRU32_", paste(range(cru.yrs), collapse="_"))
+outDir <- paste0("../data/delta_maps/climate_2km/base_climatology_PRISM_", paste(range(prism.yrs), collapse="_"))
 
 # functions
 # monthly or seasonal (DJF, MAM, JJA, SON) climatology layers
 get_clim <- function(k=NULL, dir, years, seasons=FALSE, prev.december=TRUE, round.values=FALSE, internal.par=FALSE){
     if(!is.null(k)){ dir <- dir[k]; years <- years[[k]] }
-    rnd <- if(basename(dir) %in% c("tas")) 1 else 0
+    path.vec <- strsplit(dir, "/")[[1]]
+    prism <- "prism" %in% path.vec
+    rnd <- if("tas" %in% path.vec) 1 else 0
     p <- if(seasons) list(Winter=c(1,2,12), Spring=3:5, Summer=6:8, Fall=9:11) else
         if(prev.december) split(1:13, factor(c("PrevDec", month.abb), levels=c("PrevDec", month.abb))) else
             split(1:12, factor(month.abb, levels=month.abb))
     files <- list.files(dir, pattern="\\.tif$", full=T)
-    mo.vec <- substr(files, nchar(files)-10, nchar(files)-9)
+    mo.vec <- if(prism) c(paste0("0", 1:9), 10:12) else substr(files, nchar(files)-10, nchar(files)-9)
     files <- split(files, mo.vec)
     if(!seasons && prev.december) files <- c(files[12], files)
+    if(!prism){
     files <- lapply(1:length(p), function(i, x, years, seasons, pre){
         yr.vec <- as.numeric(substr(x[[i]], nchar(x[[i]])-7, nchar(x[[i]])-4))
         if((seasons && pre && i==12) || (!seasons && pre && i==1)) years <- years-1
         x[[i]][yr.vec %in% years]
         }, x=files, years=years, seasons=seasons, pre=prev.december)
+    }
     files <- lapply(p, function(x, files) unlist(files[x]), files=files)
     if(internal.par) b <- brick(stack(mclapply(files, function(x) calc(stack(x, quick=T), mean), mc.cores=length(files))))
     if(!internal.par) b <- brick(stack(lapply(files, function(x) calc(stack(x, quick=T), mean))))
@@ -82,7 +88,7 @@ get_deltas <- function(x, y, v=NULL, n.cores=32){
 }
 
 # save tifs
-write_delta_tifs <- function(deltas, outDir, years.range, scenarios, models, vars, n.cores=10){
+write_delta_tifs <- function(deltas, outDir, years.range, scenarios, models, vars, n.cores=10, ...){
     n <- length(deltas)
     dir.create(outDir, recur=T, showWarnings=F)
     mclapply(1:n, function(i, ...){
@@ -101,17 +107,35 @@ write_delta_tifs <- function(deltas, outDir, years.range, scenarios, models, var
 }
 
 # process
-n <- length(cru32dirs)
-cru.clim <- lapply(1:length(cru32dirs), get_clim, cru32dirs, rep(list(cru.yrs), n), internal.par=TRUE) # 2 min
-names(cru.clim) <- cru32dirs
-#cru.clim <- lapply(1:n, get_clim, cru32dirs, rep(list(cru.yrs), n), seasons=TRUE, internal.par=TRUE) # 3 min, not run
-cru.clim <- append_seasons(cru.clim, seasons)
+#n <- length(cru32dirs)
+#cru.clim <- lapply(1:length(cru32dirs), get_clim, cru32dirs, rep(list(cru.yrs), n), internal.par=TRUE) # 2 min
+#names(cru.clim) <- cru32dirs
+####cru.clim <- lapply(1:n, get_clim, cru32dirs, rep(list(cru.yrs), n), seasons=TRUE, internal.par=TRUE) # 3 min, not run
+#cru.clim <- append_seasons(cru.clim, seasons)
+
+n <- length(prism6190dirs)
+prism.clim <- lapply(1:length(prism6190dirs), get_clim, prism6190dirs, rep(list(prism.yrs), n), internal.par=TRUE) # 2 min
+prism.clim <- mclapply(prism.clim, trim, mc.cores=2)
+names(prism.clim) <- prism6190dirs
+#prism.clim <- lapply(1:n, get_clim, prism6190dirs, rep(list(prism.yrs), n), seasons=TRUE, internal.par=TRUE) # 3 min, not run
+prism.clim <- append_seasons(prism.clim, seasons)
+
 n <- length(ar4dirs)
-y <- mclapply(1:n, get_clim, ar4dirs,  rep(list(gcm.yrs), n), mc.cores=32) # 16.5 min
+y <- mclapply(1:n, get_clim, ar4dirs, rep(list(gcm.yrs), n), mc.cores=32) # 16.5 min
 names(y) <- ar4dirs
 #y <- mclapply(1:n, get_clim, ar4dirs, rep(list(gcm.yrs), n), seasons=TRUE, mc.cores=32) # 10 min, not run
 y <- append_seasons(y, seasons)
 gc()
-y <- get_deltas(x=cru.clim, y) # 1 min
+y <- get_deltas(x=prism.clim, y) # 1 min
 gc()
 write_delta_tifs(y, outDir, range(gcm.yrs), scenarios, ar4models, vars)
+
+n <- length(ar5dirs)
+y <- mclapply(1:n, get_clim, ar5dirs, rep(list(gcm.yrs), n), mc.cores=32) # 16.5 min
+names(y) <- ar5dirs
+#y <- mclapply(1:n, get_clim, ar5dirs, rep(list(gcm.yrs), n), seasons=TRUE, mc.cores=32) # 10 min, not run
+y <- append_seasons(y, seasons)
+gc()
+y <- get_deltas(x=prism.clim, y) # 1 min
+gc()
+write_delta_tifs(y, outDir, range(gcm.yrs), scenarios, ar5models, vars)
