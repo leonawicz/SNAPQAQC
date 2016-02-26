@@ -1,6 +1,6 @@
 # @knitr functions
 # Distribution data table class constructor
-disttable <- function(x, y=NULL, Val="Val", Prob="Prob", discrete=FALSE, check.values=TRUE, density.args=list()){
+disttable <- function(x, y=NULL, Val="Val", Prob="Prob", discrete=FALSE, density.args=list()){
     if("disttable" %in% class(x)) return(x)
     if(is.numeric(x)){
         if(any(is.na(x))) stop("Missing values not permitted.")
@@ -17,23 +17,21 @@ disttable <- function(x, y=NULL, Val="Val", Prob="Prob", discrete=FALSE, check.v
             }
         }
         if(length(x) != length(y)) stop("Values and probabilities do not have equal length.")
-        x <- data.frame(Val=x, Prob=y)
+        x <- data.table(Val=x, Prob=y)
     }
-    stopifnot(any(class(x) %in% c("grouped_dt", "tbl_dt", "tbl", "data.table", "data.frame")))
+    stopifnot(any(class(x) %in% c("data.table", "data.frame")))
     if(Val==Prob) stop("`Val` and `Prob` cannot refer to the same column.")
     id <- names(x)
     if(!(Val %in% id) && !("Val" %in% id)) stop(paste("No column called", Val))
     if(!(Prob %in% id) && !("Prob" %in% id)) stop(paste("No column called", Prob))
     if(Val %in% id && Val != "Val") names(x)[id==Val] <- "Val"
     if(Prob %in% id && Prob != "Prob") names(x)[id==Prob] <- "Prob"
-    if(check.values){
-        stopifnot(is.numeric(x$Val) && is.numeric(x$Prob))
-        stopifnot(!any(is.na(x$Val)) && !any(is.na(x$Prob)))
-        stopifnot(min(x$Prob) >= 0)
-        #stopifnot(max(x$Prob) <= 1)
-        dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
-        if(any((group_by_(x, .dots=dots) %>% summarise(Duplicated=any(duplicated(Val))))$Duplicated)) stop("Duplicated values in `Val`.")
-    }
+    stopifnot(is.numeric(x$Val) && is.numeric(x$Prob))
+    stopifnot(!any(is.na(x$Val)) && !any(is.na(x$Prob)))
+    stopifnot(min(x$Prob) >= 0)
+    #stopifnot(max(x$Prob) <= 1)
+    dots <- lapply(id[!(id %in% c("Val", "Prob"))], as.symbol)
+    if(any((group_by_(x, .dots=dots) %>% summarise(Duplicated=any(duplicated(Val))))$Duplicated)) stop("Duplicated values in `Val`.")
     class(x) <- unique(c("disttable", class(x)))
     x
 }
