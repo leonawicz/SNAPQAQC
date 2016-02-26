@@ -10,6 +10,7 @@ prism.yrs <- 1961:1990
 #cru.yrs <- 1970:1999
 gcm.yrs <- 2010:2039
 topDir <- "/Data/Base_Data/Climate/AK_CAN_2km"
+#topDir <- "/Data/Base_Data/Climate/World/World_10min" # for world grid 10-minute res data
 vars <- c("tas", "pr")
 scenarios <- c("sresb1", "sresa1b", "sresa2")
 rcps <- c("rcp45", "rcp60", "rcp85")
@@ -25,6 +26,7 @@ prism6190dirs <- file.path(topDir, "historical/singleBand/prism/AK_CAN_2km_PRISM
 ar4dirs <- file.path(topDir, "projected/AR4_CMIP3_models", rep(scenarios, each=n.m1), ar4models, rep(vars, each=n.s*n.m1))
 ar5dirs <- file.path(topDir, "projected/AR5_CMIP5_models", rep(rcps, each=n.m2), ar5models, rep(vars, each=n.r*n.m2))
 outDir <- paste0("../data/delta_maps/climate_2km/base_climatology_PRISM_", paste(range(prism.yrs), collapse="_"))
+#outDir <- paste0("../data/delta_maps/climate_10min/base_climatology_CRU_", paste(range(cru.yrs), collapse="_"))
 
 # functions
 # monthly or seasonal (DJF, MAM, JJA, SON) climatology layers
