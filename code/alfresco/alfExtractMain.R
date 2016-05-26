@@ -51,34 +51,37 @@ if(exists("locgroup")){
 #dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
 if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern="CRU", full=T)
 if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern=".*.sres.*.", full=T)
+
+#if(useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern="CRU", full=T)
+#if(!useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern=".*.rcp.*.", full=T)
+
 mainDirs <- rep(paste0(dirs,"/Maps")[modelIndex], each=length(itervar))
 modname <- unique(basename(dirname(mainDirs)))
 if(mpiBy=="rep") dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg", modname), recursive=T, showWarnings=F) else ageDir <- NULL
 
 #veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
-mod.scen <- unlist(strsplit(modname, "\\."))
+#mod.scen <- unlist(strsplit(modname, "\\."))
+mod.scen <- unlist(strsplit(modname, "_"))
 
 # @knitr functions
 # Support functions
-# include later: # CCSM4="CCSM4", GFDLcm3="GFDLcm3", GISSe2-r="GISSe2-r", IPSLcm5a-lr="IPSLcm5a-lr", MRIcgcm3="MRIcgcm3"
 swapModelName <- function(x){
 	switch(x,
-		cccma_cgcm3_1="CCCMAcgcm31", gfdl_cm2_1="GFDLcm21", miroc3_2_medres="MIROC32m", mpi_echam5="MPIecham5", ukmo_hadcm3="ukmoHADcm3"
+		cccma_cgcm3_1="CCCMAcgcm31", gfdl_cm2_1="GFDLcm21", miroc3_2_medres="MIROC32m", mpi_echam5="MPIecham5", ukmo_hadcm3="ukmoHADcm3",
+    CCSM4="CCSM4", "GFDL-CM3"="GFDL-CM3", "GISS-E2-R"="GISS-E2-R", "IPSL-CM5A-LR"="IPSL-CM5A-LR", "MRI-CGCM3"="MRI-CGCM3"
 	)
 }
 
-# include later: # rcp45="RCP 4.5", rcp60="RCP 6.0", rcp85="RCP 8.5"
 swapScenarioName <- function(x){
 	switch(x,
-		sresb1="SRES B1", sresa1b="SRES A1B", sresa2="SRES A2"
+		sresb1="SRES B1", sresa1b="SRES A1B", sresa2="SRES A2", rcp45="RCP 4.5", rcp60="RCP 6.0", rcp85="RCP 8.5"
 	)
 }
 
-# include later: # rcp45="AR5", rcp60="AR5", rcp85="AR5"
 getPhase <- function(x){
 	switch(x,
-		sresb1="AR4",	sresa1b="AR4", sresa2="AR4"
+		sresb1="AR4",	sresa1b="AR4", sresa2="AR4", rcp45="AR5", rcp60="AR5", rcp85="AR5"
 	)
 }
 paste("Remaining support objects created. Now pushing objects to slaves.")

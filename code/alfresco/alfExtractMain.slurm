@@ -3,14 +3,14 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --account=snap
-#SBATCH --reservation=shiny_4
+####SBATCH --reservation=shiny_4
 #SBATCH -p main
 ####SBATCH --ntasks=93
-#SBATCH --ntasks=58
+#SBATCH --ntasks=108
 #SBATCH --job-name=alfExtractMain
-#SBATCH --nodes=2
-#SBATCH --nodelist=atlas08,atlas09
-#SBATCH --ntasks-per-node=29
+#SBATCH --nodes=4
+####SBATCH --nodelist=atlas08,atlas09,atlas10
+#SBATCH --ntasks-per-node=27
 
 # CL variables passed take form, e.g., modelIndex=1, reps=1:200, years=1900:2100;
 # currently, years defaults to 2008:2100, this will change;

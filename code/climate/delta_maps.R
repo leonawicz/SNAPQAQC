@@ -7,7 +7,7 @@ rasterOptions(chunksize=10e10, maxmemory=10e11, tmpdir=tmpDir)
 
 # setup
 prism.yrs <- 1961:1990
-#cru.yrs <- 1970:1999
+#cru.yrs <- 1961:1990
 gcm.yrs <- 2010:2039
 topDir <- "/Data/Base_Data/Climate/AK_CAN_2km"
 #topDir <- "/Data/Base_Data/Climate/World/World_10min" # for world grid 10-minute res data
@@ -111,9 +111,14 @@ write_delta_tifs <- function(deltas, outDir, years.range, scenarios, models, var
 # process
 #n <- length(cru32dirs)
 #cru.clim <- lapply(1:length(cru32dirs), get_clim, cru32dirs, rep(list(cru.yrs), n), internal.par=TRUE) # 2 min
-#names(cru.clim) <- cru32dirs
+#names(cru.clim) <- basename(cru32dirs)
 ####cru.clim <- lapply(1:n, get_clim, cru32dirs, rep(list(cru.yrs), n), seasons=TRUE, internal.par=TRUE) # 3 min, not run
 #cru.clim <- append_seasons(cru.clim, seasons)
+#cru.clim <- lapply(1:n, function(x) dropLayer(x, 1) %>% rotate)
+#cru.clim[[1]] <- round(cru.clim[[1]], 1)
+#cru.clim[[2]] <- round(cru.clim[[2]])
+#cru6190 <- cru.clim
+#save(cru6190, file="/atlas_scratch/mfleonawicz/projects/leaflet_global/workspaces/pr_tas_CRU32_1961_1990_climatology.RData")
 
 n <- length(prism6190dirs)
 prism.clim <- lapply(1:length(prism6190dirs), get_clim, prism6190dirs, rep(list(prism.yrs), n), internal.par=TRUE) # 2 min

@@ -2,10 +2,6 @@
 #### Stage two compilation of extracted Alfresco outputs into data tables ####
 ##############################################################################
 
-#### Script author:  Matthew Leonawicz ####
-#### Maintainted by: Matthew Leonawicz ####
-#### Last updated:   01/20/2015        ####
-
 # @knitr setup
 comargs <- (commandArgs(TRUE))
 if(!length(comargs)) q("no") else for(z in 1:length(comargs)) eval(parse(text=comargs[[z]]))
