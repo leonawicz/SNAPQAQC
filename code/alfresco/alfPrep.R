@@ -56,95 +56,96 @@ dtBoot <- function(p, p2=NULL, n.boot=10000, interp=TRUE, n.interp=100000, round
 # @knitr prep_data
 # Primary processing functions
 prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ...){
-    id <- basename(inDir)
-    reps <- list(...)$reps
-    exact <- list(...)$exact
-    if(is.null(exact) || !is.logical(exact) || id!="veg") exact <- FALSE
+  id <- basename(inDir)
+  reps <- list(...)$reps
+  exact <- list(...)$exact
+  if(is.null(exact) || !is.logical(exact) || id!="veg") exact <- FALSE
 	files.hist <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.CRU.*.RData$"))
-    files.all <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.RData$"))
-    if(period=="historical") files <- files.hist else if(period=="projected") files <- setdiff(files.all, files.hist)
+  files.all <- list.files(inDir, full=T, pattern=paste0("^", id, "__.*.RData$"))
+  if(period=="historical") files <- files.hist else if(period=="projected") files <- setdiff(files.all, files.hist)
 	files.locs <- sapply(strsplit(files, "__"), "[", 2)
 	locs <- unique(files.locs)
 	if(j > length(locs)) return(NULL)
 	loc <- locs[j]
 	files <- files[which(files.locs %in% loc)]
-    dat <- stat <- vector("list", length(files))
+  dat <- stat <- vector("list", length(files))
 	for(i in 1:length(files)){
 		load(files[i], envir=environment())
-        d <- get(ls(pattern="^d\\."))
-        rm(list=ls(pattern="^d\\."))
+    d <- get(ls(pattern="^d\\."))
+    rm(list=ls(pattern="^d\\."))
 		loc.grp <- d$LocGroup[1]
 		loc <- d$Location[1]
-        reps.all <- if(is.null(reps)) sort(unique(d$Replicate)) else reps
-        if(id=="fsv"){
-            d2 <- group_by(d, Phase, Scenario, Model, Location, Var, Year, Replicate, FID) %>% summarise(Val=sum(Val)) %>% mutate(Vegetation="All") # agg-veg FS
-            d <- data.table(bind_rows(d, d2)) %>% mutate(Vegetation=factor(Vegetation, levels=unique(Vegetation))) %>%
-                group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) # individual and aggregate-veg fire sizes
-            d2 <- group_by(d, Replicate, add=T) %>% summarise(BA=sum(Val), FC=length(Val)) # burn area and fire frequency
-            d2 <- d2 %>% do(.,
-                Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with burn area and fire frequency of zero
-                    complete(c(Phase, Scenario, Model, Location, Var, Vegetation, Year), fill=list(BA=0L, FC=0L)) %>%
-                    fill(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% data.table
-            ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
-            d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y)
-            d2.ba <- summarise(d2, Val=dtDen(BA, n=n.samples, out="list")$x, Prob=dtDen(BA, n=n.samples, out="list")$y) %>% mutate(Var="Burn Area")
-            d2.fc <- summarise(d2, Val=dtDen(FC, n=n.samples, out="list")$x, Prob=dtDen(FC, n=n.samples, out="list")$y) %>% mutate(Var="Fire Count")
-            rm(d2)
-            d <- data.table(bind_rows(d, d2.ba, d2.fc))
-            rm(d2.ba, d2.fc)
-            gc()
-        }
-		d <- group_by(d, Phase, Scenario, Model, Location, Var, Vegetation, Year)
-        if(id=="age"){ # note that estimating age "distribution" is still allowed when all pixels for a given veg type have a contant age value across space in a given year
-            d <- filter(d, !(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")) & sum(Freq) > 30) # must be at least 30 pixels across all reps to estimate age distribution
-            if(nrow(d)==0) return("Insufficient data.") # skip if any null data table for the location occurs for age, based on removal of irrelevant veg types or insufficient samples
-            print(paste("j =", j, "| loc =", loc, "| loc.grp =", loc.grp, "| Age[1] = ", d$Age[1], "| Freq[1] =", d$Freq[1], "| nrow(d) =", nrow(d)))
-            d <- summarise(d, Val=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x, # constant age permitted (when length(Freq)==1)
-                Prob=dtDen(ifelse(length(Freq)==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
-        }
-        if(id=="veg"){
-            d <- d %>% do(.,
-                Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with veg area of zero
-                    complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
-                    fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
-            ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
-            if(!exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
-        }
-        get_stats <- function(data, exact=FALSE){
-            if(!exact) data <- summarise(data, Val=dtBoot(Val, Prob, n.boot=n.boot)) %>% group_by(Year, add=T)
-            summarise(data, Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
-                Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
-                Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) %>% group_by(Year, add=T)
-        }
-        s <- get_stats(d, exact=exact) # exact=TRUE only applies to veg area stats, for comparison with veg area stats computed after veg area density estimation
-        if(id=="veg" & exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
-        dat[[i]] <- d
-        stat[[i]] <- s
-        print(i)
-	}
-    dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
-	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
-    prefix <- if(stat[[1]]$Scenario[1]=="Historical") "historical" else "projected"
+    reps.all <- if(is.null(reps)) sort(unique(d$Replicate)) else reps
     if(id=="fsv"){
-        dat <- rbindlist(dat)
-        d.alf.fs <- filter(dat, Var=="Fire Size")
-        d.alf.ba <- filter(dat, Var=="Burn Area")
-        d.alf.fc <- filter(dat, Var=="Fire Count")
-        stats.alf.fire <- rbindlist(stat)
-        save(d.alf.fs, file=file.path(samplesDir, paste0(prefix, "_fsByVeg.RData")))
-        save(d.alf.ba, file=file.path(samplesDir, paste0(prefix, "_baByVeg.RData")))
-        save(d.alf.fc, file=file.path(samplesDir, paste0(prefix, "_fcByVeg.RData")))
-        save(stats.alf.fire, file=file.path(statsDir, paste0(prefix, "_stats_fsbafcByVeg.RData")))
-    } else {
-        data.obj.name <- switch(id, age="d.alf.vegage", veg="d.alf.vegarea")
-        stats.obj.name <- switch(id, age="stats.alf.vegage", veg="stats.alf.vegarea")
-        assign(data.obj.name, rbindlist(dat))
-        assign(stats.obj.name, rbindlist(stat))
-        filename <- paste0(prefix, "_", tail(strsplit(data.obj.name, "\\.")[[1]], 1), ".RData")
-        save(list=data.obj.name, file=file.path(samplesDir, filename))
-        save(list=stats.obj.name, file=file.path(statsDir, filename))
+      d2 <- group_by(d, Phase, Scenario, Model, Location, Var, Year, Replicate, FID) %>% summarise(Val=sum(Val)) %>% mutate(Vegetation="All") # agg-veg FS
+      d <- data.table(bind_rows(d, d2)) %>% mutate(Vegetation=factor(Vegetation, levels=unique(Vegetation))) %>%
+          group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year) # individual and aggregate-veg fire sizes
+      d2 <- group_by(d, Replicate, add=T) %>% summarise(BA=sum(Val), FC=length(Val)) # burn area and fire frequency
+      d2 <- d2 %>% do(.,
+          Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with burn area and fire frequency of zero
+              complete(c(Phase, Scenario, Model, Location, Var, Vegetation, Year), fill=list(BA=0L, FC=0L)) %>%
+              fill(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% data.table
+      ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
+      d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y)
+      d2.ba <- summarise(d2, Val=dtDen(BA, n=n.samples, out="list")$x, Prob=dtDen(BA, n=n.samples, out="list")$y) %>% mutate(Var="Burn Area")
+      d2.fc <- summarise(d2, Val=dtDen(FC, n=n.samples, out="list")$x, Prob=dtDen(FC, n=n.samples, out="list")$y) %>% mutate(Var="Fire Count")
+      rm(d2)
+      d <- data.table(bind_rows(d, d2.ba, d2.fc))
+      rm(d2.ba, d2.fc)
+      gc()
     }
-    return()
+		d <- group_by(d, Phase, Scenario, Model, Location, Var, Vegetation, Year)
+    if(id=="age"){ # note that estimating age "distribution" is still allowed when all pixels for a given veg type have a contant age value across space in a given year
+      d <- filter(d, !(Vegetation %in% c("Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")) & sum(Freq) > 30) # must be at least 30 pixels across all reps to estimate age distribution
+      if(nrow(d)==0) return("Insufficient data.") # skip if any null data table for the location occurs for age, based on removal of irrelevant veg types or insufficient samples
+      print(paste("j =", j, "| loc =", loc, "| loc.grp =", loc.grp, "| Age[1] = ", d$Age[1], "| Freq[1] =", d$Freq[1], "| nrow(d) =", nrow(d)))
+      d <- mutate(d, N=n()) %>% group_by(Year, add=T)
+      d <- summarise(d, Val=dtDen(ifelse(N==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x, # constant age permitted (when length(Freq)==1)
+          Prob=dtDen(ifelse(N==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+    }
+    if(id=="veg"){
+      d <- d %>% do(.,
+        Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with veg area of zero
+          complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
+          fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
+      ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
+      if(!exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+    }
+    get_stats <- function(data, exact=FALSE){
+      if(!exact) data <- summarise(data, Val=dtBoot(Val, Prob, n.boot=n.boot)) %>% group_by(Year, add=T)
+      summarise(data, Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
+        Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
+        Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) %>% group_by(Year, add=T)
+    }
+    s <- get_stats(d, exact=exact) # exact=TRUE only applies to veg area stats, for comparison with veg area stats computed after veg area density estimation
+    if(id=="veg" & exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+    dat[[i]] <- d
+    stat[[i]] <- s
+    print(i)
+	}
+  dir.create(statsDir <- file.path(outDir, "stats", loc.grp, loc), recursive=T, showWarnings=F)
+	dir.create(samplesDir <- file.path(outDir, "samples", loc.grp, loc), recursive=T, showWarnings=F)
+  prefix <- if(stat[[1]]$Scenario[1]=="Historical") "historical" else "projected"
+  if(id=="fsv"){
+    dat <- rbindlist(dat)
+    d.alf.fs <- filter(dat, Var=="Fire Size")
+    d.alf.ba <- filter(dat, Var=="Burn Area")
+    d.alf.fc <- filter(dat, Var=="Fire Count")
+    stats.alf.fire <- rbindlist(stat)
+    save(d.alf.fs, file=file.path(samplesDir, paste0(prefix, "_fsByVeg.RData")))
+    save(d.alf.ba, file=file.path(samplesDir, paste0(prefix, "_baByVeg.RData")))
+    save(d.alf.fc, file=file.path(samplesDir, paste0(prefix, "_fcByVeg.RData")))
+    save(stats.alf.fire, file=file.path(statsDir, paste0(prefix, "_stats_fsbafcByVeg.RData")))
+  } else {
+    data.obj.name <- switch(id, age="d.alf.vegage", veg="d.alf.vegarea")
+    stats.obj.name <- switch(id, age="stats.alf.vegage", veg="stats.alf.vegarea")
+    assign(data.obj.name, rbindlist(dat))
+    assign(stats.obj.name, rbindlist(stat))
+    filename <- paste0(prefix, "_", tail(strsplit(data.obj.name, "\\.")[[1]], 1), ".RData")
+    save(list=data.obj.name, file=file.path(samplesDir, filename))
+    save(list=stats.obj.name, file=file.path(statsDir, filename))
+  }
+  return()
 }
 
 # @knitr run

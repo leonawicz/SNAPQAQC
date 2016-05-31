@@ -61,8 +61,8 @@ if(mpiBy=="rep") dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfr
 
 #veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
-#mod.scen <- unlist(strsplit(modname, "\\."))
-mod.scen <- unlist(strsplit(modname, "_"))
+mod.scen <- unlist(strsplit(modname, "\\."))
+#mod.scen <- unlist(strsplit(modname, "_"))
 
 # @knitr functions
 # Support functions
@@ -223,7 +223,7 @@ if(doAgeVeg){
     print("Vegetation area completed.")
     print("Saving vegetation area data tables by location to .RData files.")
 	locs <- unique(d.area$Location)
-	dir.create(vegDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg"), showWarnings=F)
+	dir.create(vegDir <- file.path("/atlas_scratch/mfleonawicz/alfresco", projectName, "extractions/veg"), recursive=TRUE, showWarnings=FALSE)
 
 	for(j in 1:length(locs)){
         filename.tmp <- if(useCRU) paste0("veg__", locs[j], "__", "CRU32") else paste0("veg__", locs[j], "__", modname)
