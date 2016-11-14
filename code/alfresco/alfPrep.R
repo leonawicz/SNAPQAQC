@@ -75,7 +75,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
     rm(list=ls(pattern="^d\\."))
 		loc.grp <- d$LocGroup[1]
 		loc <- d$Location[1]
-    reps.all <- if(is.null(reps)) sort(unique(d$Replicate)) else reps
+    if(id != "age"){ reps.all <- if(is.null(reps)) sort(unique(d$Replicate)) else reps }
     if(id=="fsv"){
       d2 <- group_by(d, Phase, Scenario, Model, Location, Var, Year, Replicate, FID) %>% summarise(Val=sum(Val)) %>% mutate(Vegetation="All") # agg-veg FS
       d <- data.table(bind_rows(d, d2)) %>% mutate(Vegetation=factor(Vegetation, levels=unique(Vegetation))) %>%
@@ -83,12 +83,17 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
       d2 <- group_by(d, Replicate, add=T) %>% summarise(BA=sum(Val), FC=length(Val)) # burn area and fire frequency
       d2 <- d2 %>% do(.,
           Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with burn area and fire frequency of zero
-              complete(c(Phase, Scenario, Model, Location, Var, Vegetation, Year), fill=list(BA=0L, FC=0L)) %>%
+              complete(nesting(Phase, Scenario, Model, Location, Var, Vegetation, Year), fill=list(BA=0L, FC=0L)) %>%
               fill(Phase, Scenario, Model, Location, Var, Vegetation, Year) %>% data.table
       ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
-      d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y)
-      d2.ba <- summarise(d2, Val=dtDen(BA, n=n.samples, out="list")$x, Prob=dtDen(BA, n=n.samples, out="list")$y) %>% mutate(Var="Burn Area")
-      d2.fc <- summarise(d2, Val=dtDen(FC, n=n.samples, out="list")$x, Prob=dtDen(FC, n=n.samples, out="list")$y) %>% mutate(Var="Fire Count")
+      d <- dplyr::do(d, data.table::data.table(
+                             Val=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$y))
+      d2.ba <- dplyr::do(d2, data.table::data.table(
+                             Val=do.call(dtDen, list(.$BA, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$BA, n=n.samples, out="list"))$y)) %>% 
+                             ungroup %>% mutate(Var="Burn Area")
+      d2.fc <- dplyr::do(d2, data.table::data.table(
+                             Val=do.call(dtDen, list(.$FC, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$FC, n=n.samples, out="list"))$y)) %>%
+                             ungroup %>% mutate(Var="Fire Count")
       rm(d2)
       d <- data.table(bind_rows(d, d2.ba, d2.fc))
       rm(d2.ba, d2.fc)
@@ -100,25 +105,32 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
       if(nrow(d)==0) return("Insufficient data.") # skip if any null data table for the location occurs for age, based on removal of irrelevant veg types or insufficient samples
       print(paste("j =", j, "| loc =", loc, "| loc.grp =", loc.grp, "| Age[1] = ", d$Age[1], "| Freq[1] =", d$Freq[1], "| nrow(d) =", nrow(d)))
       d <- mutate(d, N=n()) %>% group_by(Year, add=T)
-      d <- summarise(d, Val=dtDen(ifelse(N==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$x, # constant age permitted (when length(Freq)==1)
-          Prob=dtDen(ifelse(N==1, sample(Age, n.boot, T), sample(Age, n.boot, T, Freq)), n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+      d <- dplyr::do(d, data.table::data.table( # constant age permitted (when length(Freq)==1)
+                             Val=do.call(dtDen, list(ifelse(.$N==1, sample(.$Age, n.boot, T), sample(.$Age, n.boot, T, .$Freq)), n=n.samples, out="list"))$x,
+                             Prob=do.call(dtDen, list(ifelse(.$N==1, sample(.$Age, n.boot, T), sample(.$Age, n.boot, T, .$Freq)), n=n.samples, out="list"))$y))
     }
     if(id=="veg"){
-      d <- d %>% do(.,
+      dx <- d %>% do(.,
         Expanded=suppressMessages(right_join(., data.table(Replicate=as.integer(reps.all)))) %>% # expand to include replicates with veg area of zero
-          complete(c(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
+          complete(nesting(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year), fill=list(Val=0)) %>%
           fill(Phase, Scenario, Model, LocGroup, Location, Var, Vegetation, Year) %>% data.table
       ) %>% select(Expanded) %>% unnest(Expanded) %>% data.table %>% group_by(Phase, Scenario, Model, Location, Var, Vegetation, Year)
-      if(!exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+      if(!exact){
+        d <- dplyr::do(d, data.table::data.table(
+                             Val=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$y))
+      }
     }
     get_stats <- function(data, exact=FALSE){
-      if(!exact) data <- summarise(data, Val=dtBoot(Val, Prob, n.boot=n.boot)) %>% group_by(Year, add=T)
+      if(!exact) data <- dplyr::do(data, data.table::data.table(Val=do.call(dtBoot, list(.$Val,.$Prob, n.boot=n.boot))))
       summarise(data, Mean=round(mean(Val)), SD=round(sd(Val),1), Min=round(min(Val)),
         Pct_05=round(quantile(Val, 0.05)), Pct_10=round(quantile(Val, 0.10)), Pct_25=round(quantile(Val, 0.25)), Pct_50=round(quantile(Val, 0.50)),
         Pct_75=round(quantile(Val, 0.75)), Pct_90=round(quantile(Val, 0.90)), Pct_95=round(quantile(Val, 0.95)), Max=round(max(Val))) %>% group_by(Year, add=T)
     }
     s <- get_stats(d, exact=exact) # exact=TRUE only applies to veg area stats, for comparison with veg area stats computed after veg area density estimation
-    if(id=="veg" & exact) d <- summarise(d, Val=dtDen(Val, n=n.samples, out="list")$x, Prob=dtDen(Val, n=n.samples, out="list")$y) %>% group_by(Year, add=T)
+    if(id=="veg" & exact){
+      d <- dplyr::do(d, data.table::data.table(
+                             Val=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$y))
+    }
     dat[[i]] <- d
     stat[[i]] <- s
     print(i)
