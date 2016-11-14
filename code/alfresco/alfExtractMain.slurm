@@ -5,14 +5,15 @@
 #SBATCH --account=snap
 ####SBATCH --reservation=shiny_4
 #SBATCH -p main
-####SBATCH --ntasks=93
-#SBATCH --ntasks=108
+#SBATCH --ntasks=86 # one for each year
+####SBATCH --ntasks=108
 #SBATCH --job-name=alfExtractMain
-#SBATCH --nodes=4
+#SBATCH --nodes=3
 ####SBATCH --nodelist=atlas08,atlas09,atlas10
-#SBATCH --ntasks-per-node=27
+#SBATCH --ntasks-per-node=29
 
-# CL variables passed take form, e.g., modelIndex=1, reps=1:200, years=1900:2100;
+# CL variables passed take form, e.g., modelIndex=1, domain=\'akcan1km\', reps=1:200, years=1900:2100;
+# domain must be one of 'akcan1km' (SNAP standard CMIP5 data) or 'ak1km' (JFSP)
 # currently, years defaults to 2008:2100, this will change;
 # locgroup="Name String" is optional;
 # doFire=TRUE, doAgeVeg=TRUE, Rmpi=TRUE and useCRU=FALSE are defaults;
@@ -27,4 +28,4 @@
 # projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
 # readMethod, optional, defaults to "loop" for serial raster loading. Alternative is "stack" for read all files pre-loop.
 # You will run out of memory with "stack" if you have too many years and reps.
-mpirun --oversubscribe -np 1 Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtractMain.R $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
+mpirun --oversubscribe -np 1 Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfExtractMain.R $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}
