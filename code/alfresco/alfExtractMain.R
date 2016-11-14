@@ -5,6 +5,7 @@ if(!length(args)) q("no") else for(i in 1:length(args)) eval(parse(text=args[[i]
 
 if(!exists("modelIndex")) stop("Must provide a modelIndex 1 to 15, e.g., modelIndex=1")
 stopifnot(length(modelIndex)==1)
+if(!exists("domain")) stop("Must provide domain, e.g., domain='akcan1km' or domain='ak1km'")
 if(!exists("reps")) stop("Must provide replicates as integer(s) 1:200, e.g., reps=1:25")
 if(!exists("years")) years <- 2008:2100 # Assume if not specified
 if(!exists("Rmpi")) Rmpi <- TRUE
@@ -39,8 +40,13 @@ if(Rmpi){
 }
 
 # Load data table of cell indices defining groups of shapefile polygons
-load("/atlas_scratch/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_akcan1km2km.RData")
-cells <- filter(cells, Source=="akcan1km") %>% group_by %>% select(-Source) %>% group_by(LocGroup, Location)
+if(domain=="akcan1km"){
+  load("/atlas_scratch/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_akcan1km2km.RData")
+  cells <- filter(cells, Source=="akcan1km") %>% group_by %>% select(-Source) %>% group_by(LocGroup, Location)
+} else if(domain=="ak1km"){
+  load("/atlas_scratch/mfleonawicz/projects/DataExtraction/workspaces/shapes2cells_ak1km.RData")
+  cells <- filter(cells, Source=="ak1km") %>% group_by %>% select(-Source) %>% group_by(LocGroup, Location)
+}
 if(exists("locgroup")){
     cat("locgroup = "); cat(locgroup); cat("\n")
 	cells <- filter(cells, LocGroup %in% unique(cells$LocGroup)[locgroup])
@@ -48,12 +54,17 @@ if(exists("locgroup")){
     stopifnot(nrow(cells) > 0)
 }
 
+if(domain=="akcan1km"){
 #dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
 if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern="CRU", full=T)
 if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern=".*.sres.*.", full=T)
 
 #if(useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern="CRU", full=T)
 #if(!useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern=".*.rcp.*.", full=T)
+} else if(domain=="ak1km"){
+  if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/CMIP5_Statewide/outputs/3m", pattern="CRU", full=T)
+  if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/CMIP5_Statewide/outputs/3m", pattern="^rcp.*.", full=T)
+}
 
 mainDirs <- rep(paste0(dirs,"/Maps")[modelIndex], each=length(itervar))
 modname <- unique(basename(dirname(mainDirs)))
@@ -62,6 +73,7 @@ if(mpiBy=="rep") dir.create(ageDir <- file.path("/atlas_scratch/mfleonawicz/alfr
 #veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
 scen.levels <- c("SRES B1", "SRES A1B", "SRES A2", "RCP 4.5", "RCP 6.0", "RCP 8.5")
 mod.scen <- unlist(strsplit(modname, "\\."))
+if(domain=="ak1km") mod.scen <- rev(mod.scen)
 #mod.scen <- unlist(strsplit(modname, "_"))
 
 # @knitr functions
