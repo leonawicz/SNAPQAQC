@@ -3,7 +3,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mfleonawicz@alaska.edu
 #SBATCH --account=snap
-#SBATCH --reservation=shiny_4
+####SBATCH --reservation=shiny_4
 #SBATCH -p main
 #SBATCH --ntasks=32
 ####SBATCH --nodelist=atlas03,atlas04,atlas05,atlas06,atlas11,atlas12,atlas13,atlas14,atlas15
