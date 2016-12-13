@@ -17,11 +17,14 @@ stopifnot(length(period)==1 && period %in% c("historical", "projected"))
 if(!exists("projectName")) projectName <- "Unnamed_Project_Run_Extractions"
 if(!exists("mainDir")) mainDir <- "/atlas_scratch/mfleonawicz/alfresco"
 mainDir <- file.path(mainDir, projectName, "extractions")
+if(exists("gbm")) mainDir <- file.path(mainDir, gbm)
 if(!exists("variable")) stop("Must provide 'variable' argument in escaped quotes. Options are 'age' (vegetation age), 'veg' (vegetated area), or 'fsv' (fire sizes by vegetation class).")
 stopifnot(length(variable)==1 && variable %in% c("age", "veg", "fsv"))
 if(!exists("reps")) reps <- NULL
 inDir <- file.path(mainDir, variable)
-outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName)
+if(exists("gbm")) projectName <- file.path(projectName, gbm)
+dir.create(outDir <- file.path("/atlas_scratch/mfleonawicz/projects/SNAPQAQC/data/final/alfresco", projectName), showWarnings=F, recursive=T)
+print(outDir)
 
 # All regions for which stage-1 outputs currently exist on disk.
 # Checking fsv files, but it is assumed stage one processing has been done on a common set of regions for all variables.
@@ -89,7 +92,7 @@ prep_data <- function(j, inDir, outDir, n.samples=1000, n.boot=10000, period, ..
       d <- dplyr::do(d, data.table::data.table(
                              Val=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$Val, n=n.samples, out="list"))$y))
       d2.ba <- dplyr::do(d2, data.table::data.table(
-                             Val=do.call(dtDen, list(.$BA, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$BA, n=n.samples, out="list"))$y)) %>% 
+                             Val=do.call(dtDen, list(.$BA, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$BA, n=n.samples, out="list"))$y)) %>%
                              ungroup %>% mutate(Var="Burn Area")
       d2.fc <- dplyr::do(d2, data.table::data.table(
                              Val=do.call(dtDen, list(.$FC, n=n.samples, out="list"))$x, Prob=do.call(dtDen, list(.$FC, n=n.samples, out="list"))$y)) %>%

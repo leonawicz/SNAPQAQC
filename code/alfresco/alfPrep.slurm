@@ -15,7 +15,8 @@
 # mainDir is optional, default shown above;
 # period, required, options are historical or projected;
 # variable, required, options are age, veg, and fsv;
-# projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions"
+# projectName, optional (recommended), defaults to "Unnamed_Project_Run_Extractions";
+# gbm, optional (for 3m and 5m datasets stored in subdirectories), e.g. gbm=\'3m\';
 
 # reps, optional (recommended), e.g., reps=1:200. You should know the number of total reps in your data and use it explicitly.
 # reps defaults to NULL, in which case there is a slight possibility not all reps will be used.
@@ -23,4 +24,4 @@
 # It is unlikely to be a problem, but more likely with small spatial domains and/or short time periods.
 # Just be safe and specify your reps!
 
-Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3 $4 $5
+Rscript /atlas_scratch/mfleonawicz/projects/SNAPQAQC/code/alfresco/alfPrep.R $1 $2 $3 $4 $5 $6
