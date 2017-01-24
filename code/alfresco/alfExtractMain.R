@@ -48,8 +48,10 @@ if(domain=="akcan1km"){
   cells <- filter(cells, Source=="ak1km") %>% group_by %>% select(-Source) %>% group_by(LocGroup, Location)
 }
 if(exists("locgroup")){
+    locgroup <- gsub("_", " ", locgroup)
     cat("locgroup = "); cat(locgroup); cat("\n")
-	cells <- filter(cells, LocGroup %in% unique(cells$LocGroup)[locgroup])
+	if(is.character(locgroup)) cells <- filter(cells, LocGroup %in% locgroup)
+	if(is.numeric(locgroup)) cells <- filter(cells, LocGroup %in% unique(cells$LocGroup)[locgroup])
     print(unique(cells$LocGroup))
     stopifnot(nrow(cells) > 0)
 }
@@ -156,7 +158,7 @@ if(doFire){
             fsv.dat <- rbindlist(fsv.dat)
         }
     }
-	
+
     fsv.dat.names.ini <- copy(names(fsv.dat))
     if(useCRU){
         fsv.dat[, Model := "CRU 3.2"]
@@ -170,7 +172,7 @@ if(doFire){
     }
 	fsv.dat <- setcolorder(fsv.dat, c("Phase", "Scenario", "Model", fsv.dat.names.ini))
 	setkey(fsv.dat, Location)
-	
+
 	print("Fire size by vegetation class completed.")
 	print("Saving fire size by vegetation class data frames by location to .RData file.")
 	locs <- unique(fsv.dat$Location)
@@ -246,7 +248,7 @@ if(doAgeVeg){
 	print(tables())
 	rm(d.area, d.vegarea)
 	gc()
-    
+
     if(mpiBy=="year"){
     d.age.names.ini <- copy(names(d.age))
     if(useCRU){
