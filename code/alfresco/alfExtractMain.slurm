@@ -5,12 +5,12 @@
 #SBATCH --account=snap
 ####SBATCH --reservation=shiny_4
 #SBATCH -p main
-#SBATCH --ntasks=86 # one for each year
+#SBATCH --ntasks=86 #64 #93 # one for each year
 ####SBATCH --ntasks=108
 #SBATCH --job-name=alfExtractMain
-#SBATCH --nodes=3
+#SBATCH --nodes=3 #2 #3
 ####SBATCH --nodelist=atlas08,atlas09,atlas10
-#SBATCH --ntasks-per-node=29
+#SBATCH --ntasks-per-node=29 #32 #31
 
 # CL variables passed take form, e.g., modelIndex=1, domain=\'akcan1km\', reps=1:200, years=1900:2100;
 # domain must be one of 'akcan1km' (SNAP standard CMIP5 data) or 'ak1km' (JFSP)
