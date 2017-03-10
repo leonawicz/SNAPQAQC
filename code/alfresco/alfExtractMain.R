@@ -107,14 +107,15 @@ paste("Remaining support objects created. Now pushing objects to slaves.")
 # Export objects to slaves
 if(Rmpi){
 	mpi.bcast.Robj2slave(cells)
-    mpi.bcast.Robj2slave(reps)
+  mpi.bcast.Robj2slave(reps)
 	mpi.bcast.Robj2slave(years)
 	mpi.bcast.Robj2slave(mainDirs)
 	mpi.bcast.Robj2slave(modname)
 	mpi.bcast.Robj2slave(ageDir)
 	mpi.bcast.Robj2slave(itervar)
-    mpi.bcast.Robj2slave(loopBy)
-    mpi.bcast.Robj2slave(readMethod)
+  mpi.bcast.Robj2slave(loopBy)
+  mpi.bcast.Robj2slave(readMethod)
+  mpi.bcast.Robj2slave(veg.labels)
 	print("mpi.bcast.Robj2slave calls completed.")
 }
 
