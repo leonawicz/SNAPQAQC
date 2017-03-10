@@ -57,15 +57,18 @@ if(exists("locgroup")){
 }
 
 if(domain=="akcan1km"){
-#dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
-if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern="CRU", full=T)
-if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern=".*.sres.*.", full=T)
+  veg.labels <- c("Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra",
+                  "Wetland Tundra", "Barren lichen-moss", "Temperate Rainforest")
+  #dirs <- list.files("/atlas_scratch/apbennett/IEM/FinalCalib", pattern=".*.sres.*.", full=T)
+  if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern="CRU", full=T)
+  if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/IEM/outputs/FinalCalib", pattern=".*.sres.*.", full=T)
 
-#if(useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern="CRU", full=T)
-#if(!useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern=".*.rcp.*.", full=T)
+  #if(useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern="CRU", full=T)
+  #if(!useCRU) dirs <- list.files("/atlas_scratch/apbennett/Calibration/HighCalib/FMO_Calibrated", pattern=".*.rcp.*.", full=T)
 } else if(domain=="ak1km"){
-  if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/CMIP5_Statewide/outputs/3m", pattern="CRU", full=T)
-  if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/CMIP5_Statewide/outputs/3m", pattern="^rcp.*.", full=T)
+  veg.labels <- c("Alpine Tundra", "Black Spruce", "White Spruce", "Deciduous", "Shrub Tundra", "Graminoid Tundra", "Wetland Tundra")
+  if(useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/CMIP5_Statewide/outputs/5m", pattern="CRU", full=T)
+  if(!useCRU) dirs <- list.files("/atlas_scratch/mfleonawicz/alfresco/CMIP5_Statewide/outputs/5m", pattern="^rcp.*.", full=T)
 }
 
 mainDirs <- rep(paste0(dirs,"/Maps")[modelIndex], each=length(itervar))
@@ -135,12 +138,14 @@ if(Rmpi){
 if(doFire){
     print("#### Compiling fire statistics... ####")
 	if(Rmpi){
-        fsv.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), readMethod=readMethod) )
+        fsv.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years,
+                                                 cells=select(cells, -Cell_rmNA), readMethod=readMethod, veg.labels=veg.labels) )
         fsv.dat <- rbindlist(fsv.dat)
     } else {
         len <- length(itervar)
         if(len <= n.cores){
-            fsv.dat <- mclapply(itervar, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), readMethod=readMethod, mc.cores=n.cores)
+            fsv.dat <- mclapply(itervar, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years,
+                                cells=select(cells, -Cell_rmNA), readMethod=readMethod, veg.labels=veg.labels, mc.cores=n.cores)
             fsv.dat <- rbindlist(fsv.dat)
         } else {
             serial.iters <- ceiling(len/n.cores)
@@ -149,7 +154,8 @@ if(doFire){
             for(j in 1:serial.iters){
                 itervar.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
-                fsv.tmp <- mclapply(itervar.tmp, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years, cells=select(cells, -Cell_rmNA), readMethod=readMethod, mc.cores=n.cores)
+                fsv.tmp <- mclapply(itervar.tmp, extract_data, type="fsv", loopBy=loopBy, mainDir=mainDir, reps=reps, years=years,
+                                    cells=select(cells, -Cell_rmNA), readMethod=readMethod, veg.labels=veg.labels, mc.cores=n.cores)
                 fsv.dat[[j]] <- rbindlist(fsv.tmp)
                 rm(fsv.tmp)
                 gc()
@@ -193,13 +199,15 @@ if(doFire){
 if(doAgeVeg){
     print("#### Compiling vegetation class and age statistics... ####")
 	if(Rmpi){
-        va.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), readMethod=readMethod) )
+        va.dat <- mpi.remote.exec( extract_data(i=itervar[id], type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years,
+                                                cells=select(cells, -Cell), readMethod=readMethod, veg.labels=veg.labels) )
         d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
         if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
 	} else {
         len <- length(itervar)
         if(len <= n.cores){
-            va.dat <- mclapply(itervar, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), readMethod=readMethod, mc.cores=n.cores)
+            va.dat <- mclapply(itervar, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years,
+                               cells=select(cells, -Cell), readMethod=readMethod, veg.labels=veg.labels, mc.cores=n.cores)
             d.area <- rbindlist(lapply(va.dat, function(x) x$d.area))
             if(mpiBy=="year") d.age <- rbindlist(lapply(va.dat, function(x) x$d.age))
         } else {
@@ -209,7 +217,8 @@ if(doAgeVeg){
             for(j in 1:serial.iters){
                 itervar.tmp <- 1:n.cores2 + (j-1)*n.cores2
                 itervar.tmp <- itervar.tmp[itervar.tmp <= max(itervar)]
-                va.dat <- mclapply(itervar.tmp, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years, cells=select(cells, -Cell), readMethod=readMethod, mc.cores=n.cores)
+                va.dat <- mclapply(itervar.tmp, extract_data, type="av", loopBy=loopBy, mainDir=mainDir, ageDir=ageDir, reps=reps, years=years,
+                                   cells=select(cells, -Cell), readMethod=readMethod, veg.labels=veg.labels, mc.cores=n.cores)
                 d.area[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.area))
                 if(mpiBy=="year") d.age[[j]] <- rbindlist(lapply(va.dat, function(x) x$d.age))
                 rm(va.dat)
